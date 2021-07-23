@@ -2,7 +2,7 @@ import React from "react";
 import "./CardList.scss";
 import PokemonCard from "./PokemonCard";
 
-const CardList = ({ pokemonList, modal, showNumber, clickHandler }) => {
+const CardList = ({ pokemonList, modal, clickHandler }) => {
   // Determines the class to use for the card list
   const cardListClass = modal ? "modal-card-list" : "card-list";
 
@@ -15,7 +15,7 @@ const CardList = ({ pokemonList, modal, showNumber, clickHandler }) => {
               key={i}
               species={pokemon.species}
               variant={pokemon.variant}
-              showNumber={showNumber}
+              form={pokemon.form}
               modalCard={modal}
               clickHandler={clickHandler}
             />

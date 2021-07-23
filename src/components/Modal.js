@@ -12,7 +12,7 @@ import PokemonTypeBtn from "./PokemonTypeBtn";
 import PokemonAbility from "./PokemonAbility";
 import PokemonStatTable from "./PokemonStatTable";
 import CardList from "./CardList";
-import { textCleanup } from "../helpers.js";
+import { getName, textCleanup } from "../helpers.js";
 
 // Constants for the Poke API
 const Pokedex = require("pokeapi-js-wrapper");
@@ -50,6 +50,7 @@ const getDefaultTypeEffectiveness = () => {
 const resetState = () => ({
   abilitiesReceived: false,
   typesReceived: false,
+  formsReceived: false,
   otherVariants: [],
   typeEffectiveness: getDefaultTypeEffectiveness(),
 });
@@ -64,12 +65,14 @@ class Modal extends Component {
       ...resetState(),
       species: this.props.species,
       variant: this.props.variant,
+      form: this.props.form,
     };
   }
   static propTypes = {
     showModal: PropTypes.bool,
     species: PropTypes.object.isRequired,
     variant: PropTypes.object.isRequired,
+    form: PropTypes.object.isRequired,
     hideModal: PropTypes.func,
   };
 
@@ -82,6 +85,7 @@ class Modal extends Component {
     // Fetch the details about abilities, types and other variants from the API
     this.getPokemonAbilityObjects(this.state.variant);
     this.getPokemonTypeObjects(this.state.variant);
+    this.getPokemonFormObjects(this.state.variant);
     this.getOtherVariants(this.state.species, this.state.variant);
   }
 
@@ -162,6 +166,38 @@ class Modal extends Component {
     }
   };
 
+  // Gets the pokemon form objects from the API and returns the variant with forms added
+  addFormsToVariant = async (variant) => {
+    if (variant.forms.length) {
+      try {
+        for (let i = 0; i < variant.forms.length; i++) {
+          const formObject = await PokeApi.resource(`${variant.forms[i].url}`);
+          variant.forms[i].details = formObject;
+        }
+        return variant;
+      } catch {
+        console.error(`Failed to get form object`);
+      }
+    }
+  };
+
+  // Gets the form objects of the current pokemon variant and adds updated variant to state
+  getPokemonFormObjects = (variant) => {
+    if (!this.state.formsReceived) {
+      try {
+        (async () => {
+          variant = await this.addFormsToVariant(variant);
+          this.setState({
+            variant: variant,
+            formsReceived: true,
+          });
+        })();
+      } catch {
+        console.error(`Failed to get forms for the current variant`);
+      }
+    }
+  };
+
   // Gets the other variants of this pokemon species from the API
   getOtherVariants = (species, currentVariant) => {
     const otherVariantsToGet = species.varieties.filter(
@@ -172,17 +208,17 @@ class Modal extends Component {
       try {
         (async () => {
           for (let i = 0; i < otherVariantsToGet.length; i++) {
-            const variantObject = await PokeApi.resource(
+            let variantObject = await PokeApi.resource(
               otherVariantsToGet[i].pokemon.url
             );
-            otherVariants[i] = variantObject;
+            otherVariants[i] = await this.addFormsToVariant(variantObject);
           }
           this.setState({
             otherVariants: otherVariants,
           });
         })();
       } catch {
-        console.error(`Failed to get type object`);
+        console.error(`Failed to get other variants`);
       }
     }
   };
@@ -201,26 +237,30 @@ class Modal extends Component {
         ...resetState(),
         species: pokemon.species,
         variant: pokemon.variant,
+        form: pokemon.form,
       },
       () => {
         // Once state has changed, fetch the new abilities, types and other variants from the API
         this.getPokemonAbilityObjects(pokemon.variant);
         this.getPokemonTypeObjects(pokemon.variant);
+        this.getPokemonFormObjects(pokemon.variant);
         this.getOtherVariants(pokemon.species, pokemon.variant);
       }
     );
   };
 
   render() {
-    const { showModal, hideModal, showNumber } = this.props;
+    const { showModal, hideModal } = this.props;
 
     const {
       species,
       variant,
+      form,
       abilitiesReceived,
       typeEffectiveness,
       typesReceived,
       otherVariants,
+      formsReceived,
     } = this.state;
 
     // If the showModal state becomes false, hide the modal
@@ -258,14 +298,14 @@ class Modal extends Component {
 
     // Get the female gender percentage
     const getFemalePercent = (genderRate) => {
-      let femalePercent = ((genderRate / 8) * 100);
-      return (femalePercent % 1 === 0) ? femalePercent : femalePercent.toFixed(1);
+      let femalePercent = (genderRate / 8) * 100;
+      return femalePercent % 1 === 0 ? femalePercent : femalePercent.toFixed(1);
     };
 
     // Get the male gender percentage
     const getMalePercent = (femalePercent) => {
-      let malePercent = (100 - femalePercent);
-      return (malePercent % 1 === 0) ? malePercent : malePercent.toFixed(1);
+      let malePercent = 100 - femalePercent;
+      return malePercent % 1 === 0 ? malePercent : malePercent.toFixed(1);
     };
 
     // If the type details have been received, returns the JSX to display the type effectiveness buttons
@@ -300,8 +340,12 @@ class Modal extends Component {
     };
 
     // Get pokemon information for display on the modal
-    const types = variant.types;
-    const habitat = species.habitat?.name;
+    const types = form?.details?.types?.length
+      ? form.details.types
+      : variant.types;
+    const habitat = form?.details?.is_battle_only
+      ? "Battle"
+      : species.habitat?.name;
     const height = variant.height;
     const heightInMetres = getHeightInMetres(height);
     const heightInFeetInches = `${parseInt(
@@ -321,9 +365,78 @@ class Modal extends Component {
     const femalePercent = getFemalePercent(genderRate);
     const malePercent = getMalePercent(femalePercent);
     const eggGroups = species.egg_groups;
-    let otherVariantsList = [];
+    let allForms = [];
 
-    // Gets the gender rates for rendering
+    // Display the habitat if there is one
+    const displayHabitat = (habitat) => {
+      if (habitat) {
+        return (
+          <ModalInfoItem label="Habitat" id="modal-habitat" subitem={true}>
+            <ModalInfoValue value={textCleanup(habitat)}></ModalInfoValue>
+          </ModalInfoItem>
+        );
+      }
+    };
+
+    // If the pokemon can be caught (i.e. isn't battle-only) display the catch rate.
+    const displayCatchRate = (form, captureRate, capturePercent) => {
+      if (!form.details?.is_battle_only) {
+        return (
+          <ModalInfoItem
+            label="Catch rate"
+            id="modal-catch-rate"
+            subitem={true}
+          >
+            <ModalInfoValue value={captureRate}></ModalInfoValue>
+            <ModalInfoValue
+              value={`~ ${capturePercent}`}
+              unit="%"
+              alternative={true}
+            ></ModalInfoValue>
+          </ModalInfoItem>
+        );
+      }
+    };
+
+    // Displays the training details, depending on if the pokemon is battle-only or not
+    const displayTrainingDetails = (
+      form,
+      baseExperience,
+      baseFriendship,
+      growthRate
+    ) => {
+      if (form.details?.is_battle_only) {
+        return <p>This is a battle-only form which cannot be trained.</p>;
+      } else {
+        return (
+          <ModalRow>
+            <ModalInfoItem
+              label="Base Experience"
+              id="modal-base-exp"
+              subitem={true}
+            >
+              <ModalInfoValue value={baseExperience}></ModalInfoValue>
+            </ModalInfoItem>
+            <ModalInfoItem
+              label="Base Friendship"
+              id="modal-base-friendship"
+              subitem={true}
+            >
+              <ModalInfoValue value={baseFriendship}></ModalInfoValue>
+            </ModalInfoItem>
+            <ModalInfoItem
+              label="Growth rate"
+              id="modal-growth-rate"
+              subitem={true}
+            >
+              <ModalInfoValue value={textCleanup(growthRate)}></ModalInfoValue>
+            </ModalInfoItem>
+          </ModalRow>
+        );
+      }
+    };
+
+    // Get the gender rates for rendering
     const getGenderSplit = (genderRate) => {
       if (genderRate === -1) {
         return <ModalInfoValue value={`No gender`}></ModalInfoValue>;
@@ -339,6 +452,40 @@ class Modal extends Component {
               unit="%"
             ></ModalInfoValue>
           </>
+        );
+      }
+    };
+
+    // Displays the breeding details, depending on if the pokemon is battle-only or not
+    const displayBreedingDetails = (form, genderRate, eggGroups) => {
+      if (form.details?.is_battle_only) {
+        return <p>This is a battle-only form which cannot be bred.</p>;
+      } else {
+        return (
+          <ModalRow>
+            <ModalInfoItem
+              label="Gender"
+              id="modal-gender"
+              subitem={true}
+              row={true}
+            >
+              {getGenderSplit(genderRate)}
+            </ModalInfoItem>
+            <ModalInfoItem
+              label="Egg groups"
+              id="modal-egg-groups"
+              subitem={true}
+            >
+              {eggGroups.map((eggGroup, i) => {
+                return (
+                  <ModalInfoValue
+                    value={textCleanup(eggGroup.name)}
+                    key={eggGroup.name}
+                  ></ModalInfoValue>
+                );
+              })}
+            </ModalInfoItem>
+          </ModalRow>
         );
       }
     };
@@ -364,22 +511,70 @@ class Modal extends Component {
       ); // Get the types where the effectiveness is 0
     }
 
-    // Add the other variants to the list for display
-    otherVariants.forEach((variant) => {
-      otherVariantsList.push({ species: species, variant: variant });
-    });
+    // Returns an array of pokemon objects for each form of the variant
+    const getPokemonObjectsForEachForm = (variant) => {
+      let pokemonObjectsArray = [];
+      variant.forms.forEach((form) => {
+        pokemonObjectsArray.push({
+          species: species,
+          variant: variant,
+          form: form,
+        });
+      });
+      return pokemonObjectsArray;
+    };
 
-    // Displays a list of cards for the other variants, if the pokemon has other variants
-    const displayOtherVariants = (otherVariantsList) => {
-      if (otherVariantsList.length) {
+    // Add the forms of the current variant to the list for display
+    if (formsReceived) {
+      allForms.push(getPokemonObjectsForEachForm(variant));
+    }
+
+    // Add the forms of the other variants to the list for display
+    if (formsReceived && otherVariants.length) {
+      otherVariants.forEach((variant) => {
+        allForms.push(getPokemonObjectsForEachForm(variant));
+      });
+    }
+
+    // Displays a list of cards for the other forms of this pokemon, if they exist
+    const displayAllForms = (allForms, currentPokemon, getName) => {
+      const speciesName = getName(currentPokemon.species);
+
+      // Gets the description of the different forms, if it exists
+      const getFormDescription = (species) => {
+        if (species.form_descriptions.length) {
+          let formDescription;
+          // Find the English description
+          for (let i = 0; i < species.form_descriptions.length; i++) {
+            if (species.form_descriptions[i].language.name === "en") {
+              formDescription = species.form_descriptions[i].description;
+            }
+          }
+          return <p>{formDescription}</p>;
+        }
+      };
+
+      // If there's no form, set the form ID to be the variant ID as it must be the default form
+      if (Object.keys(currentPokemon.form).length === 0) {
+        currentPokemon.form = { details: { id: currentPokemon.variant.id } };
+      }
+
+      // Remove the current form from the list of other forms to show
+      const otherFormsToShow = allForms.filter(
+        (pokemon) => pokemon.form.details.id !== currentPokemon.form.details.id
+      );
+
+      // If there are multiple forms of the pokemon, render the Other Forms section
+      if (allForms.length > 1) {
         return (
           <ModalRow>
-            <ModalInfoItem label="Other variants">
+            <ModalInfoItem label={`Other forms of ${speciesName}`}>
+              {getFormDescription(currentPokemon.species)}
               <ModalColumn>
                 <CardList
-                  pokemonList={otherVariantsList}
+                  pokemonList={otherFormsToShow}
                   modal={true}
-                  showNumber={false}
+                  currentPokemon={currentPokemon}
                   clickHandler={this.refreshModal}
                 />
               </ModalColumn>
@@ -400,7 +595,7 @@ class Modal extends Component {
           <ModalImagePanel
             species={species}
             variant={variant}
-            showNumber={showNumber}
+            form={form}
           />
           <div className="modal-info-panel" ref={this.infoPanelRef}>
             <PokemonDescription species={species} />
@@ -421,13 +616,7 @@ class Modal extends Component {
                     );
                   })}
                 </ModalInfoItem>
-                <ModalInfoItem
-                  label="Habitat"
-                  id="modal-habitat"
-                  subitem={true}
-                >
-                  <ModalInfoValue value={textCleanup(habitat)}></ModalInfoValue>
-                </ModalInfoItem>
+                {displayHabitat(habitat)}
               </ModalRow>
               <ModalRow>
                 <ModalInfoItem label="Height" id="modal-height" subitem={true}>
@@ -452,18 +641,7 @@ class Modal extends Component {
                     alternative={true}
                   ></ModalInfoValue>
                 </ModalInfoItem>
-                <ModalInfoItem
-                  label="Catch rate"
-                  id="modal-catch-rate"
-                  subitem={true}
-                >
-                  <ModalInfoValue value={captureRate}></ModalInfoValue>
-                  <ModalInfoValue
-                    value={`~ ${capturePercent}`}
-                    unit="%"
-                    alternative={true}
-                  ></ModalInfoValue>
-                </ModalInfoItem>
+                {displayCatchRate(form, captureRate, capturePercent)}
               </ModalRow>
             </ModalRow>
             <ModalRow id="modal-centre-section">
@@ -491,59 +669,17 @@ class Modal extends Component {
                 </ModalRow>
                 <ModalRow id="modal-training">
                   <ModalInfoItem label="Training">
-                    <ModalRow>
-                      <ModalInfoItem
-                        label="Base Experience"
-                        id="modal-base-exp"
-                        subitem={true}
-                      >
-                        <ModalInfoValue value={baseExperience}></ModalInfoValue>
-                      </ModalInfoItem>
-                      <ModalInfoItem
-                        label="Base Friendship"
-                        id="modal-base-friendship"
-                        subitem={true}
-                      >
-                        <ModalInfoValue value={baseFriendship}></ModalInfoValue>
-                      </ModalInfoItem>
-                      <ModalInfoItem
-                        label="Growth rate"
-                        id="modal-growth-rate"
-                        subitem={true}
-                      >
-                        <ModalInfoValue
-                          value={textCleanup(growthRate)}
-                        ></ModalInfoValue>
-                      </ModalInfoItem>
-                    </ModalRow>
+                    {displayTrainingDetails(
+                      form,
+                      baseExperience,
+                      baseFriendship,
+                      growthRate
+                    )}
                   </ModalInfoItem>
                 </ModalRow>
                 <ModalRow id="modal-breeding">
                   <ModalInfoItem label="Breeding">
-                    <ModalRow>
-                      <ModalInfoItem
-                        label="Gender"
-                        id="modal-gender"
-                        subitem={true}
-                        row={true}
-                      >
-                        {getGenderSplit(genderRate)}
-                      </ModalInfoItem>
-                      <ModalInfoItem
-                        label="Egg groups"
-                        id="modal-egg-groups"
-                        subitem={true}
-                      >
-                        {eggGroups.map((eggGroup, i) => {
-                          return (
-                            <ModalInfoValue
-                              value={textCleanup(eggGroup.name)}
-                              key={eggGroup.name}
-                            ></ModalInfoValue>
-                          );
-                        })}
-                      </ModalInfoItem>
-                    </ModalRow>
+                    {displayBreedingDetails(form, genderRate, eggGroups)}
                   </ModalInfoItem>
                 </ModalRow>
               </ModalColumn>
@@ -617,7 +753,7 @@ class Modal extends Component {
                 </ModalRow>
               </ModalColumn>
             </ModalRow>
-            {displayOtherVariants(otherVariantsList)}
+            {displayAllForms(allForms.flat(), {species: species, variant: variant, form: form }, getName)}
           </div>
         </section>
       </div>

@@ -25,6 +25,8 @@ $text-stroke: 0 0 3px black;
 
   img {
     z-index: $img-panel-z-index;
+    width: 60%;
+    height: auto;
     max-width: 35vh;
     max-height: 35vh;
   }
@@ -43,6 +45,6 @@ $text-stroke: 0 0 3px black;
   }
 
   .hidden {
-    display: none;
+    visibility: hidden;
   }
 }

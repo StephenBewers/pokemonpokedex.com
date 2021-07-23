@@ -97,6 +97,7 @@ class App extends Component {
           pokemonObjects.push({
             species: pokemonSpecies,
             variant: pokemonVariant,
+            form: {},
           });
         }
 
@@ -139,7 +140,7 @@ class App extends Component {
           }
 
           // Add the pokemon object and default variant to the array of pokemon objects retrieved in this request
-          pokemonObjects.push([pokemonSpecies, pokemonVariant]);
+          pokemonObjects.push([pokemonSpecies, pokemonVariant, {}]);
         }
 
         // Change state to the pokemon objects retrieved
@@ -175,7 +176,7 @@ class App extends Component {
           hideModal={this.hideModal}
           species={this.state.modalPokemon.species}
           variant={this.state.modalPokemon.variant}
-          showNumber={true}
+          form={this.state.modalPokemon.form}
         />
       );
     }
@@ -276,7 +277,6 @@ class App extends Component {
           >
             <CardList
               pokemonList={retrievedPokemon}
-              showNumber={true}
               clickHandler={this.initModal}
             />
           </InfiniteScroll>

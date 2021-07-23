@@ -1,20 +1,22 @@
 import React from "react";
 import Tilt from "react-parallax-tilt";
 import "./PokemonCard.scss";
-import { getNumberWithLeadingZeros, textCleanup } from "../helpers.js";
+import { getNumberWithLeadingZeros, getName, getImage } from "../helpers.js";
 
-const PokemonCard = ({ species, variant, showNumber, modalCard, clickHandler }) => {
+const PokemonCard = ({ species, variant, form, modalCard, clickHandler }) => {
   // Determines the class to use for the card
   const cardClass = modalCard ? "modal-card" : "pokemon-card";
-  
+
   // Get pokemon information for display on the card
   const number = getNumberWithLeadingZeros(
     species.pokedex_numbers[0].entry_number,
     3
   );
-  const name = textCleanup(variant.name);
-  const types = variant.types;
-  const image = variant.sprites.other["official-artwork"].front_default;
+  const name = getName(species, form);
+  const types = form?.details?.types?.length
+    ? form.details.types
+    : variant.types;
+  const image = getImage(variant, form);
 
   const primaryTypeClass = `${types[0].type.name}-type`;
 
@@ -22,13 +24,18 @@ const PokemonCard = ({ species, variant, showNumber, modalCard, clickHandler }) 
   const secondaryTypeClass =
     types.length > 1 ? `${types[1].type.name}-secondary` : "";
 
-  // If showNumber is true, render the number
-  const numberClass = showNumber ? "pokemon-number" : "hidden-number";
+  // Hide the pokemon number for modal cards
+  const numberClass =
+    cardClass !== "modal-card" ? "pokemon-number" : "hidden-number";
 
   return (
     <div
       role="button"
-      onClick={clickHandler.bind(this, { species: species, variant: variant })}
+      onClick={clickHandler.bind(this, {
+        species: species,
+        variant: variant,
+        form: form,
+      })}
     >
       <Tilt
         className={`${cardClass} ${primaryTypeClass} ${secondaryTypeClass}`}
