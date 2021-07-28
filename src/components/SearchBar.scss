@@ -1,29 +1,25 @@
-@mixin search-bar-dimensions {
-  width: 300px;
-  min-width: 50%;
-  margin-top: 3vh;
-  z-index: 100;
-}
-
-@mixin search-bar-style {
-  overflow: hidden;
-
-  background-color: #fff;
-  border-radius: 16px;
-  border-color: transparent;
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.3), 0 6px 20px 0 rgba(0, 0, 0, 0.3);
-}
-
 @mixin options-style {
   list-style: none;
-  padding: 0.25em 1em 0.25em 1em;
+  padding: 0.25em 1.25em;
   margin: 0;
   text-transform: capitalize;
   cursor: pointer;
 }
 
 .search-container {
-  @include search-bar-dimensions;
+  position: absolute;
+
+  width: 300px;
+  min-width: 50%;
+  top: 44vh;
+  z-index: 100;
+
+  overflow: hidden;
+
+  background-color: #fff;
+  border-radius: 32px;
+  border-color: transparent;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.3), 0 6px 20px 0 rgba(0, 0, 0, 0.3);
 
   &.sticky {
     position: fixed;
@@ -32,30 +28,29 @@
     left: 0;
     right: 0;
   }
-}
-
-.search-bar {
-  display: flex;
-  flex-direction: row;
-
-  @include search-bar-style;
 
   &:focus-within {
     box-shadow: 0 0 5px 4px cornflowerblue;
     outline: 0;
   }
+}
 
+.search-bar {
+  display: flex;
+  flex-direction: row;
+  margin: 0.25em 0em;
 }
 
 .search-box {
   width: 100%;
   padding: 0.25em;
+  padding-bottom: 0.5em;
   flex-grow: 2;
   
   font-family: "Pokemon Solid";
   letter-spacing: 0.1em;
   font-size: 1em;
-  text-indent: 0.75em;
+  text-indent: 1em;
 
   border: none;
 
@@ -70,19 +65,36 @@
   }
 }
 
+span.search-divider {
+  border-right: 1px solid #dfe1e5;
+  height: 65%;
+  align-self: center;
+  margin-left: 1.1em;
+
+  &:before {
+    content: "\200D";
+    display: inline;
+ }
+}
+
 .search-btn {
   background: none;
+  color: #3563ad;
   border: none;
-  padding: 0.25em 1em 0.25em 1em;
-  margin-right: 1em;
+  font-size: 1.1em;
+  padding: 0.25em 1.6em;
+  cursor: pointer;
+}
+
+div.options-container-divider {
+  border-top: 1px solid #dfe1e5;
+  padding: 0.25em 0em;
+  width: 96%;
+  margin: auto;
 }
 
 .options-container {
-  position: absolute;
-  
-  @include search-bar-dimensions;
-  @include search-bar-style;
-
+  padding-bottom: 0.6em;
   font-family: "Pokemon Solid";
   letter-spacing: 0.09em;
   font-size: 0.9em;

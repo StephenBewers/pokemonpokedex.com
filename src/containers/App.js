@@ -139,8 +139,8 @@ class App extends Component {
             }
           }
 
-          // Add the pokemon object and default variant to the array of pokemon objects retrieved in this request
-          pokemonObjects.push([pokemonSpecies, pokemonVariant, {}]);
+          // Add the pokemon object to the array of pokemon objects retrieved in this request
+          pokemonObjects.push({species: pokemonSpecies, variant: pokemonVariant, form: {}});
         }
 
         // Change state to the pokemon objects retrieved

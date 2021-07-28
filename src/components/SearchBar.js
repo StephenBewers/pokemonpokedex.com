@@ -72,26 +72,25 @@ class SearchBar extends Component {
     }
   };
 
-  // When the user selects one of the autocomplete suggestions, populate the search box with
-  // the selected pokemon name, load that pokemon card, and stop displaying suggestions
+  // When the user clicks one of the autocomplete suggestions, populate the search box with
+  // the clicked pokemon name, load that pokemon card, and stop displaying suggestions
   onClick = (event) => {
     this.setState({
       activeOption: 0,
-      filteredOption: [],
       showOptions: false,
       defaultView: false,
-      userInput: event.currentTarget.innerText,
+      userInput: event.target.outerText,
     });
     this.props.getSpecificPokemon([
-      event.currentTarget.innerText.toLowerCase(),
-    ]);
+      event.target.outerText.toLowerCase(),
+    ]); 
   };
 
   // Handle key events for autocomplete suggestion list
   onKeyDown = (event) => {
     const { activeOption, filteredOptions } = this.state;
 
-    // Return key provides the same action as the click event
+    // Return key provides the same action as the click event, but uses the selected pokemon as there is no clicked one
     if (event.keyCode === 13) {
       this.setState({
         activeOption: 0,
@@ -141,6 +140,7 @@ class SearchBar extends Component {
 
   render() {
     const {
+      onClick,
       onChange,
       onKeyDown,
       listOptions,
@@ -156,20 +156,26 @@ class SearchBar extends Component {
         // If there are more than 5 options, only return the first 5
         if (filteredOptions.length > 5) {
           optionList = (
+            <>
+            <div className="options-container-divider"></div>
             <div className="options-container">
               <ul className="options">
                 {filteredOptions.slice(0, 5).map(listOptions)}
               </ul>
             </div>
+            </>
           );
         }
 
         // If there are 5 or fewer options, return all
         else {
           optionList = (
+            <>
+            <div className="options-container-divider"></div>
             <div className="options-container">
               <ul className="options">{filteredOptions.map(listOptions)}</ul>
             </div>
+            </>
           );
         }
       }
@@ -177,11 +183,14 @@ class SearchBar extends Component {
       // JSX if there are no matching pokemon names in the list
       else {
         optionList = (
+          <>
+          <div className="options-container-divider"></div>
           <div className="options-container">
             <p className="no-results">
               <em>No pokémon found with that name!</em>
             </p>
           </div>
+          </>
         );
       }
     }
@@ -197,7 +206,8 @@ class SearchBar extends Component {
             onKeyDown={onKeyDown}
             value={userInput}
           />
-          <button type="submit" value="" className="search-btn">
+          <span className="search-divider"></span>
+          <button type="submit" value="" className="search-btn" onClick={onClick}>
             <FontAwesomeIcon icon={faSearch} />
           </button>
         </div>
