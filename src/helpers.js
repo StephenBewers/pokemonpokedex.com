@@ -1,3 +1,27 @@
+// Wraps around a Promise to make it cancellable as per ReactJs blog post "isMounted is an Antipattern"
+export function makeCancellable(promise) {
+  let hasCancelled_ = false;
+
+  const wrappedPromise = new Promise((resolve, reject) => {
+    promise.then(
+      val => hasCancelled_ ? reject({isCancelled: true}) : resolve(val),
+      error => hasCancelled_ ? reject({isCancelled: true}) : reject(error)
+    );
+  });
+
+  return {
+    promise: wrappedPromise,
+    cancel() {
+      hasCancelled_ = true;
+    },
+  };
+};
+
+// Returns a promise to get the resource from the provided URL
+export function getResource(PokeApi, url) {
+  return PokeApi.resource(url)
+}
+
 // Appends the leading zeros to the pokemon number
 export function getNumberWithLeadingZeros(number, length) {
   let pokemonNumber = "" + number;

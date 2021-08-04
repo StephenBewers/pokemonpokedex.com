@@ -12,7 +12,7 @@ import PokemonTypeBtn from "./PokemonTypeBtn";
 import PokemonAbility from "./PokemonAbility";
 import PokemonStatTable from "./PokemonStatTable";
 import CardList from "./CardList";
-import { getName, textCleanup } from "../helpers.js";
+import { getName, getResource, makeCancellable, textCleanup } from "../helpers.js";
 
 // Constants for the Poke API
 const Pokedex = require("pokeapi-js-wrapper");
@@ -55,6 +55,12 @@ const resetState = () => ({
   typeEffectiveness: getDefaultTypeEffectiveness(),
 });
 
+// Arrays that will store promises to return the additional data. Promises will be cancelled on unmount.
+let abilityPromises = [];
+let typePromises = [];
+let formPromises = [];
+let otherVariantPromises = [];
+
 class Modal extends Component {
   constructor(props) {
     super(props);
@@ -81,39 +87,231 @@ class Modal extends Component {
     event.stopPropagation();
   }
 
+  // Scrolls the referred element to the top
+  scrollToTop = (ref) => ref.current.scroll({ top: 0, behavior: "auto" });
+
   componentDidMount() {
-    // Fetch the details about abilities, types and other variants from the API
-    this.getPokemonAbilityObjects(this.state.variant);
-    this.getPokemonTypeObjects(this.state.variant);
-    this.getPokemonFormObjects(this.state.variant);
-    this.getOtherVariants(this.state.species, this.state.variant);
+    let { species, variant } = this.state;
+
+    // Fetch the details about the abilities, types, forms and variants from the API
+    abilityPromises = this.getAbilityPromises(variant);
+    typePromises = this.getTypePromises(variant);
+    formPromises = this.getFormPromises(variant);
+    otherVariantPromises = this.getOtherVariantPromises(species, variant);
+
+    // Update the details about the abilities, types, forms in the state
+    if (abilityPromises.length) {this.updateAbilities(variant, abilityPromises)};
+    if (typePromises.length) {this.updateTypes(variant, typePromises)};
+    if (formPromises.length) {this.updateForms(variant, formPromises)};
+    if (otherVariantPromises.length) {this.updateOtherVariants(otherVariantPromises)};
   }
 
-  // Gets the pokemon ability objects from the API
-  getPokemonAbilityObjects = (variant) => {
+  componentWillUnmount() {
+    // Cancel the ability promises
+    if (abilityPromises.length) {
+      abilityPromises.forEach(promise => {
+        promise.cancel();
+      });
+    }
+
+    // Cancel the type promises
+    if (typePromises.length) {
+      typePromises.forEach(promise => {
+        promise.cancel();
+      });
+    }
+
+    // Cancel the form promises
+    if (formPromises.length) {
+      formPromises.forEach(promise => {
+        promise.cancel();
+      });
+    }
+
+    // Cancel the other variant promises
+    if (otherVariantPromises.length) {
+      otherVariantPromises.forEach(promise => {
+        promise.cancel();
+      });
+    }
+  } 
+
+  // Gets cancellable promises to return the ability objects from the API
+  getAbilityPromises = (variant) => {
+    let abilityPromises = [];
     if (variant.abilities.length) {
-      try {
-        (async () => {
-          for (let i = 0; i < variant.abilities.length; i++) {
-            const abilityObject = await PokeApi.resource(
-              `${variant.abilities[i].ability.url}`
-            );
-            variant.abilities[i].details = abilityObject;
-          }
-          this.setState({
-            variant: variant,
-            abilitiesReceived: true,
-          });
-        })();
-      } catch {
-        console.error(`Failed to get ability object`);
+      for (let i = 0; i < variant.abilities.length; i++) {
+        abilityPromises.push(makeCancellable(getResource(PokeApi, `${variant.abilities[i].ability.url}`)));
       }
     }
+    return abilityPromises;
+  }
+
+  // Gets cancellable promises to return the type objects from the API
+  getTypePromises = (variant) => {
+    let typePromises = [];
+    if (variant.types.length) {
+      for (let i = 0; i < variant.types.length; i++) {
+        typePromises.push(makeCancellable(getResource(PokeApi, `${variant.types[i].type.url}`)));
+      }
+    }
+    return typePromises;
+  }
+
+  // Gets cancellable promises to return the form objects from the API
+  getFormPromises = (variant) => {
+    let formPromises = [];
+    if (variant.forms.length) {
+      for (let i = 0; i < variant.forms.length; i++) {
+        formPromises.push(makeCancellable(getResource(PokeApi, `${variant.forms[i].url}`)));
+      }
+    }
+    return formPromises;
+  }
+
+  // Gets cancellable promises to return the other variant objects from the API
+  getOtherVariantPromises = (species, currentVariant) => {
+    const otherVariantsToGet = species.varieties.filter(
+      (variant) => variant.pokemon.name !== currentVariant.name
+    );
+    let otherVariantPromises = [];
+    if (otherVariantsToGet.length) {
+      for (let i = 0; i < otherVariantsToGet.length; i++) {
+        otherVariantPromises.push(makeCancellable(getResource(PokeApi, otherVariantsToGet[i].pokemon.url)));
+      }
+    }
+    return otherVariantPromises;
+  }
+
+  // Once all ability promises have resolved, add the ability objects to the variant and update state
+  updateAbilities = (variant, abilityPromises) => {
+    Promise.all(abilityPromises)
+    .then((promises) => {
+      (async () => {
+        for (let i = 0; i < promises.length; i++) {
+          variant.abilities[i].details = await promises[i].promise;
+        }
+        this.setState({
+          variant: variant,
+          abilitiesReceived: true,
+        });
+      })()
+    })
+    .catch(error => {console.error(error)})
+  }
+
+  // Once all type promises have resolved, add the type details to the variant and update state
+  updateTypes = (variant, typePromises) => {
+    Promise.all(typePromises)
+    .then((promises) => {
+      (async () => {
+        for (let i = 0; i < promises.length; i++) {
+            variant.types[i].details = await promises[i].promise;
+        }
+        let typeEffectiveness = getDefaultTypeEffectiveness();
+        variant.types.forEach(type => {
+          typeEffectiveness = this.calculateTypeEffectiveness(typeEffectiveness, type.details);
+        });
+        this.setState({
+          variant: variant,
+          typeEffectiveness: typeEffectiveness,
+          typesReceived: true,
+        });
+      })()
+    })
+    .catch(error => {console.error(error)})
+  }
+
+  // Once all form promises have resolved, add the form details to the variant and update state
+  updateForms = (variant, formPromises) => {
+    Promise.all(formPromises)
+    .then((promises) => {
+      (async () => {
+        for (let i = 0; i < promises.length; i++) {
+            variant.forms[i].details = await promises[i].promise;
+          }
+        this.setState({
+          variant: variant,
+          formsReceived: true,
+        });
+      })()
+    })
+    .catch(error => {console.error(error)})
+  }
+
+  // Once all other variant promises have resolved, get the forms for those variants and update state
+  updateOtherVariants = (otherVariantPromises) => {
+    Promise.all(otherVariantPromises)
+    .then((promises) => {
+      (async () => {
+        let otherVariants = [];
+        for (let i = 0; i < promises.length; i++) {
+          let otherVariant = await promises[i].promise;
+          otherVariants.push(otherVariant);
+        }
+        otherVariants.forEach(otherVariant => {
+          // Get the forms for each other variant
+          let variantFormPromises = this.getFormPromises(otherVariant);
+          // Only once the form promises have resolved, add the forms to the variant
+          Promise.all(variantFormPromises)
+          .then((formPromises) => {
+            (async () => {
+              for (let i = 0; i < formPromises.length; i++) {
+                otherVariant.forms[i].details = await formPromises[i].promise
+              }
+              // Update the state for the other variants with their different forms
+              this.setState({
+                otherVariants: otherVariants,
+              });
+            })()
+          })
+          .catch((error) => {
+            // Cancel the form promises
+            if (variantFormPromises.length) {
+              variantFormPromises.forEach(promise => {
+                promise.cancel();
+              });
+            }
+            // Log the error
+            console.error(error);
+          })
+      });
+      })()
+    })
+    .catch(error => {console.error(error)})
+  }
+
+  // Refreshes the modal with a different pokemon
+  refreshModal = (pokemon) => {
+    // Scroll the modal elements back to the top
+    this.scrollToTop(this.modalMainRef);
+    this.scrollToTop(this.infoPanelRef);
+    // Set the modal state for the new pokemon
+    this.setState(
+      {
+        ...resetState(),
+        species: pokemon.species,
+        variant: pokemon.variant,
+        form: pokemon.form,
+      },
+      () => {
+        // Once state has changed, fetch the new abilities, types and other variants from the API
+        abilityPromises = this.getAbilityPromises(pokemon.variant);
+        typePromises = this.getTypePromises(pokemon.variant);
+        formPromises = this.getFormPromises(pokemon.variant);
+        otherVariantPromises = this.getOtherVariantPromises(pokemon.species, pokemon.variant);
+
+        // Update the details about the abilities, types, forms in the state
+        if (abilityPromises.length) {this.updateAbilities(pokemon.variant, abilityPromises)};
+        if (typePromises.length) {this.updateTypes(pokemon.variant, typePromises)};
+        if (formPromises.length) {this.updateForms(pokemon.variant, formPromises)};
+        if (otherVariantPromises.length) {this.updateOtherVariants(otherVariantPromises)};
+      }
+    );
   };
 
   // Calculates the effectiveness of each type against this pokemon
-  calculateTypeEffectiveness = (type) => {
-    let typeEffectiveness = getDefaultTypeEffectiveness();
+  calculateTypeEffectiveness = (typeEffectiveness, type) => {
 
     // Calculate double damage types
     if (type.damage_relations.double_damage_from.length) {
@@ -139,114 +337,6 @@ class Modal extends Component {
       });
     }
     return typeEffectiveness;
-  };
-
-  // Gets the pokemon type objects from the API
-  getPokemonTypeObjects = (variant) => {
-    let typeEffectiveness;
-    if (variant.types.length) {
-      try {
-        (async () => {
-          for (let i = 0; i < variant.types.length; i++) {
-            const typeObject = await PokeApi.resource(
-              `${variant.types[i].type.url}`
-            );
-            variant.types[i].details = typeObject;
-            typeEffectiveness = this.calculateTypeEffectiveness(typeObject);
-          }
-          this.setState({
-            variant: variant,
-            typeEffectiveness: typeEffectiveness,
-            typesReceived: true,
-          });
-        })();
-      } catch {
-        console.error(`Failed to get type object`);
-      }
-    }
-  };
-
-  // Gets the pokemon form objects from the API and returns the variant with forms added
-  addFormsToVariant = async (variant) => {
-    if (variant.forms.length) {
-      try {
-        for (let i = 0; i < variant.forms.length; i++) {
-          const formObject = await PokeApi.resource(`${variant.forms[i].url}`);
-          variant.forms[i].details = formObject;
-        }
-        return variant;
-      } catch {
-        console.error(`Failed to get form object`);
-      }
-    }
-  };
-
-  // Gets the form objects of the current pokemon variant and adds updated variant to state
-  getPokemonFormObjects = (variant) => {
-    if (!this.state.formsReceived) {
-      try {
-        (async () => {
-          variant = await this.addFormsToVariant(variant);
-          this.setState({
-            variant: variant,
-            formsReceived: true,
-          });
-        })();
-      } catch {
-        console.error(`Failed to get forms for the current variant`);
-      }
-    }
-  };
-
-  // Gets the other variants of this pokemon species from the API
-  getOtherVariants = (species, currentVariant) => {
-    const otherVariantsToGet = species.varieties.filter(
-      (variant) => variant.pokemon.name !== currentVariant.name
-    );
-    let otherVariants = [];
-    if (otherVariantsToGet.length) {
-      try {
-        (async () => {
-          for (let i = 0; i < otherVariantsToGet.length; i++) {
-            let variantObject = await PokeApi.resource(
-              otherVariantsToGet[i].pokemon.url
-            );
-            otherVariants[i] = await this.addFormsToVariant(variantObject);
-          }
-          this.setState({
-            otherVariants: otherVariants,
-          });
-        })();
-      } catch {
-        console.error(`Failed to get other variants`);
-      }
-    }
-  };
-
-  // Scrolls the referred element to the top
-  scrollToTop = (ref) => ref.current.scroll({ top: 0, behavior: "auto" });
-
-  // Refreshes the modal with a different pokemon
-  refreshModal = (pokemon) => {
-    // Scroll the modal elements back to the top
-    this.scrollToTop(this.modalMainRef);
-    this.scrollToTop(this.infoPanelRef);
-    // Set the modal state for the new pokemon
-    this.setState(
-      {
-        ...resetState(),
-        species: pokemon.species,
-        variant: pokemon.variant,
-        form: pokemon.form,
-      },
-      () => {
-        // Once state has changed, fetch the new abilities, types and other variants from the API
-        this.getPokemonAbilityObjects(pokemon.variant);
-        this.getPokemonTypeObjects(pokemon.variant);
-        this.getPokemonFormObjects(pokemon.variant);
-        this.getOtherVariants(pokemon.species, pokemon.variant);
-      }
-    );
   };
 
   render() {
@@ -561,7 +651,7 @@ class Modal extends Component {
 
       // Remove the current form from the list of other forms to show
       const otherFormsToShow = allForms.filter(
-        (pokemon) => pokemon.form.details.id !== currentPokemon.form.details.id
+        (pokemon) => pokemon.form?.details?.id !== currentPokemon.form?.details?.id
       );
 
       // If there are multiple forms of the pokemon, render the Other Forms section
