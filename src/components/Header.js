@@ -30,7 +30,7 @@ class Header extends Component {
   render() {
     return (
       <header>
-        <h1>Pokédex</h1>
+        <h1>Pokémon Pokédex</h1>
         <SearchBar
           additionalClass={this.state.stickyClass}
           options={this.props.searchOptions}

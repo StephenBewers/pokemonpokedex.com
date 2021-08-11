@@ -8,10 +8,11 @@
 
 .search-container {
   position: absolute;
+  top: 42vh;
 
-  width: 300px;
-  min-width: 50%;
-  top: 44vh;
+  width: 260px;
+  min-width: 60%;
+  margin: 2em;
   z-index: 100;
 
   overflow: hidden;
@@ -54,7 +55,7 @@
 
   border: none;
 
-  @media (max-width: 1000px) {
+  @media (max-width: 767px) {
     font-size: 0.8em;
     letter-spacing: 0.08em;
   }
