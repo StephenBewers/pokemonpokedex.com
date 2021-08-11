@@ -125,6 +125,13 @@ class SearchBar extends Component {
     }
   };
 
+  // Change the currently selected option to the option the user moves their mouse over
+  onMouseOver = (event) => {
+    const parent = event.target.parentNode;
+    const optionIndex = [].indexOf.call(parent.children, event.target);
+    this.setState({ activeOption: optionIndex });
+  }
+
   // Lists the autocomplete options provided in JSX format for rendering
   listOptions = (optionName, index) => {
     let className = "option";
@@ -132,7 +139,7 @@ class SearchBar extends Component {
       className = "option-active";
     }
     return (
-      <li className={className} key={optionName} onClick={this.onClick}>
+      <li className={className} key={optionName} onClick={this.onClick} onMouseOver={this.onMouseOver}>
         {optionName}
       </li>
     );
