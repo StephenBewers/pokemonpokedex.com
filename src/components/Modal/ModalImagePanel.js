@@ -1,16 +1,16 @@
 import React from "react";
 import "./ModalImagePanel.scss";
-import { getNumberWithLeadingZeros, getName, getImage } from "../helpers.js";
+import { getNumberWithLeadingZeros, getPokemonName, getImage } from "../../helpers.js";
 
-const ModalImagePanel = ({ species, variant, form }) => {
+const ModalImagePanel = ({ pokemon }) => {
   // Get pokemon information for display on the card
   const number = getNumberWithLeadingZeros(
-    species.pokedex_numbers[0].entry_number,
+    pokemon.species.pokedex_numbers[0].entry_number,
     3
   );
-  const name = getName(species, form);
-  const types = (form?.details?.types?.length) ? form.details.types : variant.types;
-  const image = getImage(variant, form);
+  const name = getPokemonName(pokemon.species, pokemon.form);
+  const types = (pokemon.form?.details?.types?.length) ? pokemon.form.details.types : pokemon.variant.types;
+  const image = getImage(pokemon.variant, pokemon.form);
 
   const primaryTypeClass = `${types[0].type.name}-type`;
 

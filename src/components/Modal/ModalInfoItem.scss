@@ -15,6 +15,7 @@
 
 #modal-top-row .modal-info-item {
   margin-right: 4vw;
+  flex-grow: 0;
 }
 
 .modal-info-values-row {
@@ -48,9 +49,4 @@
   @media (max-width: 1200px) {
     margin-bottom: 0vmax;
   }
-}
-
-#modal-type-effectiveness {
-  // This gives margin to the first column when unwrapped
-  margin-left: 2vmax;
 }

@@ -47,7 +47,7 @@ $thick-padding-constant: 2vmax;
   /* This uses the background color to create a smart divider
      between columns which then divides between rows on wrap */
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   background-color: #ddd;
   grid-column-gap: 2.3vmax;
   grid-row-gap: 5px;
@@ -55,16 +55,4 @@ $thick-padding-constant: 2vmax;
   // Thick border style as children will cover some of it
   border-top: $thick-border-style;
   border-bottom: $thick-border-style;
-}
-
-#modal-training, #modal-breeding, #modal-abilities {
-  border-top: $border-style;
-}
-
-#modal-type-effectiveness .modal-row {
-  padding: 0vmax 0vmax $padding-constant 0vmax;
-
-  @media (max-width: 720px) {
-    padding: 0;
-  }
 }

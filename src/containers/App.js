@@ -3,25 +3,24 @@ import "./App.scss";
 import Header from "../components/Header.js";
 import InfiniteScroll from "react-infinite-scroll-component";
 import CardList from "../components/CardList.js";
-import Modal from "../components/Modal";
-
-const Pokedex = require("pokeapi-js-wrapper");
-const customOptions = {
-  cacheImages: true,
-};
-const PokeApi = new Pokedex.Pokedex(customOptions);
+import Modal from "../components/Modal/Modal.js";
+import LoadingBarMain from "../components/LoadingBarMain";
+import { 
+  getPokemonSpeciesList,
+  getPokemon
+ } from "../helpers.js";
 class App extends Component {
   constructor() {
     super();
     this.resetPokemon = this.resetPokemon.bind(this);
-    this.getSpecificPokemon = this.getSpecificPokemon.bind(this);
+    this.getPokemonBatch = this.getPokemonBatch.bind(this);
     this.initModal = this.initModal.bind(this);
     this.hideModal = this.hideModal.bind(this);
     this.state = {
       pokemonNames: [],
+      pokemonToGet: [],
       retrievedPokemon: [],
       retrievalLimit: 24,
-      count: 1,
       hasMore: true,
       stickySearch: false,
       showModal: false,
@@ -29,133 +28,92 @@ class App extends Component {
     };
   }
 
-  // Gets a list of all available pokemon names
-  getPokemonNames = () => {
-    // The starting point and number of pokemon to retrieve from the API per request
-    const interval = { offset: 0, limit: 2000 };
+  // Retrieves specified pokemon objects from the API
+  getPokemonBatch = async (remainingPokemonToGet, retrievedPokemon) => {
+    let { retrievalLimit } = this.state;
 
-    try {
-      (async () => {
-        // Gets the list of pokemon requested
-        let response = await PokeApi.getPokemonSpeciesList(interval);
-
-        // Store the total number of pokemon available from the API in state
-        this.setState({ count: response.count });
-
-        // Store all of the pokemon names in an array and add to state
-        let pokemonNames = [];
-        for (const item of response.results) {
-          pokemonNames.push(item.name);
-        }
-        this.setState({ pokemonNames: pokemonNames });
-      })();
-    } catch {
-      console.error(`Failed to get Pokemon names`);
-    }
-  };
-
-  // Retrieves the pokemon objects from the API from the total already retrieved (pass 0 to reset)
-  getPokemon = (totalAlreadyRetrieved) => {
-    let { retrievedPokemon, retrievalLimit } = this.state;
-
-    // Compares the number of pokemon already in state to the total available from the API
-    if (retrievedPokemon.length >= this.state.count) {
+    // Compares the number of pokemon already retrieved to the total to get
+    if (retrievedPokemon.length >= remainingPokemonToGet.length) {
       // If there are no more to retrieve, set the hasMore flag to false
       this.setState({ hasMore: false });
       return;
     } else {
       this.setState({ hasMore: true });
     }
-    try {
-      (async () => {
-        // The starting point and number of pokemon to retrieve from the API per request
-        const interval = {
-          offset: totalAlreadyRetrieved,
-          limit: retrievalLimit,
-        };
 
-        // Gets the list of pokemon requested and the API URL for their information
-        let response = await PokeApi.getPokemonSpeciesList(interval);
+    // Select the pokemon to get in this request
+    let pokemonToGetNow;
+    if (remainingPokemonToGet.length > retrievalLimit) {
+      pokemonToGetNow = remainingPokemonToGet.slice(0, retrievalLimit);
+    } else {
+      pokemonToGetNow = remainingPokemonToGet;
+    }
 
-        // For each pokemon in the response, retrieve their information from the API
-        let pokemonObjects = [];
-        for (const item of response.results) {
-          // Get the pokemon species from the API
-          let pokemonSpecies = await PokeApi.resource(`${item.url}`);
+    // Retrieves the pokemon objects from the API
+    const pokemonObjects = await getPokemon(pokemonToGetNow);
 
-          // Get the data for the default variant of the species
-          let pokemonVariant;
-          for (let i = 0; i < pokemonSpecies.varieties.length; i++) {
-            if (pokemonSpecies.varieties[i].is_default) {
-              pokemonVariant = await PokeApi.resource(
-                `${pokemonSpecies.varieties[i].pokemon.url}`
-              );
-            }
-          }
+    // Update the list of pokemon still to retrieve, removing those we retrieved in this batch
+    let pokemonStillToGet;
+    if (remainingPokemonToGet.length > retrievalLimit) {
+      pokemonStillToGet = remainingPokemonToGet.slice(
+        retrievalLimit,
+        remainingPokemonToGet.length
+      );
+    } else {
+      pokemonStillToGet = [];
+    }
 
-          // Add the pokemon object and default variant to the array of pokemon objects retrieved in this request
-          pokemonObjects.push({
-            species: pokemonSpecies,
-            variant: pokemonVariant,
-            form: {},
-          });
-        }
-
-        // If there are fewer pokemon in state than would be returned by one call, replace the state with
-        // the pokemon objects retrieved in this request
-        if (totalAlreadyRetrieved < 1) {
-          this.setState({
-            retrievedPokemon: pokemonObjects,
-          });
-        } else {
-          // If not, add the array of pokemon objects retrieved in this request to the pokemon objects already in state
-          this.setState({
-            retrievedPokemon: retrievedPokemon.concat(pokemonObjects),
-          });
-        }
-      })();
-    } catch {
-      console.error(`Failed to get Pokemon list`);
+    // If no pokemon have already been retrieved, update the state with those retrieved in this request
+    if (retrievedPokemon.length < 1) {
+      this.setState({
+        pokemonToGet: pokemonStillToGet,
+        retrievedPokemon: pokemonObjects,
+      });
+    } else {
+      // If not, add the array of pokemon objects retrieved in this request to the pokemon objects already in state
+      this.setState({
+        pokemonToGet: pokemonStillToGet,
+        retrievedPokemon: retrievedPokemon.concat(pokemonObjects),
+      });
     }
   };
 
-  // Retrieves a single pokemon from the API
-  getSpecificPokemon = (pokemonToGet) => {
+  // Initialises the pokemon list
+  initPokemonList = () => {
+    // The starting point and number of pokemon to retrieve from the API per request
+    const interval = { offset: 0, limit: 2000 };
+
     try {
       (async () => {
-        let pokemonObjects = [];
+        // Gets the json of all pokemon species
+        let response = await getPokemonSpeciesList(interval);
 
-        for (const pokemon of pokemonToGet) {
-          // Get the pokemon species from the API
-          let pokemonSpecies = await PokeApi.getPokemonSpeciesByName(pokemon);
-
-          // Get the data for the default variant of the species
-          let pokemonVariant;
-          for (let i = 0; i < pokemonSpecies.varieties.length; i++) {
-            if (pokemonSpecies.varieties[i].is_default) {
-              pokemonVariant = await PokeApi.resource(
-                `${pokemonSpecies.varieties[i].pokemon.url}`
-              );
-            }
-          }
-
-          // Add the pokemon object to the array of pokemon objects retrieved in this request
-          pokemonObjects.push({species: pokemonSpecies, variant: pokemonVariant, form: {}});
+        // Store all of the pokemon names in an array
+        let pokemonNames = [];
+        for (const item of response.results) {
+          pokemonNames.push(item.name);
         }
 
-        // Change state to the pokemon objects retrieved
+        // Start getting the pokemon from the API
+        this.getPokemonBatch(pokemonNames, []);
+
+        // Update the state with the list of pokemon names
         this.setState({
-          retrievedPokemon: pokemonObjects,
-          hasMore: false,
+          pokemonNames: pokemonNames,
         });
       })();
     } catch {
-      console.error(`Unable to retrieve specified pokemon`);
+      console.error(`Failed to get the list of Pokemon`);
     }
   };
 
-  // Retrieves the next batch of pokemon for the infinite scroll
-  getMorePokemon = () => this.getPokemon(this.state.retrievedPokemon.length);
+  // Checks if any pokemon have already been received and if so, gets the next batch
+  getNextPokemonBatch = () => {
+    const { pokemonToGet, retrievedPokemon } = this.state;
+    if (retrievedPokemon.length) {
+      this.getPokemonBatch(pokemonToGet, retrievedPokemon);
+    }
+  };
 
   // Resets the UI before loading the pokemon
   resetPokemon = () => {
@@ -163,26 +121,24 @@ class App extends Component {
       {
         retrievedPokemon: [],
       },
-      this.getPokemon(0)
+      this.initPokemonList()
     );
   };
 
-  // Determines if the modal should be rendered or not
+  // If the state implies that we should show the modal, render it
   renderModal = () => {
     if (this.state.showModal) {
       return (
         <Modal
           showModal={this.state.showModal}
           hideModal={this.hideModal}
-          species={this.state.modalPokemon.species}
-          variant={this.state.modalPokemon.variant}
-          form={this.state.modalPokemon.form}
+          pokemon={this.state.modalPokemon}
         />
       );
     }
   };
 
-  // Triggers the modal to show and passes the pokemon information
+  // Updates the state to initialise the modal
   initModal = (pokemon) => {
     this.setState({
       showModal: true,
@@ -196,27 +152,19 @@ class App extends Component {
   };
 
   componentDidMount() {
-    // If the pokemon names list is empty, get the pokemon names
+    // If the pokemon names list is empty, initialise the pokemon list
     if (!this.state.pokemonNames.length) {
-      this.getPokemonNames();
+      this.initPokemonList();
     }
 
-    // Retrieve the pokemon
-    this.getMorePokemon();
-
-    // Get the viewport height and width, and calculate the minimum
+    // Get the viewport height
     const viewportHeight = Math.max(
       document.documentElement.clientHeight || 0,
       window.innerHeight || 0
     );
-    const viewportWidth = Math.max(
-      document.documentElement.clientWidth || 0,
-      window.innerWidth || 0
-    );
-    const viewportMin = Math.min(viewportHeight, viewportWidth);
 
     // Calculate the point for the search bar to stick
-    let stickySearchPosition = Math.min(viewportMin * 0.4);
+    let stickySearchPosition = Math.min(viewportHeight * 0.42);
 
     // Checks if the user has scrolled past the sticky position
     const checkStickyPosition = () => {
@@ -247,6 +195,7 @@ class App extends Component {
     const loadingLabel = retrievedPokemon.length
       ? "Looking for more pokémon"
       : "Looking for pokémon";
+
     return (
       <>
         <Header
@@ -254,26 +203,16 @@ class App extends Component {
           stickySearch={stickySearch}
           searchOptions={pokemonNames}
           resetPokemon={this.resetPokemon}
-          getSpecificPokemon={this.getSpecificPokemon}
+          getPokemonBatch={this.getPokemonBatch}
         ></Header>
         <main>
           {this.renderModal()}
           <InfiniteScroll
             dataLength={retrievedPokemon.length}
-            next={this.getMorePokemon}
+            next={this.getNextPokemonBatch}
             hasMore={hasMore}
-            scrollThreshold="25%"
-            loader={
-              <div className="loading-bar">
-                <p className="loading-label">{loadingLabel}</p>
-                <div className="lds-ellipsis">
-                  <div></div>
-                  <div></div>
-                  <div></div>
-                  <div></div>
-                </div>
-              </div>
-            }
+            scrollThreshold="50%"
+            loader={<LoadingBarMain loadingLabel={loadingLabel}></LoadingBarMain>}
           >
             <CardList
               pokemonList={retrievedPokemon}

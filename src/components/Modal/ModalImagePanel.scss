@@ -21,7 +21,7 @@ $text-stroke: 0 0 3px black;
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
-  min-width: auto;
+  min-width: 180px;
 
   img {
     z-index: $img-panel-z-index;

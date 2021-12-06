@@ -46,7 +46,8 @@ $border-radius: 8px;
     
     font-size: $pokemon-card-font-size;
     transform: translateZ(3px);
-    margin: 1.8vh 1vw 0vh 1vw;
+    margin: 1em;
+    margin-bottom: 0em;
     line-height: 1.4;
   }
 
@@ -55,7 +56,8 @@ $border-radius: 8px;
     font-size: $pokemon-card-font-size;
     text-transform: capitalize;
     transform: translateZ(3px);
-    margin: 0vh 1vw 2.6vh 1vw;
+    margin: 1em;
+    margin-top: 0em;
     line-height: 1.4;
     text-align: center;
   }
@@ -67,6 +69,8 @@ $border-radius: 8px;
 
 .modal-card {
   @extend .pokemon-card;
+
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.6), 0 3px 10px 0 rgba(0, 0, 0, 0.6);
 
   .pokemon-number {
     font-size: $modal-card-font-size;

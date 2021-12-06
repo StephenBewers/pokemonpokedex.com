@@ -1,9 +1,9 @@
 import React from "react";
 import Tilt from "react-parallax-tilt";
-import "./PokemonCard.scss";
-import { getNumberWithLeadingZeros, getName, getImage } from "../helpers.js";
+import "./Card.scss";
+import { getNumberWithLeadingZeros, getPokemonName, getImage } from "../helpers.js";
 
-const PokemonCard = ({ species, variant, form, modalCard, clickHandler }) => {
+const Card = ({ species, variant, form, modalCard, clickHandler }) => {
   // Determines the class to use for the card
   const cardClass = modalCard ? "modal-card" : "pokemon-card";
 
@@ -12,7 +12,7 @@ const PokemonCard = ({ species, variant, form, modalCard, clickHandler }) => {
     species.pokedex_numbers[0].entry_number,
     3
   );
-  const name = getName(species, form);
+  const name = getPokemonName(species, form);
   const types = form?.details?.types?.length
     ? form.details.types
     : variant.types;
@@ -52,4 +52,4 @@ const PokemonCard = ({ species, variant, form, modalCard, clickHandler }) => {
   );
 };
 
-export default PokemonCard;
+export default Card;

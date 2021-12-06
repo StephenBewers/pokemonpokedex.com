@@ -1,3 +1,7 @@
+#pokemon-abilities {
+    border-top: 1px solid #ddd;
+  }
+
 .pokemon-ability {
     margin: 0.8em 0.5em 0em 0em;
 }
@@ -8,8 +12,8 @@
 
 .pokemon-ability summary {
     font-size: 1.1em;
-    text-transform: capitalize;
     cursor: pointer;
+    text-transform: capitalize;
 }
 
 .hidden-ability-label {

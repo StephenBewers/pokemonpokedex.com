@@ -1,0 +1,12 @@
+#pokemon-type-effectiveness {
+  // This gives margin to the first column when unwrapped
+  margin-left: 2vmax;
+}
+
+#pokemon-type-effectiveness .modal-row {
+  padding: 0vmax 0vmax 1.4vmax 0vmax;
+
+  @media (max-width: 720px) {
+    padding: 0;
+  }
+}

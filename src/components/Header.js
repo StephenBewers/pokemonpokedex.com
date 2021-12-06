@@ -35,7 +35,7 @@ class Header extends Component {
           additionalClass={this.state.stickyClass}
           options={this.props.searchOptions}
           resetPokemon={this.props.resetPokemon}
-          getSpecificPokemon={this.props.getSpecificPokemon}
+          getPokemonBatch={this.props.getPokemonBatch}
         ></SearchBar>
       </header>
     );

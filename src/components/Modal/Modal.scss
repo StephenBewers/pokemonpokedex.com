@@ -1,8 +1,8 @@
-@use '../containers/App';
+@use '../../containers/App';
 
 .modal {
   position: fixed;
-  z-index: 998;
+  z-index: 990;
   top: 0;
   left: 0;
   width: 100%;
@@ -10,7 +10,9 @@
   background: rgba(0, 0, 0, 0.75);
 
   &.visible {
-    display: block;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 
   &.hidden {
@@ -23,7 +25,7 @@
   display: flex;
   flex-flow: row wrap;
   align-items: stretch;
-  z-index: 999;
+  z-index: 995;
   width: 90%;
   height: 90%;
   top: 50%;
@@ -44,5 +46,5 @@
   padding: 0vmax 3vmax 0vmax 3vmax;
   font-family: "Quicksand", sans-serif;
   overflow-y: auto;
-  height: calc(90vh - 110px);
+  height: calc(90vh - 85px);
 }

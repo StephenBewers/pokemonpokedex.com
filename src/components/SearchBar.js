@@ -9,7 +9,7 @@ class SearchBar extends Component {
     options: PropTypes.instanceOf(Array).isRequired,
     additionalClass: PropTypes.string,
     resetPokemon: PropTypes.func,
-    getSpecificPokemon: PropTypes.func,
+    getPokemonBatch: PropTypes.func,
   };
 
   state = {
@@ -81,9 +81,9 @@ class SearchBar extends Component {
       defaultView: false,
       userInput: event.target.outerText,
     });
-    this.props.getSpecificPokemon([
+    this.props.getPokemonBatch([
       event.target.outerText.toLowerCase(),
-    ]); 
+    ],[]); 
   };
 
   // Handle key events for autocomplete suggestion list
@@ -98,9 +98,9 @@ class SearchBar extends Component {
         defaultView: false,
         userInput: filteredOptions[activeOption],
       });
-      this.props.getSpecificPokemon([
-        filteredOptions[activeOption].toLowerCase(),
-      ]);
+      this.props.getPokemonBatch([
+        filteredOptions[activeOption].toLowerCase()
+      ],[]);
     }
 
     // Up arrow selects the suggestion above the currently selected option if not already at the top

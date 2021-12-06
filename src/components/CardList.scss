@@ -25,21 +25,26 @@
   .modal-card-list {
     display: grid;
     padding: 3vh 0vw;
-    gap: 33px;
+    gap: 28px;
     justify-content: start;
 
     @media (orientation: landscape) and (min-height: 600px) {
-      grid-template-columns: repeat(auto-fit, minmax(140px, calc(22vmin / 1.4)));
-      grid-auto-rows: minmax(196px, 22vmin);
+      grid-template-columns: repeat(auto-fit, minmax(110px, calc(20vmin / 1.4)));
+      grid-auto-rows: minmax(154px, 20vmin);
+    }
+
+    @media (orientation: portrait) and (min-width: 600px) {
+      grid-template-columns: repeat(auto-fit, minmax(110px, calc(20vmin / 1.4)));
+      grid-auto-rows: minmax(154px, 20vmin);
     }
 
     @media (orientation: landscape) and (max-height: 600px) {
-      grid-template-columns: repeat(auto-fit, 140px);
-      grid-auto-rows: 196px;
+      grid-template-columns: repeat(auto-fit, 110px);
+      grid-auto-rows: 154px;
     }
     
-    @media (orientation: portrait) {
-      grid-template-columns: repeat(auto-fill, minmax(126px, 22vmin));
-      grid-auto-rows: minmax(176px, calc(22vmin * 1.4));
+    @media (orientation: portrait) and (max-width: 600px) {
+      grid-template-columns: repeat(auto-fit, 110px);
+      grid-auto-rows: 154px;
     }
   }
