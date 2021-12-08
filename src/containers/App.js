@@ -20,7 +20,7 @@ class App extends Component {
       pokemonNames: [],
       pokemonToGet: [],
       retrievedPokemon: [],
-      retrievalLimit: 24,
+      retrievalLimit: 6,
       hasMore: true,
       stickySearch: false,
       showModal: false,
@@ -54,6 +54,7 @@ class App extends Component {
 
     // Update the list of pokemon still to retrieve, removing those we retrieved in this batch
     let pokemonStillToGet;
+    let hasMore = true;
     if (remainingPokemonToGet.length > retrievalLimit) {
       pokemonStillToGet = remainingPokemonToGet.slice(
         retrievalLimit,
@@ -61,6 +62,7 @@ class App extends Component {
       );
     } else {
       pokemonStillToGet = [];
+      hasMore = false;
     }
 
     // If no pokemon have already been retrieved, update the state with those retrieved in this request
@@ -68,12 +70,14 @@ class App extends Component {
       this.setState({
         pokemonToGet: pokemonStillToGet,
         retrievedPokemon: pokemonObjects,
+        hasMore: hasMore,
       });
     } else {
       // If not, add the array of pokemon objects retrieved in this request to the pokemon objects already in state
       this.setState({
         pokemonToGet: pokemonStillToGet,
         retrievedPokemon: retrievedPokemon.concat(pokemonObjects),
+        hasMore: hasMore,
       });
     }
   };
@@ -211,7 +215,7 @@ class App extends Component {
             dataLength={retrievedPokemon.length}
             next={this.getNextPokemonBatch}
             hasMore={hasMore}
-            scrollThreshold="50%"
+            scrollThreshold="80%"
             loader={<LoadingBarMain loadingLabel={loadingLabel}></LoadingBarMain>}
           >
             <CardList

@@ -49,7 +49,7 @@ class PokemonHabitat extends Component {
 
     // If the habitat promise has been retrieved, update the habitat in state
     if (
-      habitatPromise.hasOwnProperty("promise") &&
+      habitatPromise?.hasOwnProperty("promise") &&
       !this.state.habitatReceived
     ) {
       this.updateHabitat(pokemon, habitatPromise);
@@ -67,7 +67,7 @@ class PokemonHabitat extends Component {
   getHabitatPromise = (pokemon) => {
     const habitat = pokemon.species.habitat;
     let habitatPromise;
-    if (habitat.hasOwnProperty("url")) {
+    if (habitat?.hasOwnProperty("url")) {
       habitatPromise = makeCancellable(getResource(`${habitat.url}`));
     }
     return habitatPromise;

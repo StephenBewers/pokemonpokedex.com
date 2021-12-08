@@ -10,7 +10,7 @@ import PokemonTypes from "../Pokemon/PokemonTypes";
 import PokemonHabitat from "../Pokemon/PokemonHabitat";
 import PokemonCatchRate from "../Pokemon/PokemonCatchRate";
 import PokemonHeight from "../Pokemon/PokemonHeight";
-import PokemonWeight from "../Pokemon/PokemonHeight";
+import PokemonWeight from "../Pokemon/PokemonWeight";
 import PokemonAbilities from "../Pokemon/PokemonAbilities";
 import PokemonBaseStats from "../Pokemon/PokemonBaseStats";
 import PokemonGender from "../Pokemon/PokemonGender";

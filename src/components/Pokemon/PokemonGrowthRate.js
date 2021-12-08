@@ -17,7 +17,7 @@ class PokemonGrowthRate extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      growthRate: this.props.pokemon.species.habitat,
+      growthRate: this.props.pokemon.species.growth_rate,
       growthRateReceived: false,
     };
   }

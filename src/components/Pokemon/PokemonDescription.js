@@ -2,14 +2,16 @@ import React from "react";
 import "./PokemonDescription.scss";
 
 const PokemonDescription = ({ pokemon }) => {
-  // Gets the Omega-Ruby description in English
+  // Gets the description in English
   const getDescriptionText = (descriptionsArray) => {
     let descriptionString = "";
     descriptionsArray.forEach((description) => {
-      if (
-        description.language.name === "en" &&
-        description.version.name === "omega-ruby"
-      ) {
+      // We prefer the Omega-Ruby description as it's more detailed
+      if (description.language.name === "en" && description.version.name === "omega-ruby") {
+        descriptionString = description.flavor_text;
+      }
+      // But if there is no Omega-Ruby description, just get the first English description
+      else if (description.language.name === "en" && descriptionString === "") {
         descriptionString = description.flavor_text;
       }
     });
