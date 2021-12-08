@@ -25,6 +25,7 @@ $text-stroke: 0 0 3px black;
 .modal-ribbon {
   width: 400px;
   height: 400px;
+  max-height: 100%;
   overflow: hidden;
   position: absolute;
   top: -10px;
