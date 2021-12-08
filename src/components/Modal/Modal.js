@@ -23,6 +23,7 @@ import {
   cancelPromise,
   getFormPromises,
 } from "../../helpers.js";
+import ModalRibbon from "./ModalRibbon";
 
 // Array that will store promises to return the current variant forms. Promises will be cancelled on unmount.
 let formOfCurrentVariantPromises = [];
@@ -136,6 +137,7 @@ class Modal extends Component {
           onClick={this.innerModalClick}
           ref={this.modalMainRef}
         >
+          <ModalRibbon pokemon={pokemon} />
           <ModalImagePanel pokemon={pokemon} key={`image-${pokemon.variant.id}`} />
           <div className="modal-info-panel" ref={this.infoPanelRef}>
             <PokemonDescription pokemon={pokemon} key={`description-${pokemon.species.id}`} />

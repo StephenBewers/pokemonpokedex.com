@@ -1,0 +1,45 @@
+@use "../../containers/App";
+
+$text-stroke: 0 0 3px black;
+
+@mixin modal-ribbon-span($color) {
+  position: absolute;
+  display: block;
+  width: 800px;
+  padding: 1.2em 0;
+  background-color: $color;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.5);
+  color: #fff;
+  font-family: "Quicksand", sans-serif;
+  // font-size: calc([minimum font size] + ([maximum font size] - [minimum font size]) * ((100vmin - [minimum viewport width]) / ([maximum viewport width] - [minimum viewport width])));
+  font-size: calc(10px + (30 – 10) * (100vmin – 140px) / (3840 – 140));
+  font-weight: 900;
+  text-shadow: $text-stroke, $text-stroke, $text-stroke, $text-stroke;
+  text-transform: uppercase;
+  text-align: center;
+  right: -4em;
+  top: 2.2em;
+  transform: rotate(-45deg);
+}
+
+.modal-ribbon {
+  width: 400px;
+  height: 400px;
+  overflow: hidden;
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  z-index: 5;
+}
+span.baby {
+  @include modal-ribbon-span(#f4c2c2);
+}
+span.legendary {
+  @include modal-ribbon-span(#dfbd69);
+}
+span.mythical {
+  @include modal-ribbon-span(#adadc9);
+}
+.hidden {
+  display: none;
+}
