@@ -2,26 +2,21 @@ import React, { Component } from "react";
 import ModalInfoItem from "../Modal/ModalInfoItem";
 import ModalRow from "../Modal/ModalRow";
 import PokemonEvolvesFrom from "./PokemonEvolvesFrom";
-import {
-  getPokemonName,
-} from "../../helpers.js";
+import PokemonEvolvesTo from "./PokemonEvolvesTo";
+import { getPokemonName } from "../../helpers.js";
+import "./PokemonEvolution.scss";
 
 class PokemonEvolution extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-
-    };
+    this.state = {};
   }
 
-  componentDidMount() {
-  }
+  componentDidMount() {}
 
-  componentDidUpdate(prevProps) {
-  }
+  componentDidUpdate(prevProps) {}
 
-  componentWillUnmount() {
-  }
+  componentWillUnmount() {}
 
   render() {
     let { pokemon, clickHandler } = this.props;
@@ -45,19 +40,25 @@ class PokemonEvolution extends Component {
 
       // Content for all other pokemon
       else {
-        return <PokemonEvolvesFrom pokemon={pokemon} clickHandler={clickHandler}></PokemonEvolvesFrom>
+        return (
+          <>
+            <PokemonEvolvesFrom
+              pokemon={pokemon}
+              clickHandler={clickHandler}
+            ></PokemonEvolvesFrom>
+            <PokemonEvolvesTo
+              pokemon={pokemon}
+              clickHandler={clickHandler}
+            ></PokemonEvolvesTo>
+          </>
+        );
       }
     };
 
     return (
       <ModalRow id="pokemon-evolution">
         <ModalInfoItem label="Evolution">
-          <ModalRow>
-            {displayEvolution(
-              pokemon,
-              clickHandler
-            )}
-          </ModalRow>
+          <ModalRow>{displayEvolution(pokemon, clickHandler)}</ModalRow>
         </ModalInfoItem>
       </ModalRow>
     );

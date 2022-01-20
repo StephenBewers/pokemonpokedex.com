@@ -1,0 +1,11 @@
+#pokemon-evolution .modal-row {
+  width: 100%;
+}
+
+#pokemon-evolution .modal-column:first-of-type {
+  margin-right: 3.3vmax;
+
+  @media (max-width: 1200px) {
+    margin-right: 7.3vmax;
+  }
+}
