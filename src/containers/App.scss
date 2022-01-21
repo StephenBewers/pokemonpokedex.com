@@ -6,16 +6,15 @@
     url("../assets/fonts/Pokemon\ Solid.ttf") format("truetype");
 }
 
-@import url('https://fonts.googleapis.com/css2?family=Quicksand&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Quicksand&display=swap");
 
 @mixin card-type-background($color, $image) {
-  background: linear-gradient(rgba($color, 0.8), rgba($color, 0.8)), $image,
-    $color;
+  background: linear-gradient(rgba($color, 0.8), rgba($color, 0.8)), $image, $color;
   background-repeat: space;
 }
 
 @mixin secondary-type-pseudo-style {
-  $image-mask: linear-gradient(to bottom right, transparent 35%, black 65%);
+  $image-mask: linear-gradient(to bottom right, transparent 30%, black 70%);
 
   content: "";
   position: absolute;
@@ -30,24 +29,24 @@
 }
 
 // Pokemon type colours
-$bug-color: #9BBB1B;
+$bug-color: #9bbb1b;
 $dark-color: #1c262b;
 $dragon-color: #421aa3;
 $electric-color: #ffcb05;
 $fairy-color: #fb6883;
 $fighting-color: #a4241e;
 $fire-color: #ff8202;
-$flying-color: #4398F9;
+$flying-color: #4398f9;
 $ghost-color: #373140;
-$grass-color: #41730D;
-$ground-color: #7F5E53;
+$grass-color: #41730d;
+$ground-color: #7f5e53;
 $ice-color: #7da5d1;
-$normal-color: #AC9377;
+$normal-color: #ac9377;
 $poison-color: #50396d;
-$psychic-color: #933E82;
+$psychic-color: #933e82;
 $rock-color: #544c4b;
-$steel-color: #8D98A0;
-$water-color: #04719F;
+$steel-color: #8d98a0;
+$water-color: #04719f;
 
 // Pokemon type classes
 .bug {
@@ -107,10 +106,16 @@ $water-color: #04719F;
 
 // Pokemon card type backgrounds
 .bug-type {
-  @include card-type-background($bug-color, url("../assets/images/bug-icon.png"));
+  @include card-type-background(
+    $bug-color,
+    url("../assets/images/bug-icon.png")
+  );
 }
 .dark-type {
-  @include card-type-background($dark-color, url("../assets/images/dark-icon.png"));
+  @include card-type-background(
+    $dark-color,
+    url("../assets/images/dark-icon.png")
+  );
 }
 .dragon-type {
   @include card-type-background(
@@ -137,7 +142,10 @@ $water-color: #04719F;
   );
 }
 .fire-type {
-  @include card-type-background($fire-color, url("../assets/images/fire-icon.png"));
+  @include card-type-background(
+    $fire-color,
+    url("../assets/images/fire-icon.png")
+  );
 }
 .flying-type {
   @include card-type-background(
@@ -164,7 +172,10 @@ $water-color: #04719F;
   );
 }
 .ice-type {
-  @include card-type-background($ice-color, url("../assets/images/ice-icon.png"));
+  @include card-type-background(
+    $ice-color,
+    url("../assets/images/ice-icon.png")
+  );
 }
 .normal-type {
   @include card-type-background(
@@ -185,7 +196,10 @@ $water-color: #04719F;
   );
 }
 .rock-type {
-  @include card-type-background($rock-color, url("../assets/images/rock-icon.png"));
+  @include card-type-background(
+    $rock-color,
+    url("../assets/images/rock-icon.png")
+  );
 }
 .steel-type {
   @include card-type-background(

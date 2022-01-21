@@ -1,8 +1,8 @@
 @use '../containers/App';
 
 // font-size: calc([minimum font size] + ([maximum font size] - [minimum font size]) * ((100vmin - [minimum viewport width]) / ([maximum viewport width] - [minimum viewport width])));
-$pokemon-card-font-size: calc(8px + (50 – 8) * (100vmin – 140px) / (3840 – 140));
-$modal-card-font-size: calc(8px + (20 – 8) * (50vmin – 140px) / (1920 – 140));
+$pokemon-card-font-size: calc(10px + (50 - 10) * (100vmin - 140px) / (3840 - 140));
+$modal-card-font-size: calc(10px + (20 - 10) * (50vmin - 140px) / (1920 - 140));
 $text-stroke: 0 0 2.5px black;
 $border-radius: 8px;
 
