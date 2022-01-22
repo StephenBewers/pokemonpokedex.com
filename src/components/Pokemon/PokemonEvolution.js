@@ -33,7 +33,7 @@ class PokemonEvolution extends Component {
           <p>
             {formName} is a temporary transformation of {speciesName}. It is
             only available in battle and is not a permanent evolution. It cannot
-            evolve further.
+            evolve any further.
           </p>
         );
       }

@@ -15,26 +15,29 @@ import {
 let evolvesFromSpeciesPromise;
 let evolvesFromPokemonPromises = [];
 
+// Resets the state to default values
+const resetState = () => ({
+  evolvesFromSpeciesReceived: false,
+  evolvesFromPokemon: {},
+  evolvesFromPokemonReceived: false,
+});
+
 class PokemonEvolvesFrom extends Component {
   constructor(props) {
     super(props);
     this.state = {
       evolvesFromSpecies: this.props.pokemon.species.evolves_from_species,
-      evolvesFromSpeciesReceived: false,
-      evolvesFromPokemon: {},
-      evolvesFromPokemonReceived: false,
+      ...resetState(),
     };
   }
 
   componentDidMount() {
     let { pokemon } = this.props;
 
-    // We only need to get the evolves from pokemon if the form is not a battle-only form.
-    if (!pokemon.form || !pokemon.form?.details?.is_battle_only) {
-      evolvesFromSpeciesPromise = this.getEvolvesFromSpeciesPromise(pokemon);
-    }
+    // Get the evolves from species promise
+    evolvesFromSpeciesPromise = this.getEvolvesFromSpeciesPromise(pokemon);
 
-    // Update the details about the evolves from pokemon
+    // Update the details about the evolves from species
     if (evolvesFromSpeciesPromise?.hasOwnProperty("promise")) {
       this.updateEvolvesFromSpecies(pokemon, evolvesFromSpeciesPromise);
     }
@@ -48,25 +51,23 @@ class PokemonEvolvesFrom extends Component {
       evolvesFromPokemonReceived,
     } = this.state;
 
-    // If the variant has changed
-    if (prevProps.pokemon.variant.id !== this.props.pokemon.variant.id) {
+    // If the form or variant has changed
+    if (prevProps.pokemon.form?.details?.id !== this.props.pokemon.form?.details?.id ||
+      prevProps.pokemon.variant.id !== this.props.pokemon.variant.id) {
       // Clear the existing promise arrays
       evolvesFromSpeciesPromise = null;
       evolvesFromPokemonPromises = [];
 
-      // Update state with the evolves from pokemon
-      this.setState({
-        evolvesFromSpecies: this.props.pokemon.species.evolves_from_species,
-        evolvesFromSpeciesReceived: false,
-        evolvesFromPokemon: {},
-        evolvesFromPokemonReceived: false,
-      });
-
-      // Get the evolves from promises for the new pokemon
-      // We only need to get this if the form is not a battle-only form. Battle-only forms cannot evolve.
-      if (!pokemon.form || !pokemon.form?.details?.is_battle_only) {
-        evolvesFromSpeciesPromise = this.getEvolvesFromSpeciesPromise(pokemon);
-      }
+      // Reset the state
+      this.setState(
+        {
+          evolvesFromSpecies: this.props.pokemon.species.evolves_from_species,
+          ...resetState(),
+        },
+        () => {
+          this.componentDidMount();
+        }
+      );
     }
 
     // If we've received the evolves from species, we can get the evolves from pokemon promises
@@ -111,9 +112,9 @@ class PokemonEvolvesFrom extends Component {
     const evolvesFromSpecies = pokemon.species.evolves_from_species;
     let evolvesFromSpeciesPromise;
     if (evolvesFromSpecies?.hasOwnProperty("url")) {
-        evolvesFromSpeciesPromise = makeCancellable(
-            getResource(`${evolvesFromSpecies.url}`)
-          );
+      evolvesFromSpeciesPromise = makeCancellable(
+        getResource(`${evolvesFromSpecies.url}`)
+      );
     }
     return evolvesFromSpeciesPromise;
   };
@@ -156,7 +157,9 @@ class PokemonEvolvesFrom extends Component {
           ) {
             // Get a cancellable promise to retrieve the variant
             evolvesFromVariantPromise = makeCancellable(
-              getResource(`${evolvesFromSpecies.details.varieties[i].pokemon.url}`)
+              getResource(
+                `${evolvesFromSpecies.details.varieties[i].pokemon.url}`
+              )
             );
             // Get a cancellable promise to retrieve the form
             evolvesFromFormPromise = makeCancellable(
@@ -169,6 +172,24 @@ class PokemonEvolvesFrom extends Component {
               evolvesFromVariantPromise,
               evolvesFromFormPromise
             );
+          }
+          // If there isn't a variant with the same form name, get the default
+          else {
+            for (let i = 0; i < evolvesFromSpecies.details.varieties.length; i++) {
+              if (evolvesFromSpecies.details.varieties[i].is_default) {
+                // Get a cancellable promise to retrieve the default variant
+                evolvesFromVariantPromise = makeCancellable(
+                  getResource(
+                    `${evolvesFromSpecies.details.varieties[i].pokemon.url}`
+                  )
+                );
+                // Add both promises to the promise array (even though in this case the form is empty)
+                evolvesFromPokemonPromises.push(
+                  evolvesFromVariantPromise,
+                  evolvesFromFormPromise
+                );
+              }
+            }
           }
         }
       }
@@ -199,7 +220,9 @@ class PokemonEvolvesFrom extends Component {
         if (evolvesFromSpecies.details.varieties[i].is_default) {
           // Get a cancellable promise to retrieve the default variant
           evolvesFromVariantPromise = makeCancellable(
-            getResource(`${evolvesFromSpecies.details.varieties[i].pokemon.url}`)
+            getResource(
+              `${evolvesFromSpecies.details.varieties[i].pokemon.url}`
+            )
           );
           // Add both promises to the promise array (even though in this case the form is empty)
           evolvesFromPokemonPromises.push(
@@ -285,7 +308,13 @@ class PokemonEvolvesFrom extends Component {
         pokemon.species.evolves_from_species?.hasOwnProperty("url") &&
         !evolvesFromPokemonReceived
       ) {
-        return <LoadingBarSmall></LoadingBarSmall>;
+        return (
+          <ModalColumn>
+            <ModalInfoItem label="Evolves from" subitem={true}>
+              <LoadingBarSmall></LoadingBarSmall>
+            </ModalInfoItem>
+          </ModalColumn>
+        );
       }
       // If everything has been retrieved and the variant doesn't have an evolves from pokemon then it must hatch
       else if (!pokemon.variant.hasOwnProperty("evolvesFromPokemon")) {
@@ -301,10 +330,10 @@ class PokemonEvolvesFrom extends Component {
     };
 
     return displayEvolvesFromPokemon(
-        pokemon,
-        evolvesFromPokemonReceived,
-        evolvesFromPokemon
-      );
+      pokemon,
+      evolvesFromPokemonReceived,
+      evolvesFromPokemon
+    );
   }
 }
 
