@@ -16,12 +16,17 @@ import {
 // Array to store promises to return the additional data. Promises will be cancelled on unmount.
 let otherVariantPromises = [];
 
+// Resets the state to default values
+const resetState = () => ({
+  otherVariantsReceived: false,
+  otherVariants: [],
+});
+
 class PokemonOtherForms extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      otherVariantsReceived: false,
-      otherVariants: [],
+      ...resetState(),
     };
   }
 
@@ -35,19 +40,25 @@ class PokemonOtherForms extends Component {
   componentDidUpdate(prevProps) {
     let { pokemon } = this.props;
 
-    // If the variant has changed
-    if (prevProps.pokemon.variant.id !== this.props.pokemon.variant.id) {
+    // If the form or variant has changed
+    if (
+      prevProps.pokemon.form?.details?.id !==
+        this.props.pokemon.form?.details?.id ||
+      prevProps.pokemon.variant.id !== this.props.pokemon.variant.id
+    ) {
       // Clear the existing promises
       otherVariantPromises = [];
 
-      // Update state with the new pokemon variants
-      this.setState({
-        otherVariantsReceived: false,
-        otherVariants: [],
-      });
-
-      // Get the variant promises for the new pokemon
-      otherVariantPromises = this.getOtherVariantPromises(pokemon);
+      // Reset the state
+      this.setState(
+        {
+          evolvesFromSpecies: this.props.pokemon.species.evolves_from_species,
+          ...resetState(),
+        },
+        () => {
+          this.componentDidMount();
+        }
+      );
     }
 
     // If the variant promises have been retrieved, update the variants in state
@@ -75,9 +86,7 @@ class PokemonOtherForms extends Component {
     if (otherVariantsToGet.length) {
       for (let i = 0; i < otherVariantsToGet.length; i++) {
         otherVariantPromises.push(
-          makeCancellable(
-            getResource(otherVariantsToGet[i].pokemon.url)
-          )
+          makeCancellable(getResource(otherVariantsToGet[i].pokemon.url))
         );
       }
     }
@@ -181,15 +190,20 @@ class PokemonOtherForms extends Component {
       }
 
       // If there's no form, set the form ID to be the variant ID as it must be the default form
-      if (Object.keys(currentPokemon.form).length === 0) {
+      if (
+        Object.keys(currentPokemon.form).length === 0 ||
+        !currentPokemon.form?.details
+      ) {
         currentPokemon.form = { details: { id: currentPokemon.variant.id } };
       }
 
       // Returns a list of all other forms and variants for display, with the current form removed
-      return allFormsAndVariants.flat().filter(
-        (pokemon) =>
-          pokemon.form?.details?.id !== currentPokemon.form?.details?.id
-      );
+      return allFormsAndVariants
+        .flat()
+        .filter(
+          (pokemon) =>
+            pokemon.form?.details?.id !== currentPokemon.form?.details?.id
+        );
     };
 
     // Gets the description of the different forms, if it exists

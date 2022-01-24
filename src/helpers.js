@@ -179,3 +179,18 @@ export function getImage(variant, form) {
     }
   }
 }
+
+// Handle the Galarian-specific evolutions
+export function isGalarianEvolution(id) {
+  // Array of Galarian-specific evolution IDs
+  const galarianEvolutions = [
+    863,  // Perrserker
+    865,  // Sirfetch'd
+    866,  // Mr. Rime
+    864,  // Cursola
+    862,  // Obstagoon
+    867   // Runerigus
+  ]
+  // If the ID matches one of those above return true, else return false
+  return galarianEvolutions.includes(id) ? true : false;
+}

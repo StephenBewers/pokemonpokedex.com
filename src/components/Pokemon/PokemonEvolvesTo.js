@@ -10,6 +10,7 @@ import {
   makeCancellable,
   getResource,
   getPokemonName,
+  isGalarianEvolution,
 } from "../../helpers.js";
 
 // Array that will store promises to return the additional data. Promises will be cancelled on unmount.
@@ -59,7 +60,8 @@ class PokemonEvolvesTo extends Component {
 
     // If the form or variant has changed
     if (
-      prevProps.pokemon.form?.details?.id !== this.props.pokemon.form?.details?.id ||
+      prevProps.pokemon.form?.details?.id !==
+        this.props.pokemon.form?.details?.id ||
       prevProps.pokemon.variant.id !== this.props.pokemon.variant.id
     ) {
       // Clear the existing promise arrays
@@ -85,8 +87,7 @@ class PokemonEvolvesTo extends Component {
         evolutionChain
       );
       // If the evolves to species array is empty, this pokemon has no evolutions so update state
-      // Handle special case Mr Mime here too - only the Galarian variant evolves
-      if (!evolvesToSpeciesArray.length || pokemon.form.details.id === 122) {
+      if (!evolvesToSpeciesArray.length) {
         this.setState({
           hasEvolutions: false,
         });
@@ -118,7 +119,11 @@ class PokemonEvolvesTo extends Component {
       evolvesToPokemonPromises.length &&
       !evolvesToPokemonReceived
     ) {
-      this.updateEvolvesToPokemon(evolvesToPokemonPromises, evolvesToSpecies);
+      this.updateEvolvesToPokemon(
+        pokemon,
+        evolvesToPokemonPromises,
+        evolvesToSpecies
+      );
     }
   }
 
@@ -231,6 +236,20 @@ class PokemonEvolvesTo extends Component {
     const currentForm = pokemon.form;
     let allEvolvesToPokemonPromises = [];
 
+    // Gets the promises to retrieve the default variant
+    const getDefaultVariantPromises = (evolvesToSpecies) => {
+      for (let i = 0; i < evolvesToSpecies.varieties.length; i++) {
+        if (evolvesToSpecies.varieties[i].is_default) {
+          // Get a cancellable promise to retrieve the default variant
+          let evolvesToVariantPromise = makeCancellable(
+            getResource(`${evolvesToSpecies.varieties[i].pokemon.url}`)
+          );
+          // Return both promises (even though in this case the form is empty)
+          return [evolvesToVariantPromise, null];
+        }
+      }
+    };
+
     for (const evolvesToSpecies of evolvesToSpeciesArray) {
       let evolvesToPokemonPromise = [];
       let evolvesToVariantPromise;
@@ -268,6 +287,17 @@ class PokemonEvolvesTo extends Component {
               allEvolvesToPokemonPromises.push(evolvesToPokemonPromise);
             }
           }
+
+          // If there isn't a variant with the same form name, get the default
+          if (!allEvolvesToPokemonPromises.length) {
+            const defaultVariantPromises =
+              getDefaultVariantPromises(evolvesToSpecies);
+            // Add both promises to the promise array (even though in this case the form is empty)
+            allEvolvesToPokemonPromises.push([
+              defaultVariantPromises[0],
+              defaultVariantPromises[1],
+            ]);
+          }
         }
 
         // Otherwise, there is only one variant and we can get that one and the corresponding form
@@ -294,29 +324,26 @@ class PokemonEvolvesTo extends Component {
 
       // If not, the current modal pokemon must be the default variant
       else {
-        for (let i = 0; i < evolvesToSpecies.varieties.length; i++) {
-          if (evolvesToSpecies.varieties[i].is_default) {
-            // Get a cancellable promise to retrieve the default variant
-            evolvesToVariantPromise = makeCancellable(
-              getResource(`${evolvesToSpecies.varieties[i].pokemon.url}`)
-            );
-            // Add both promises to the promise array for this pokemon (even though in this case the form is empty)
-            evolvesToPokemonPromise.push(
-              evolvesToVariantPromise,
-              evolvesToFormPromise
-            );
-            // Add the promise array for this pokemon to the array for all evolves to pokemon
-            allEvolvesToPokemonPromises.push(evolvesToPokemonPromise);
-          }
-        }
+        const defaultVariantPromises =
+          getDefaultVariantPromises(evolvesToSpecies);
+        // Add both promises to the promise array (even though in this case the form is empty)
+        allEvolvesToPokemonPromises.push([
+          defaultVariantPromises[0],
+          defaultVariantPromises[1],
+        ]);
       }
     }
     return allEvolvesToPokemonPromises;
   };
 
   // Adds the pokemon objects that the current pokemon evolves to, updating the state
-  updateEvolvesToPokemon = (allEvolvesToPokemonPromises, evolvesToSpecies) => {
+  updateEvolvesToPokemon = (
+    pokemon,
+    allEvolvesToPokemonPromises,
+    evolvesToSpecies
+  ) => {
     let evolvesToPokemonArray = [];
+    let impossibleEvolutions = [];
 
     for (let i = 0; i < allEvolvesToPokemonPromises.length; i++) {
       const evolvesToPokemonPromises = allEvolvesToPokemonPromises[i];
@@ -342,24 +369,48 @@ class PokemonEvolvesTo extends Component {
               evolvesToFormDetails = { details: evolvesToForm };
             }
 
-            // Add the evolves to pokemon to the array
-            let evolvesToPokemon = {
-              species: evolvesToSpecies[i],
-              variant: evolvesToVariant,
-              form: evolvesToFormDetails,
-            };
-            evolvesToPokemonArray.push(evolvesToPokemon);
+            // Only add the pokemon to the evolves to array under certain conditions to prevent impossible evolutions
+            if (
+              (!isGalarianEvolution(evolvesToVariant.id) &&
+              pokemon.form?.details?.form_name !== "galar") ||
+              (evolvesToFormDetails.details?.form_name === "galar" &&
+                pokemon.form?.details?.form_name === "galar") || 
+              (isGalarianEvolution(evolvesToVariant.id) &&
+                pokemon.form?.details?.form_name === "galar")
+            ) {
+              // Add the evolves to pokemon to the array
+              let evolvesToPokemon = {
+                species: evolvesToSpecies[i],
+                variant: evolvesToVariant,
+                form: evolvesToFormDetails,
+              };
+              evolvesToPokemonArray.push(evolvesToPokemon);
+            }
+            // Keep count of any impossible evolutions not included in the evolves to array
+            else {
+              impossibleEvolutions.push(1);
+            }
 
             // If all of the pokemon have been added to the array, update state
-            if (evolvesToPokemonArray.length === evolvesToSpecies.length) {
-
-              // Ensure the array is in the correct order first
-              evolvesToPokemonArray.sort((a, b) => a.species.id - b.species.id);
-
-              this.setState({
-                evolvesToPokemon: evolvesToPokemonArray,
-                evolvesToPokemonReceived: true,
-              });
+            if (
+              evolvesToPokemonArray.length ===
+              evolvesToSpecies.length - impossibleEvolutions.length
+            ) {
+              // If there are no non-Galarian evolutions, update the state to has no evolutions
+              if (evolvesToPokemonArray.length === 0) {
+                this.setState({
+                  hasEvolutions: false,
+                });
+              } else {
+                // Ensure the array is in the correct order first
+                evolvesToPokemonArray.sort(
+                  (a, b) => a.species.id - b.species.id
+                );
+                this.setState({
+                  evolvesToPokemon: evolvesToPokemonArray,
+                  evolvesToPokemonReceived: true,
+                });
+              }
             }
           })();
         })
@@ -381,7 +432,6 @@ class PokemonEvolvesTo extends Component {
       evolvesToPokemon,
       hasEvolutions
     ) => {
-
       // If the pokemon has no evolutions it must be top of the chain
       if (!hasEvolutions) {
         return (

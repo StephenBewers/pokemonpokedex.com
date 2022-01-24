@@ -9,6 +9,7 @@ import {
   cancelPromise,
   makeCancellable,
   getResource,
+  isGalarianEvolution,
 } from "../../helpers.js";
 
 // Array that will store promises to return the additional data. Promises will be cancelled on unmount.
@@ -52,8 +53,11 @@ class PokemonEvolvesFrom extends Component {
     } = this.state;
 
     // If the form or variant has changed
-    if (prevProps.pokemon.form?.details?.id !== this.props.pokemon.form?.details?.id ||
-      prevProps.pokemon.variant.id !== this.props.pokemon.variant.id) {
+    if (
+      prevProps.pokemon.form?.details?.id !==
+        this.props.pokemon.form?.details?.id ||
+      prevProps.pokemon.variant.id !== this.props.pokemon.variant.id
+    ) {
       // Clear the existing promise arrays
       evolvesFromSpeciesPromise = null;
       evolvesFromPokemonPromises = [];
@@ -137,10 +141,34 @@ class PokemonEvolvesFrom extends Component {
 
   // Gets cancellable promises to return the pokemon variant and form that the current pokemon evolves from
   getEvolvesFromPokemonPromises = (pokemon, evolvesFromSpecies) => {
-    const currentForm = pokemon.form;
+    let currentForm = pokemon.form;
+    let currentVariant = pokemon.variant;
     let evolvesFromPokemonPromises = [];
     let evolvesFromVariantPromise;
     let evolvesFromFormPromise;
+
+    // Gets the promises to retrieve the default variant
+    const getDefaultVariantPromises = (evolvesFromSpecies) => {
+      for (let i = 0; i < evolvesFromSpecies.details.varieties.length; i++) {
+        if (evolvesFromSpecies.details.varieties[i].is_default) {
+          // Get a cancellable promise to retrieve the default variant
+          let evolvesFromVariantPromise = makeCancellable(
+            getResource(
+              `${evolvesFromSpecies.details.varieties[i].pokemon.url}`
+            )
+          );
+          // Return both promises (even though in this case the form is empty)
+          return [evolvesFromVariantPromise, null];
+        }
+      }
+    };
+
+    // Check if the current variant is a Galarian evolution
+    if (isGalarianEvolution(currentVariant.id)) {
+      currentForm.details
+        ? (currentForm.details.form_name = "galar")
+        : (currentForm = { details: { form_name: "galar" } });
+    }
 
     // If the current modal pokemon has a form and that form has a non-blank name (i.e. not a default pokemon)
     if (currentForm.details?.form_name) {
@@ -150,7 +178,6 @@ class PokemonEvolvesFrom extends Component {
       if (evolvesFromSpecies.details.varieties.length > 1) {
         // Loop through the evolves from species to find if there is a matching variant
         for (let i = 0; i < evolvesFromSpecies.details.varieties.length; i++) {
-          // If there is a variant with the same form name
           if (
             evolvesFromSpecies.details.varieties[i].pokemon.name ===
             `${evolvesFromSpecies.name}-${formName}`
@@ -173,24 +200,17 @@ class PokemonEvolvesFrom extends Component {
               evolvesFromFormPromise
             );
           }
-          // If there isn't a variant with the same form name, get the default
-          else {
-            for (let i = 0; i < evolvesFromSpecies.details.varieties.length; i++) {
-              if (evolvesFromSpecies.details.varieties[i].is_default) {
-                // Get a cancellable promise to retrieve the default variant
-                evolvesFromVariantPromise = makeCancellable(
-                  getResource(
-                    `${evolvesFromSpecies.details.varieties[i].pokemon.url}`
-                  )
-                );
-                // Add both promises to the promise array (even though in this case the form is empty)
-                evolvesFromPokemonPromises.push(
-                  evolvesFromVariantPromise,
-                  evolvesFromFormPromise
-                );
-              }
-            }
-          }
+        }
+
+        // If there isn't a variant with the same form name, get the default
+        if (!evolvesFromPokemonPromises.length) {
+          const defaultVariantPromises =
+            getDefaultVariantPromises(evolvesFromSpecies);
+          // Add both promises to the promise array (even though in this case the form is empty)
+          evolvesFromPokemonPromises.push(
+            defaultVariantPromises[0],
+            defaultVariantPromises[1]
+          );
         }
       }
 
@@ -216,21 +236,13 @@ class PokemonEvolvesFrom extends Component {
 
     // If not, the current modal pokemon must be the default variant
     else {
-      for (let i = 0; i < evolvesFromSpecies.details.varieties.length; i++) {
-        if (evolvesFromSpecies.details.varieties[i].is_default) {
-          // Get a cancellable promise to retrieve the default variant
-          evolvesFromVariantPromise = makeCancellable(
-            getResource(
-              `${evolvesFromSpecies.details.varieties[i].pokemon.url}`
-            )
-          );
-          // Add both promises to the promise array (even though in this case the form is empty)
-          evolvesFromPokemonPromises.push(
-            evolvesFromVariantPromise,
-            evolvesFromFormPromise
-          );
-        }
-      }
+      const defaultVariantPromises =
+        getDefaultVariantPromises(evolvesFromSpecies);
+      // Add both promises to the promise array (even though in this case the form is empty)
+      evolvesFromPokemonPromises.push(
+        defaultVariantPromises[0],
+        defaultVariantPromises[1]
+      );
     }
     return evolvesFromPokemonPromises;
   };
@@ -259,6 +271,7 @@ class PokemonEvolvesFrom extends Component {
             } catch (error) {
               errorHandler(error);
             }
+
             evolvesFromFormDetails = { details: evolvesFromForm };
           }
 
