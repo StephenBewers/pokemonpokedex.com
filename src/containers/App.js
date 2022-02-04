@@ -4,32 +4,63 @@ import Header from "../components/Header.js";
 import InfiniteScroll from "react-infinite-scroll-component";
 import CardList from "../components/CardList.js";
 import Modal from "../components/Modal/Modal.js";
-import LoadingBarMain from "../components/LoadingBarMain";
-import { 
-  getPokemonSpeciesList,
-  getPokemon
- } from "../helpers.js";
+import ProgressBar from "../components/ProgressBar";
+import LoadingSpinnerMain from "../components/LoadingSpinnerMain";
+import { getPokemonSpeciesList, getPokemon, getType } from "../helpers.js";
 class App extends Component {
   constructor() {
     super();
-    this.resetPokemon = this.resetPokemon.bind(this);
-    this.getPokemonBatch = this.getPokemonBatch.bind(this);
+    this.updatePokemonCardList = this.updatePokemonCardList.bind(this);
+    this.typeBtnClick = this.typeBtnClick.bind(this);
     this.initModal = this.initModal.bind(this);
     this.hideModal = this.hideModal.bind(this);
     this.state = {
       pokemonNames: [],
       pokemonToGet: [],
       retrievedPokemon: [],
-      retrievalLimit: 6,
+      retrievalLimit: 12,
       hasMore: true,
       stickySearch: false,
       showModal: false,
       modalPokemon: "",
+      clearSearchBar: false,
+      cardListTitle: "",
+      showProgressBar: false,
     };
   }
 
+  // Initialises the pokemon list
+  initPokemonList = () => {
+    // The starting point and number of pokemon to retrieve from the API per request
+    const interval = { offset: 0, limit: 2000 };
+
+    try {
+      (async () => {
+        // Gets the json of all pokemon species
+        let response = await getPokemonSpeciesList(interval);
+
+        // Store all of the pokemon names in an array
+        let pokemonNames = [];
+        for (const item of response.results) {
+          pokemonNames.push(item.name);
+        }
+
+        // Update the state with the list of pokemon names
+        this.setState({
+          pokemonNames: pokemonNames,
+        });
+      })();
+    } catch {
+      console.error(`Failed to get the list of Pokemon`);
+    }
+  };
+
   // Retrieves specified pokemon objects from the API
-  getPokemonBatch = async (remainingPokemonToGet, retrievedPokemon) => {
+  getPokemonBatch = async (
+    remainingPokemonToGet,
+    retrievedPokemon,
+    areVariants
+  ) => {
     let { retrievalLimit } = this.state;
 
     // Compares the number of pokemon already retrieved to the total to get
@@ -50,7 +81,7 @@ class App extends Component {
     }
 
     // Retrieves the pokemon objects from the API
-    const pokemonObjects = await getPokemon(pokemonToGetNow);
+    const pokemonObjects = await getPokemon(pokemonToGetNow, areVariants);
 
     // Update the list of pokemon still to retrieve, removing those we retrieved in this batch
     let pokemonStillToGet;
@@ -65,49 +96,37 @@ class App extends Component {
       hasMore = false;
     }
 
+    // Hides the loading bar if needed
+    const doesProgressBarNeedHiding = (hasMore) => {
+      if (!hasMore) {
+        this.hideProgressBar();
+      }
+    };
+
     // If no pokemon have already been retrieved, update the state with those retrieved in this request
     if (retrievedPokemon.length < 1) {
-      this.setState({
-        pokemonToGet: pokemonStillToGet,
-        retrievedPokemon: pokemonObjects,
-        hasMore: hasMore,
-      });
+      this.setState(
+        {
+          pokemonToGet: pokemonStillToGet,
+          retrievedPokemon: pokemonObjects,
+          hasMore: hasMore,
+        },
+        () => {
+          doesProgressBarNeedHiding();
+        }
+      );
     } else {
       // If not, add the array of pokemon objects retrieved in this request to the pokemon objects already in state
-      this.setState({
-        pokemonToGet: pokemonStillToGet,
-        retrievedPokemon: retrievedPokemon.concat(pokemonObjects),
-        hasMore: hasMore,
-      });
-    }
-  };
-
-  // Initialises the pokemon list
-  initPokemonList = () => {
-    // The starting point and number of pokemon to retrieve from the API per request
-    const interval = { offset: 0, limit: 2000 };
-
-    try {
-      (async () => {
-        // Gets the json of all pokemon species
-        let response = await getPokemonSpeciesList(interval);
-
-        // Store all of the pokemon names in an array
-        let pokemonNames = [];
-        for (const item of response.results) {
-          pokemonNames.push(item.name);
+      this.setState(
+        {
+          pokemonToGet: pokemonStillToGet,
+          retrievedPokemon: retrievedPokemon.concat(pokemonObjects),
+          hasMore: hasMore,
+        },
+        () => {
+          doesProgressBarNeedHiding();
         }
-
-        // Start getting the pokemon from the API
-        this.getPokemonBatch(pokemonNames, []);
-
-        // Update the state with the list of pokemon names
-        this.setState({
-          pokemonNames: pokemonNames,
-        });
-      })();
-    } catch {
-      console.error(`Failed to get the list of Pokemon`);
+      );
     }
   };
 
@@ -119,27 +138,51 @@ class App extends Component {
     }
   };
 
-  // Resets the UI before loading the pokemon
-  resetPokemon = () => {
+  // Handles a type button being clicked
+  typeBtnClick = async (type) => {
+    // If the modal is showing, hide it
+    if (this.state.showModal) {
+      this.hideModal();
+    }
+
+    // Show the progress bar
+    this.initProgressBar();
+
+    // Clear the existing pokemon card list
+    this.updatePokemonCardList();
+
+    // Get the type from the API
+    const typeObject = await getType(type);
+    const cardListTitle = `${type} pokémon`;
+    const areVariants = true;
+
+    // Get the list of pokemon for this type
+    let pokemonList = [];
+    for (let pokemon of typeObject.pokemon) {
+      pokemonList.push(pokemon.pokemon.name);
+    }
+
+    // Update the card list to pokemon of this type
+    this.updatePokemonCardList(pokemonList, cardListTitle, areVariants);
+  };
+
+  // Updates the pokemon card list displaying on the main page (call without params to reset)
+  updatePokemonCardList = (pokemonList, cardListTitle, areVariants) => {
+    const loadPokemonList = (pokemonList) => {
+      // If a pokemon list has been supplied, load it
+      if (pokemonList?.length) {
+        this.getPokemonBatch(pokemonList, [], areVariants);
+      }
+    };
+
+    // Clear any previously retrieved pokemon and update the card list title
     this.setState(
       {
         retrievedPokemon: [],
+        cardListTitle: cardListTitle,
       },
-      this.initPokemonList()
+      loadPokemonList(pokemonList)
     );
-  };
-
-  // If the state implies that we should show the modal, render it
-  renderModal = () => {
-    if (this.state.showModal) {
-      return (
-        <Modal
-          showModal={this.state.showModal}
-          hideModal={this.hideModal}
-          pokemon={this.state.modalPokemon}
-        />
-      );
-    }
   };
 
   // Updates the state to initialise the modal
@@ -147,12 +190,25 @@ class App extends Component {
     this.setState({
       showModal: true,
       modalPokemon: pokemon,
+      clearSearchBar: true,
     });
   };
 
   // Hides the modal
   hideModal = () => {
-    this.setState({ showModal: false });
+    this.setState({ showModal: false, clearSearchBar: false });
+  };
+
+  // Updates the state to initialise the progress bar
+  initProgressBar = () => {
+    this.setState({
+      showProgressBar: true,
+    });
+  };
+
+  // Hides the progress bar
+  hideProgressBar = () => {
+    this.setState({ showProgressBar: false });
   };
 
   componentDidMount() {
@@ -194,11 +250,70 @@ class App extends Component {
   }
 
   render() {
-    const { pokemonNames, retrievedPokemon, hasMore, stickySearch } =
-      this.state;
+    const {
+      pokemonNames,
+      retrievedPokemon,
+      hasMore,
+      stickySearch,
+      clearSearchBar,
+      showModal,
+      showProgressBar,
+      cardListTitle,
+    } = this.state;
     const loadingLabel = retrievedPokemon.length
       ? "Looking for more pokémon"
       : "Looking for pokémon";
+
+    // If the state implies that we should show the progress bar, render it
+    const renderProgressBar = () => {
+      if (showProgressBar) {
+        return (
+        <div className="progress-overlay">
+          <ProgressBar></ProgressBar>
+        </div>
+        )
+      }
+    };
+
+    // If the state implies that we should show the modal, render it
+    const renderModal = () => {
+      if (showModal) {
+        return (
+          <Modal
+            showModal={this.state.showModal}
+            hideModal={this.hideModal}
+            typeBtnClick={this.typeBtnClick}
+            pokemon={this.state.modalPokemon}
+          />
+        );
+      }
+    };
+
+    // If pokemon have been retrieved, render the card list
+    const renderCardList = () => {
+      if (retrievedPokemon.length) {
+        return (
+          <InfiniteScroll
+            dataLength={retrievedPokemon.length}
+            next={this.getNextPokemonBatch}
+            hasMore={hasMore}
+            scrollThreshold="80%"
+            loader={
+              <LoadingSpinnerMain
+                loadingLabel={loadingLabel}
+              ></LoadingSpinnerMain>
+            }
+          >
+            <CardList
+              pokemonList={retrievedPokemon}
+              title={cardListTitle}
+              clickHandler={this.initModal}
+              updatePokemonCardList={this.updatePokemonCardList}
+            />
+          </InfiniteScroll>
+        );
+      }
+    };
 
     return (
       <>
@@ -206,23 +321,13 @@ class App extends Component {
           key={stickySearch}
           stickySearch={stickySearch}
           searchOptions={pokemonNames}
-          resetPokemon={this.resetPokemon}
-          getPokemonBatch={this.getPokemonBatch}
+          updatePokemonCardList={this.updatePokemonCardList}
+          clearSearchBar={clearSearchBar}
         ></Header>
         <main>
-          {this.renderModal()}
-          <InfiniteScroll
-            dataLength={retrievedPokemon.length}
-            next={this.getNextPokemonBatch}
-            hasMore={hasMore}
-            scrollThreshold="80%"
-            loader={<LoadingBarMain loadingLabel={loadingLabel}></LoadingBarMain>}
-          >
-            <CardList
-              pokemonList={retrievedPokemon}
-              clickHandler={this.initModal}
-            />
-          </InfiniteScroll>
+          {renderProgressBar()}
+          {renderModal()}
+          {renderCardList()}
         </main>
       </>
     );

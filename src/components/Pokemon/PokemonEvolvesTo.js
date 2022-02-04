@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import LoadingBarSmall from "../LoadingBarSmall";
+import LoadingBarSmall from "../LoadingSpinnerSmall";
 import ModalInfoItem from "../Modal/ModalInfoItem";
 import ModalColumn from "../Modal/ModalColumn";
 import ModalRow from "../Modal/ModalRow";
@@ -458,7 +458,7 @@ class PokemonEvolvesTo extends Component {
               <ModalInfoItem label="Evolves into" subitem={true}>
                 <CardList
                   pokemonList={evolvesToPokemon}
-                  modal={true}
+                  isModal={true}
                   clickHandler={clickHandler}
                 />
               </ModalInfoItem>
@@ -472,7 +472,7 @@ class PokemonEvolvesTo extends Component {
               <ModalInfoItem label="Evolves into" subitem={true}>
                 <CardList
                   pokemonList={evolvesToPokemon}
-                  modal={true}
+                  isModal={true}
                   clickHandler={clickHandler}
                 />
               </ModalInfoItem>

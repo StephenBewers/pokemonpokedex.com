@@ -13,7 +13,7 @@ export function errorHandler(error) {
   } else {
     console.error(error);
   }
-};
+}
 
 // Wraps around a Promise to make it cancellable as per https://reactjs.org/blog/2015/12/16/ismounted-antipattern.html
 export function makeCancellable(promise) {
@@ -38,7 +38,7 @@ export function makeCancellable(promise) {
 export function cancelPromise(promise, errorHandler) {
   promise.promise.then().catch((error) => errorHandler(error));
   promise.cancel();
-};
+}
 
 // Returns a promise to get the resource from the provided URL
 export function getResource(url) {
@@ -50,22 +50,43 @@ export function getPokemonSpeciesList(interval) {
   return PokeApi.getPokemonSpeciesList(interval);
 }
 
+// Returns a promise to get a type
+export function getType(type) {
+  return PokeApi.getTypeByName(type);
+}
+
 // Retrieves the specified pokemon from the API
-export async function getPokemon(arrayOfPokemonToGet) {
+export async function getPokemon(arrayOfPokemonToGet, areVariants) {
   try {
     let pokemonObjects = [];
 
     for (const pokemon of arrayOfPokemonToGet) {
-      // Get the pokemon species from the API
-      let pokemonSpecies = await PokeApi.getPokemonSpeciesByName(pokemon);
 
-      // Get the data for the default variant of the species
+      let pokemonSpecies;
       let pokemonVariant;
-      for (let i = 0; i < pokemonSpecies.varieties.length; i++) {
-        if (pokemonSpecies.varieties[i].is_default) {
-          pokemonVariant = await PokeApi.resource(
-            `${pokemonSpecies.varieties[i].pokemon.url}`
-          );
+
+      // If the array is a list of pokemon variants
+      if (areVariants) {
+        // Get the pokemon variant from the API
+        pokemonVariant = await PokeApi.getPokemonByName(pokemon);
+
+        // Get the pokemon species from the API
+        pokemonSpecies = await PokeApi.getPokemonSpeciesByName(
+          pokemonVariant.species.name
+        );
+      }
+      // Else the array must be a list of pokemon species
+      else {
+        // Get the pokemon species from the API
+        pokemonSpecies = await PokeApi.getPokemonSpeciesByName(pokemon);
+
+        // Get the data for the default variant of the species
+        for (let i = 0; i < pokemonSpecies.varieties.length; i++) {
+          if (pokemonSpecies.varieties[i].is_default) {
+            pokemonVariant = await PokeApi.resource(
+              `${pokemonSpecies.varieties[i].pokemon.url}`
+            );
+          }
         }
       }
 
@@ -90,13 +111,11 @@ export function getFormPromises(pokemon) {
   let formPromises = [];
   if (forms.length) {
     for (let i = 0; i < forms.length; i++) {
-      formPromises.push(
-        makeCancellable(getResource(`${forms[i].url}`))
-      );
+      formPromises.push(makeCancellable(getResource(`${forms[i].url}`)));
     }
   }
   return formPromises;
-};
+}
 
 // Appends leading zeros to a number
 export function getNumberWithLeadingZeros(number, length) {
@@ -119,7 +138,7 @@ export function getEnglishContent(array, field) {
   let englishContent;
   for (let i = 0; i < array.length; i++) {
     if (array[i].language.name === "en") {
-      englishContent = array[i][field]
+      englishContent = array[i][field];
     }
   }
   return englishContent;
@@ -184,13 +203,13 @@ export function getImage(variant, form) {
 export function isGalarianEvolution(id) {
   // Array of Galarian-specific evolution IDs
   const galarianEvolutions = [
-    863,  // Perrserker
-    865,  // Sirfetch'd
-    866,  // Mr. Rime
-    864,  // Cursola
-    862,  // Obstagoon
-    867   // Runerigus
-  ]
+    863, // Perrserker
+    865, // Sirfetch'd
+    866, // Mr. Rime
+    864, // Cursola
+    862, // Obstagoon
+    867, // Runerigus
+  ];
   // If the ID matches one of those above return true, else return false
   return galarianEvolutions.includes(id) ? true : false;
 }

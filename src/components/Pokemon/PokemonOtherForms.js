@@ -240,7 +240,7 @@ class PokemonOtherForms extends Component {
             <ModalColumn>
               <CardList
                 pokemonList={otherFormsToDisplay}
-                modal={true}
+                isModal={true}
                 clickHandler={refreshModal}
               />
             </ModalColumn>

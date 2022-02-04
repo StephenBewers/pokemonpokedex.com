@@ -1,7 +1,7 @@
 import React from "react";
-import "./LoadingBarSmall.scss";
+import "./LoadingSpinnerSmall.scss";
 
-const LoadingBarSmall = () => {
+const LoadingSpinnerSmall = () => {
   return (
     <div className="lds-facebook">
       <div></div>
@@ -11,4 +11,4 @@ const LoadingBarSmall = () => {
   );
 };
 
-export default LoadingBarSmall;
+export default LoadingSpinnerSmall;

@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import LoadingBarSmall from "../LoadingBarSmall";
+import LoadingBarSmall from "../LoadingSpinnerSmall";
 import ModalInfoItem from "../Modal/ModalInfoItem";
 import ModalColumn from "../Modal/ModalColumn";
 import CardList from "../CardList";
@@ -309,7 +309,7 @@ class PokemonEvolvesFrom extends Component {
             <ModalInfoItem label="Evolves from" subitem={true}>
               <CardList
                 pokemonList={evolvesFromPokemonList}
-                modal={true}
+                isModal={true}
                 clickHandler={clickHandler}
               />
             </ModalInfoItem>

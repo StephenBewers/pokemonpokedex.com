@@ -19,7 +19,11 @@ import rockIcon from "../../assets/images/rock-icon.png";
 import steelIcon from "../../assets/images/steel-icon.png";
 import waterIcon from "../../assets/images/water-icon.png";
 
-const PokemonTypeBtn = ({ type, effectiveness }) => {
+const PokemonTypeBtn = ({
+  type,
+  effectiveness,
+  typeBtnClick,
+}) => {
   const getTypeIcon = (type) => {
     const typeIcons = {
       bug: bugIcon,
@@ -49,24 +53,29 @@ const PokemonTypeBtn = ({ type, effectiveness }) => {
   // Returns the right class name depending if the button is just a type button or has effectiveness
   const getTypeBtnClass = (effectiveness) => {
     return effectiveness ? "pokemon-effectiveness-btn" : "pokemon-type-btn";
-  }
+  };
 
   // If the type has an icon, render the icon UI
   const renderTypeIcon = (typeIcon) => {
     if (typeIcon !== undefined) {
-      return <img src={`${typeIcon}`} alt=""></img>
+      return <img src={`${typeIcon}`} alt=""></img>;
     }
-  }
+  };
 
   // If the effectiveness prop has been passed render the effectiveness UI
   const renderTypeEffectiveness = (effectiveness) => {
     if (effectiveness) {
-      return <span className={"type-effectiveness"}>&times;{effectiveness}</span>
+      return (
+        <span className={"type-effectiveness"}>&times;{effectiveness}</span>
+      );
     }
-  }
+  };
 
   return (
-    <span className={`${getTypeBtnClass(effectiveness)} ${type}`}>
+    <span
+      className={`${getTypeBtnClass(effectiveness)} ${type}`}
+      onClick={() => typeBtnClick(type)}
+    >
       {renderTypeIcon(typeIcon)} {type}
       {renderTypeEffectiveness(effectiveness)}
     </span>

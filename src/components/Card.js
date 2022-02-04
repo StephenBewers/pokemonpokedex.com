@@ -3,20 +3,20 @@ import Tilt from "react-parallax-tilt";
 import "./Card.scss";
 import { getNumberWithLeadingZeros, getPokemonName, getImage } from "../helpers.js";
 
-const Card = ({ species, variant, form, modalCard, clickHandler }) => {
+const Card = ({ pokemon, modalCard, clickHandler }) => {
   // Determines the class to use for the card
   const cardClass = modalCard ? "modal-card" : "pokemon-card";
 
   // Get pokemon information for display on the card
   const number = getNumberWithLeadingZeros(
-    species.pokedex_numbers[0].entry_number,
+    pokemon.species.pokedex_numbers[0].entry_number,
     3
   );
-  const name = getPokemonName(species, form);
-  const types = form?.details?.types?.length
-    ? form.details.types
-    : variant.types;
-  const image = getImage(variant, form);
+  const name = getPokemonName(pokemon.species, pokemon.form);
+  const types = pokemon.form?.details?.types?.length
+    ? pokemon.form.details.types
+    : pokemon.variant.types;
+  const image = getImage(pokemon.variant, pokemon.form);
 
   const primaryTypeClass = `${types[0].type.name}-type`;
 
@@ -31,11 +31,7 @@ const Card = ({ species, variant, form, modalCard, clickHandler }) => {
   return (
     <div
       role="button"
-      onClick={clickHandler.bind(this, {
-        species: species,
-        variant: variant,
-        form: form,
-      })}
+      onClick={clickHandler.bind(this, pokemon)}
     >
       <Tilt
         className={`${cardClass} ${primaryTypeClass} ${secondaryTypeClass}`}

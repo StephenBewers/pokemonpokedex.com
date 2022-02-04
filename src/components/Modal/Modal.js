@@ -43,6 +43,7 @@ class Modal extends Component {
     showModal: PropTypes.bool,
     pokemon: PropTypes.object.isRequired,
     hideModal: PropTypes.func,
+    typeBtnClick: PropTypes.func,
   };
 
   // Prevents clicks on the inner modal div triggering the outer modal click event
@@ -119,7 +120,7 @@ class Modal extends Component {
   };
 
   render() {
-    const { showModal, hideModal } = this.props;
+    const { showModal, hideModal, typeBtnClick } = this.props;
 
     const {
       pokemon,
@@ -142,7 +143,7 @@ class Modal extends Component {
           <div className="modal-info-panel" ref={this.infoPanelRef}>
             <PokemonDescription pokemon={pokemon} key={`description-${pokemon.species.id}`} />
             <ModalRow id="modal-top-row">
-              <PokemonTypes pokemon={pokemon} key={`types-${pokemon.variant.id}`} />
+              <PokemonTypes pokemon={pokemon} key={`types-${pokemon.variant.id}`} typeBtnClick={typeBtnClick} />
               <PokemonHabitat pokemon={pokemon} key={`habitat-${pokemon.species.id}`} />
               <PokemonCatchRate pokemon={pokemon} key={`catch-rate-${pokemon.species.id}`} />
               <PokemonHeight pokemon={pokemon} key={`height-${pokemon.variant.id}`} />
@@ -156,7 +157,7 @@ class Modal extends Component {
                 <PokemonTraining pokemon={pokemon} key={`training-${pokemon.variant.id}`} />
               </ModalColumn>
               <ModalColumn>
-                <PokemonTypeEffectiveness pokemon={pokemon} key={`type-effectiveness-${pokemon.variant.id}`} />
+                <PokemonTypeEffectiveness pokemon={pokemon} key={`type-effectiveness-${pokemon.variant.id}`} typeBtnClick={typeBtnClick} />
               </ModalColumn>
             </ModalRow>
             <PokemonEvolution pokemon={pokemon} clickHandler={this.refreshModal} key={`evolution-${pokemon.variant.id}`} />

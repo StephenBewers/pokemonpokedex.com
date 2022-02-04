@@ -3,7 +3,7 @@ import "./PokemonTypeEffectiveness.scss";
 import ModalRow from "../Modal/ModalRow";
 import ModalInfoItem from "../Modal/ModalInfoItem";
 import PokemonTypeBtn from "../Pokemon/PokemonTypeBtn";
-import LoadingBarSmall from "../LoadingBarSmall";
+import LoadingBarSmall from "../LoadingSpinnerSmall";
 import {
   errorHandler,
   cancelPromise,
@@ -96,9 +96,7 @@ class PokemonTypeEffectiveness extends Component {
     let typePromises = [];
     if (types.length) {
       for (let i = 0; i < types.length; i++) {
-        typePromises.push(
-          makeCancellable(getResource(`${types[i].type.url}`))
-        );
+        typePromises.push(makeCancellable(getResource(`${types[i].type.url}`)));
       }
     }
     return typePromises;
@@ -164,6 +162,9 @@ class PokemonTypeEffectiveness extends Component {
   };
 
   render() {
+    // Get the type button click function from props
+    const { typeBtnClick } = this.props;
+
     // If the type details have been received, returns the JSX to display the type effectiveness buttons
     const displayTypeEffectiveness = (
       types,
@@ -178,6 +179,7 @@ class PokemonTypeEffectiveness extends Component {
               type={types[i][0]}
               effectiveness={types[i][1]}
               key={`${effectivenessDescription}-type-btn-${i}`}
+              typeBtnClick={typeBtnClick}
             ></PokemonTypeBtn>
           );
         }
@@ -186,6 +188,7 @@ class PokemonTypeEffectiveness extends Component {
             <PokemonTypeBtn
               type={"none"}
               key={`${effectivenessDescription}-type-btn-0`}
+              typeBtnClick={typeBtnClick}
             ></PokemonTypeBtn>
           );
         }

@@ -1,7 +1,7 @@
 import React from "react";
-import "./LoadingBarMain.scss";
+import "./LoadingSpinnerMain.scss";
 
-const LoadingBarMain = ({ loadingLabel }) => {
+const LoadingSpinnerMain = ({ loadingLabel }) => {
 
   // If loading label text has been supplied, render the loading label element
   let loadingLabelElement;
@@ -10,7 +10,7 @@ const LoadingBarMain = ({ loadingLabel }) => {
   }
 
   return (
-    <div className={`loading-bar`}>
+    <div className={`loading-spinner`}>
       {loadingLabelElement}
       <div className={`lds-ellipsis`}>
         <div></div>
@@ -22,4 +22,4 @@ const LoadingBarMain = ({ loadingLabel }) => {
   );
 };
 
-export default LoadingBarMain;
+export default LoadingSpinnerMain;

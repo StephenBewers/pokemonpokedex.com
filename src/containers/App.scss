@@ -8,6 +8,19 @@
 
 @import url("https://fonts.googleapis.com/css2?family=Quicksand&display=swap");
 
+.progress-overlay {
+  position: fixed;
+  z-index: 995;
+  top: 0;
+  left: 0;
+  width: 100%;
+  min-height: 100%;
+  background: rgba(255, 255, 255, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+}
+
 @mixin card-type-background($color, $image) {
   background: linear-gradient(rgba($color, 0.8), rgba($color, 0.8)), $image, $color;
   background-repeat: space;

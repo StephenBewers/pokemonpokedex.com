@@ -8,8 +8,8 @@ class SearchBar extends Component {
   static propTypes = {
     options: PropTypes.instanceOf(Array).isRequired,
     additionalClass: PropTypes.string,
-    resetPokemon: PropTypes.func,
-    getPokemonBatch: PropTypes.func,
+    updatePokemonCardList: PropTypes.func,
+    searchBarToBeCleared: PropTypes.bool,
   };
 
   state = {
@@ -18,6 +18,17 @@ class SearchBar extends Component {
     showOptions: false,
     defaultView: true,
     userInput: "",
+  };
+
+  componentDidUpdate = () => {
+    if (this.props.searchBarToBeCleared && this.state.userInput !== "") {
+      this.setState({
+        activeOption: 0,
+        filteredOptions: [],
+        showOptions: false,
+        userInput: "",
+      });
+    }
   };
 
   filterOptions = (options, userInput) => {
@@ -42,7 +53,7 @@ class SearchBar extends Component {
   // Resets the view to display all pokemon with no autocomplete options displayed
   resetView = () => {
     if (!this.state.defaultView) {
-      this.props.resetPokemon();
+      this.props.updatePokemonCardList();
     }
     this.setState({
       activeOption: 0,
@@ -81,9 +92,7 @@ class SearchBar extends Component {
       defaultView: false,
       userInput: event.target.outerText,
     });
-    this.props.getPokemonBatch([
-      event.target.outerText.toLowerCase(),
-    ],[]); 
+    this.props.updatePokemonCardList([event.target.outerText.toLowerCase()]);
   };
 
   // Handle key events for autocomplete suggestion list
@@ -98,9 +107,9 @@ class SearchBar extends Component {
         defaultView: false,
         userInput: filteredOptions[activeOption],
       });
-      this.props.getPokemonBatch([
-        filteredOptions[activeOption].toLowerCase()
-      ],[]);
+      this.props.updatePokemonCardList([
+        filteredOptions[activeOption].toLowerCase(),
+      ]);
     }
 
     // Up arrow selects the suggestion above the currently selected option if not already at the top
@@ -130,7 +139,7 @@ class SearchBar extends Component {
     const parent = event.target.parentNode;
     const optionIndex = [].indexOf.call(parent.children, event.target);
     this.setState({ activeOption: optionIndex });
-  }
+  };
 
   // Lists the autocomplete options provided in JSX format for rendering
   listOptions = (optionName, index) => {
@@ -139,7 +148,12 @@ class SearchBar extends Component {
       className = "option-active";
     }
     return (
-      <li className={className} key={optionName} onClick={this.onClick} onMouseOver={this.onMouseOver}>
+      <li
+        className={className}
+        key={optionName}
+        onClick={this.onClick}
+        onMouseOver={this.onMouseOver}
+      >
         {optionName}
       </li>
     );
@@ -164,12 +178,12 @@ class SearchBar extends Component {
         if (filteredOptions.length > 5) {
           optionList = (
             <>
-            <div className="options-container-divider"></div>
-            <div className="options-container">
-              <ul className="options">
-                {filteredOptions.slice(0, 5).map(listOptions)}
-              </ul>
-            </div>
+              <div className="options-container-divider"></div>
+              <div className="options-container">
+                <ul className="options">
+                  {filteredOptions.slice(0, 5).map(listOptions)}
+                </ul>
+              </div>
             </>
           );
         }
@@ -178,10 +192,10 @@ class SearchBar extends Component {
         else {
           optionList = (
             <>
-            <div className="options-container-divider"></div>
-            <div className="options-container">
-              <ul className="options">{filteredOptions.map(listOptions)}</ul>
-            </div>
+              <div className="options-container-divider"></div>
+              <div className="options-container">
+                <ul className="options">{filteredOptions.map(listOptions)}</ul>
+              </div>
             </>
           );
         }
@@ -191,12 +205,12 @@ class SearchBar extends Component {
       else {
         optionList = (
           <>
-          <div className="options-container-divider"></div>
-          <div className="options-container">
-            <p className="no-results">
-              <em>No pokémon found with that name!</em>
-            </p>
-          </div>
+            <div className="options-container-divider"></div>
+            <div className="options-container">
+              <p className="no-results">
+                <em>No pokémon found with that name!</em>
+              </p>
+            </div>
           </>
         );
       }
@@ -214,7 +228,12 @@ class SearchBar extends Component {
             value={userInput}
           />
           <span className="search-divider"></span>
-          <button type="submit" value="" className="search-btn" onClick={onClick}>
+          <button
+            type="submit"
+            value=""
+            className="search-btn"
+            onClick={onClick}
+          >
             <FontAwesomeIcon icon={faSearch} />
           </button>
         </div>

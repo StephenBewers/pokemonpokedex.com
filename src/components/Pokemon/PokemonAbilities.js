@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import "./PokemonAbilities.scss";
-import LoadingBarSmall from "../LoadingBarSmall";
+import LoadingBarSmall from "../LoadingSpinnerSmall";
 import ModalRow from "../Modal/ModalRow";
 import ModalInfoItem from "../Modal/ModalInfoItem";
 import {
