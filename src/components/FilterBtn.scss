@@ -1,0 +1,25 @@
+.btn-filter {
+  height: fit-content;
+  width: 1em;
+  padding: 24px;
+  margin-left: 18px;
+  text-align: center;
+
+  color: #fff;
+  background-color: #3563ad; 
+  border-radius: 32px;
+  border-color: transparent;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.3), 0 6px 20px 0 rgba(0, 0, 0, 0.3);
+
+  cursor: pointer;
+  transition: background-color 0.1s ease-in-out, color 0.1s ease-in-out;
+
+  &:hover {
+    color: #ffcb05;
+    background-color: #1c2c5e;
+  }
+
+  &.active {
+    background-color: #1c2c5e;
+  }
+}

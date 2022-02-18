@@ -46,3 +46,25 @@ h1 {
   }
 
 }
+
+.navigation {
+  position: absolute;
+  top: 42vh;
+
+  width: 260px;
+  min-width: 60%;
+  margin: 2em;
+  z-index: 100;
+
+  &.sticky {
+    position: fixed;
+    top: 2vh;
+    margin: 0 auto;
+    left: 0;
+    right: 0;
+  }
+}
+
+.nav-bar {
+    display: flex;
+}

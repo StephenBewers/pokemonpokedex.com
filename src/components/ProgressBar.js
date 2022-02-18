@@ -26,7 +26,7 @@ class ProgressBar extends Component {
   }
 
   componentDidMount() {
-    this.interval = setInterval(() => this.addProgress(), 500);
+    this.interval = setInterval(() => this.addProgress(), 750);
   }
 
   componentWillUnmount() {

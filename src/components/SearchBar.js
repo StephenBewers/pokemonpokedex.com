@@ -7,7 +7,6 @@ import { faSearch } from "@fortawesome/free-solid-svg-icons";
 class SearchBar extends Component {
   static propTypes = {
     options: PropTypes.instanceOf(Array).isRequired,
-    additionalClass: PropTypes.string,
     updatePokemonCardList: PropTypes.func,
     searchBarToBeCleared: PropTypes.bool,
   };
@@ -66,9 +65,10 @@ class SearchBar extends Component {
 
   // When the text in the search bar changes, filter the list of pokemon and display the suggestions
   onChange = (event) => {
-    const { options } = this.props;
+    const { options, filterMenuActive, closeFilterMenu } = this.props;
     const userInput = event.currentTarget.value;
     if (userInput.length) {
+      if(filterMenuActive) { closeFilterMenu() };
       const filteredOptions = this.filterOptions(options, userInput);
       this.setState({
         activeOption: 0,
@@ -165,7 +165,6 @@ class SearchBar extends Component {
       onChange,
       onKeyDown,
       listOptions,
-      props: { additionalClass },
       state: { filteredOptions, showOptions, userInput },
     } = this;
 
@@ -217,10 +216,11 @@ class SearchBar extends Component {
     }
 
     return (
-      <div className={`search-container ${additionalClass}`}>
+      <div className={`search-container`}>
         <div className={`search-bar`}>
           <input
             type="search"
+            name="search"
             placeholder="Search pokémon"
             className="search-box"
             onChange={onChange}
@@ -230,6 +230,7 @@ class SearchBar extends Component {
           <span className="search-divider"></span>
           <button
             type="submit"
+            name="submit"
             value=""
             className="search-btn"
             onClick={onClick}

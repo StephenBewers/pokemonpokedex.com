@@ -7,28 +7,13 @@
 }
 
 .search-container {
-  position: absolute;
-  top: 42vh;
-
-  width: 260px;
-  min-width: 60%;
-  margin: 2em;
-  z-index: 100;
+  flex: 1;
 
   overflow: hidden;
-
   background-color: #fff;
   border-radius: 32px;
   border-color: transparent;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.3), 0 6px 20px 0 rgba(0, 0, 0, 0.3);
-
-  &.sticky {
-    position: fixed;
-    top: 2vh;
-    margin: 0 auto;
-    left: 0;
-    right: 0;
-  }
 
   &:focus-within {
     box-shadow: 0 0 5px 4px cornflowerblue;
@@ -85,6 +70,11 @@ span.search-divider {
   font-size: 1.1em;
   padding: 0.25em 1.6em;
   cursor: pointer;
+  transition: color 0.1s ease-in-out;
+
+  &:hover {
+    color: #1c2c5e;
+  }
 }
 
 div.options-container-divider {

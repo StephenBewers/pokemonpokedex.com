@@ -14,18 +14,21 @@ class App extends Component {
     this.typeBtnClick = this.typeBtnClick.bind(this);
     this.initModal = this.initModal.bind(this);
     this.hideModal = this.hideModal.bind(this);
+    this.filterBtnClick = this.filterBtnClick.bind(this);
+    this.closeFilterMenu = this.closeFilterMenu.bind(this);
     this.state = {
       pokemonNames: [],
       pokemonToGet: [],
       retrievedPokemon: [],
       retrievalLimit: 12,
       hasMore: true,
-      stickySearch: false,
+      stickyNav: false,
       showModal: false,
       modalPokemon: "",
       clearSearchBar: false,
       cardListTitle: "",
       showProgressBar: false,
+      filterMenuActive: false,
     };
   }
 
@@ -140,10 +143,18 @@ class App extends Component {
 
   // Handles a type button being clicked
   typeBtnClick = async (type) => {
+    // Clear the search bar
+    this.setState({
+      clearSearchBar: true,
+    });
+    
     // If the modal is showing, hide it
     if (this.state.showModal) {
       this.hideModal();
     }
+
+    // If the filter menu is open, close it
+    if(this.state.filterMenuActive) { this.closeFilterMenu() };
 
     // Show the progress bar
     this.initProgressBar();
@@ -211,6 +222,18 @@ class App extends Component {
     this.setState({ showProgressBar: false });
   };
 
+  // Toggle the filter menu active state on filter button click
+  filterBtnClick = () => {
+    this.setState({
+      filterMenuActive: !this.state.filterMenuActive,
+    });
+  };
+
+  // Closes the filter panel
+  closeFilterMenu = () => {
+    this.setState({ filterMenuActive: false });
+  }
+
   componentDidMount() {
     // If the pokemon names list is empty, initialise the pokemon list
     if (!this.state.pokemonNames.length) {
@@ -223,19 +246,19 @@ class App extends Component {
       window.innerHeight || 0
     );
 
-    // Calculate the point for the search bar to stick
-    let stickySearchPosition = Math.min(viewportHeight * 0.42);
+    // Calculate the point for the nav bar to stick
+    let stickyNavPosition = Math.min(viewportHeight * 0.42);
 
     // Checks if the user has scrolled past the sticky position
     const checkStickyPosition = () => {
       // If we pass the sticky position, make the search bar stick
-      if (window.scrollY >= stickySearchPosition) {
-        if (!this.state.stickySearch) {
-          this.setState({ stickySearch: true });
+      if (window.scrollY >= stickyNavPosition) {
+        if (!this.state.stickyNav) {
+          this.setState({ stickyNav: true });
         }
       } else {
-        if (this.state.stickySearch) {
-          this.setState({ stickySearch: false });
+        if (this.state.stickyNav) {
+          this.setState({ stickyNav: false });
         }
       }
     };
@@ -254,11 +277,12 @@ class App extends Component {
       pokemonNames,
       retrievedPokemon,
       hasMore,
-      stickySearch,
+      stickyNav,
       clearSearchBar,
       showModal,
       showProgressBar,
       cardListTitle,
+      filterMenuActive,
     } = this.state;
     const loadingLabel = retrievedPokemon.length
       ? "Looking for more pokémon"
@@ -315,16 +339,29 @@ class App extends Component {
       }
     };
 
+    // If the filter menu is open, render the overlay
+    const renderFilterOverlay = (filterMenuActive) => {
+      if (filterMenuActive) {
+        return <div className="filter-overlay"></div>
+      } else {
+        return null;
+      }
+    }
+
     return (
       <>
         <Header
-          key={stickySearch}
-          stickySearch={stickySearch}
+          stickyNav={stickyNav}
           searchOptions={pokemonNames}
           updatePokemonCardList={this.updatePokemonCardList}
           clearSearchBar={clearSearchBar}
+          typeBtnClick={this.typeBtnClick}
+          filterBtnClick={this.filterBtnClick}
+          filterMenuActive={filterMenuActive}
+          closeFilterMenu={this.closeFilterMenu}
         ></Header>
         <main>
+          {renderFilterOverlay(filterMenuActive)}
           {renderProgressBar()}
           {renderModal()}
           {renderCardList()}

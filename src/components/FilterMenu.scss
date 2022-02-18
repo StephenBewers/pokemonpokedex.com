@@ -1,0 +1,35 @@
+.filter-menu {
+  color: #fff;
+  background-color: #1c2c5e;
+  border-radius: 32px;
+  border-color: transparent;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.3), 0 6px 20px 0 rgba(0, 0, 0, 0.3);
+
+  margin-top: 2em;
+  padding: 2em;
+
+  &.inactive {
+    display: none;
+  }
+}
+
+.filter-label {
+  font-family: "Pokemon Solid";
+  letter-spacing: 0.09em;
+  font-size: 0.9em;
+
+  @media (max-width: 767px) {
+    font-size: 0.75em;
+    letter-spacing: 0.075em;
+  }
+}
+
+.filter-btns {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  text-align: left;
+  margin-top: 0.5em;
+
+  font-family: "Quicksand", sans-serif;
+}

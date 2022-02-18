@@ -1,42 +1,51 @@
 import React, { Component } from "react";
 import "./Header.scss";
-import SearchBar from "../components/SearchBar.js";
+import FilterBtn from "./FilterBtn";
+import FilterMenu from "./FilterMenu";
+import SearchBar from "./SearchBar";
 
 class Header extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      sticky: this.props.stickySearch,
-      stickyClass: "default",
-      animateClass: "",
-    };
-  }
-
-  componentDidMount() {
-    // If the state has become sticky, change the search bar class to sticky
-    if (this.state.sticky && this.state.stickyClass === "default") {
-      this.setState({
-        stickyClass: "sticky",
-      });
-    }
-    // If the state has become non-sticky, return the search bar class to default
-    else if (!this.state.sticky && this.state.stickyClass === "sticky") {
-      this.setState({
-        stickyClass: "default",
-      });
-    }
+    this.state = {};
   }
 
   render() {
+    const {
+      stickyNav,
+      searchOptions,
+      updatePokemonCardList,
+      clearSearchBar,
+      typeBtnClick,
+      filterBtnClick,
+      filterMenuActive,
+      closeFilterMenu,
+    } = this.props;
+
+    const stickyClass = stickyNav ? "sticky" : "default";
+
     return (
       <header>
         <h1>Pokémon Pokédex</h1>
-        <SearchBar
-          additionalClass={this.state.stickyClass}
-          options={this.props.searchOptions}
-          updatePokemonCardList={this.props.updatePokemonCardList}
-          searchBarToBeCleared={this.props.clearSearchBar}
-        ></SearchBar>
+        <div className={`navigation ${stickyClass}`}>
+          <div className="nav-bar">
+            <SearchBar
+              options={searchOptions}
+              updatePokemonCardList={updatePokemonCardList}
+              searchBarToBeCleared={clearSearchBar}
+              filterMenuActive={filterMenuActive}
+              closeFilterMenu={closeFilterMenu}
+            ></SearchBar>
+            <FilterBtn
+              active={filterMenuActive}
+              clickHandler={filterBtnClick}
+            ></FilterBtn>
+          </div>
+          <FilterMenu
+            active={filterMenuActive}
+            typeBtnClick={typeBtnClick}
+          ></FilterMenu>
+        </div>
       </header>
     );
   }
