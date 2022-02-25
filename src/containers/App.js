@@ -6,15 +6,20 @@ import CardList from "../components/CardList.js";
 import Modal from "../components/Modal/Modal.js";
 import ProgressBar from "../components/ProgressBar";
 import LoadingSpinnerMain from "../components/LoadingSpinnerMain";
-import { getPokemonSpeciesList, getPokemon, getType } from "../helpers.js";
+import {
+  getPokemonSpeciesList,
+  getPokemon,
+  getType,
+  getGeneration,
+} from "../helpers.js";
 class App extends Component {
   constructor() {
     super();
     this.updatePokemonCardList = this.updatePokemonCardList.bind(this);
-    this.typeBtnClick = this.typeBtnClick.bind(this);
+    this.filterBtnClick = this.filterBtnClick.bind(this);
     this.initModal = this.initModal.bind(this);
     this.hideModal = this.hideModal.bind(this);
-    this.filterBtnClick = this.filterBtnClick.bind(this);
+    this.toggleFilterMenuState = this.toggleFilterMenuState.bind(this);
     this.closeFilterMenu = this.closeFilterMenu.bind(this);
     this.state = {
       pokemonNames: [],
@@ -141,20 +146,22 @@ class App extends Component {
     }
   };
 
-  // Handles a type button being clicked
-  typeBtnClick = async (type) => {
+  // Handles a filter button being clicked
+  filterBtnClick = async (btnType, btnValue) => {
     // Clear the search bar
     this.setState({
       clearSearchBar: true,
     });
-    
+
     // If the modal is showing, hide it
     if (this.state.showModal) {
       this.hideModal();
     }
 
     // If the filter menu is open, close it
-    if(this.state.filterMenuActive) { this.closeFilterMenu() };
+    if (this.state.filterMenuActive) {
+      this.closeFilterMenu();
+    }
 
     // Show the progress bar
     this.initProgressBar();
@@ -162,18 +169,52 @@ class App extends Component {
     // Clear the existing pokemon card list
     this.updatePokemonCardList();
 
-    // Get the type from the API
-    const typeObject = await getType(type);
-    const cardListTitle = `${type} pokémon`;
-    const areVariants = true;
-
-    // Get the list of pokemon for this type
+    let cardListTitle;
+    let areVariants;
     let pokemonList = [];
-    for (let pokemon of typeObject.pokemon) {
-      pokemonList.push(pokemon.pokemon.name);
+
+    // Handle type button clicks
+    if (btnType === "type") {
+      let typeObject = await getType(btnValue);
+      cardListTitle = `${btnValue} pokémon`;
+      areVariants = true;
+
+      // Get the list of pokemon for this type
+      for (let pokemon of typeObject.pokemon) {
+        pokemonList.push(pokemon.pokemon.name);
+      }
     }
 
-    // Update the card list to pokemon of this type
+    // Handle generation button clicks
+    else if (btnType === "generation") {
+      let generationObject = await getGeneration(btnValue);
+      cardListTitle = `Gen ${btnValue} pokémon`;
+      areVariants = false;
+
+      // Gets the pokemon number from the URL
+      const getPokemonNumber = (url) => {
+        return (parseInt(url
+          .split("/")
+          .filter((e) => e)
+          .slice(-1)))
+      };
+
+      // Sort the pokemon returned for this generation into numerical order
+      generationObject[0]["pokemon_species"].sort((a, b) =>
+        getPokemonNumber(a.url) > getPokemonNumber(b.url)
+          ? 1
+          : getPokemonNumber(b.url) > getPokemonNumber(a.url)
+          ? -1
+          : 0
+      );
+
+      // Get the list of pokemon for this generation
+      for (let pokemon of generationObject[0]["pokemon_species"]) {
+        pokemonList.push(pokemon.name);
+      }
+    }
+
+    // Update the card list to show pokemon returned from the button click
     this.updatePokemonCardList(pokemonList, cardListTitle, areVariants);
   };
 
@@ -223,7 +264,7 @@ class App extends Component {
   };
 
   // Toggle the filter menu active state on filter button click
-  filterBtnClick = () => {
+  toggleFilterMenuState = () => {
     this.setState({
       filterMenuActive: !this.state.filterMenuActive,
     });
@@ -232,7 +273,7 @@ class App extends Component {
   // Closes the filter panel
   closeFilterMenu = () => {
     this.setState({ filterMenuActive: false });
-  }
+  };
 
   componentDidMount() {
     // If the pokemon names list is empty, initialise the pokemon list
@@ -292,10 +333,10 @@ class App extends Component {
     const renderProgressBar = () => {
       if (showProgressBar) {
         return (
-        <div className="progress-overlay">
-          <ProgressBar></ProgressBar>
-        </div>
-        )
+          <div className="progress-overlay">
+            <ProgressBar></ProgressBar>
+          </div>
+        );
       }
     };
 
@@ -306,7 +347,7 @@ class App extends Component {
           <Modal
             showModal={this.state.showModal}
             hideModal={this.hideModal}
-            typeBtnClick={this.typeBtnClick}
+            filterBtnClick={this.filterBtnClick}
             pokemon={this.state.modalPokemon}
           />
         );
@@ -342,11 +383,11 @@ class App extends Component {
     // If the filter menu is open, render the overlay
     const renderFilterOverlay = (filterMenuActive) => {
       if (filterMenuActive) {
-        return <div className="filter-overlay"></div>
+        return <div className="filter-overlay"></div>;
       } else {
         return null;
       }
-    }
+    };
 
     return (
       <>
@@ -355,8 +396,8 @@ class App extends Component {
           searchOptions={pokemonNames}
           updatePokemonCardList={this.updatePokemonCardList}
           clearSearchBar={clearSearchBar}
-          typeBtnClick={this.typeBtnClick}
           filterBtnClick={this.filterBtnClick}
+          toggleFilterMenuState={this.toggleFilterMenuState}
           filterMenuActive={filterMenuActive}
           closeFilterMenu={this.closeFilterMenu}
         ></Header>

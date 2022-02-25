@@ -55,6 +55,11 @@ export function getType(type) {
   return PokeApi.getTypeByName(type);
 }
 
+// Returns a promise to get a generation
+export function getGeneration(generation) {
+  return PokeApi.getGenerationByName(generation);
+}
+
 // Retrieves the specified pokemon from the API
 export async function getPokemon(arrayOfPokemonToGet, areVariants) {
   try {

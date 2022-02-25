@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import "./Header.scss";
-import FilterBtn from "./FilterBtn";
+import FilterToggleBtn from "./FilterToggleBtn";
 import FilterMenu from "./FilterMenu";
 import SearchBar from "./SearchBar";
 
@@ -16,8 +16,8 @@ class Header extends Component {
       searchOptions,
       updatePokemonCardList,
       clearSearchBar,
-      typeBtnClick,
       filterBtnClick,
+      toggleFilterMenuState,
       filterMenuActive,
       closeFilterMenu,
     } = this.props;
@@ -36,14 +36,14 @@ class Header extends Component {
               filterMenuActive={filterMenuActive}
               closeFilterMenu={closeFilterMenu}
             ></SearchBar>
-            <FilterBtn
+            <FilterToggleBtn
               active={filterMenuActive}
-              clickHandler={filterBtnClick}
-            ></FilterBtn>
+              clickHandler={toggleFilterMenuState}
+            ></FilterToggleBtn>
           </div>
           <FilterMenu
             active={filterMenuActive}
-            typeBtnClick={typeBtnClick}
+            filterBtnClick={filterBtnClick}
           ></FilterMenu>
         </div>
       </header>

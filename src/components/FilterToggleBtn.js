@@ -1,9 +1,9 @@
 import React from "react";
-import "./FilterBtn.scss";
+import "./FilterToggleBtn.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFilter, faTimes } from "@fortawesome/free-solid-svg-icons";
 
-const FilterBtn = ({ active, clickHandler }) => {
+const FilterToggleBtn = ({ active, clickHandler }) => {
   const activeClass = active ? "active" : "inactive";
 
   const getIcon = (active) => {
@@ -25,4 +25,4 @@ const FilterBtn = ({ active, clickHandler }) => {
   );
 };
 
-export default FilterBtn;
+export default FilterToggleBtn;

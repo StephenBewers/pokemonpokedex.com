@@ -3,7 +3,7 @@ import "./PokemonTypes.scss";
 import PokemonTypeBtn from "./PokemonTypeBtn";
 import ModalInfoItem from "../Modal/ModalInfoItem";
 
-const PokemonTypes = ({ pokemon, typeBtnClick }) => {
+const PokemonTypes = ({ pokemon, filterBtnClick }) => {
   // If the pokemon object has a form, we'll get the types from that
   // If not, we'll get the types from the variant instead
   const types = pokemon.form?.details?.types?.length
@@ -17,7 +17,7 @@ const PokemonTypes = ({ pokemon, typeBtnClick }) => {
           <PokemonTypeBtn
             type={type.type.name}
             key={`type-btn-${i}`}
-            typeBtnClick={typeBtnClick}
+            filterBtnClick={filterBtnClick}
           ></PokemonTypeBtn>
         );
       })}

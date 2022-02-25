@@ -22,7 +22,7 @@ import waterIcon from "../../assets/images/water-icon.png";
 const PokemonTypeBtn = ({
   type,
   effectiveness,
-  typeBtnClick,
+  filterBtnClick,
 }) => {
   const getTypeIcon = (type) => {
     const typeIcons = {
@@ -74,7 +74,7 @@ const PokemonTypeBtn = ({
   return (
     <span
       className={`${getTypeBtnClass(effectiveness)} ${type}`}
-      onClick={() => typeBtnClick(type)}
+      onClick={() => filterBtnClick("type", type)}
     >
       {renderTypeIcon(typeIcon)} {type}
       {renderTypeEffectiveness(effectiveness)}

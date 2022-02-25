@@ -163,7 +163,7 @@ class PokemonTypeEffectiveness extends Component {
 
   render() {
     // Get the type button click function from props
-    const { typeBtnClick } = this.props;
+    const { filterBtnClick } = this.props;
 
     // If the type details have been received, returns the JSX to display the type effectiveness buttons
     const displayTypeEffectiveness = (
@@ -179,7 +179,7 @@ class PokemonTypeEffectiveness extends Component {
               type={types[i][0]}
               effectiveness={types[i][1]}
               key={`${effectivenessDescription}-type-btn-${i}`}
-              typeBtnClick={typeBtnClick}
+              filterBtnClick={filterBtnClick}
             ></PokemonTypeBtn>
           );
         }
@@ -188,7 +188,7 @@ class PokemonTypeEffectiveness extends Component {
             <PokemonTypeBtn
               type={"none"}
               key={`${effectivenessDescription}-type-btn-0`}
-              typeBtnClick={typeBtnClick}
+              filterBtnClick={filterBtnClick}
             ></PokemonTypeBtn>
           );
         }
