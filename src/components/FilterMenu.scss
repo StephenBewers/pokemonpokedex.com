@@ -34,3 +34,24 @@
 
   font-family: "Quicksand", sans-serif;
 }
+
+.credits {
+  font-size: 0.95em;
+  font-family: "Quicksand", sans-serif;
+
+  & a {
+    color: #ffcb05;
+    font-weight: 800;
+    text-decoration: none;
+  }
+  & a:visited {
+    color: #9bbb1b;
+    font-weight: 800;
+    text-decoration: none;
+  }
+  & a:hover {
+    color: #4398f9;
+    font-weight: 800;
+    text-decoration: none;
+  }
+}

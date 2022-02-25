@@ -47,7 +47,7 @@ class FilterMenu extends Component {
         );
       }
       return generationBtns;
-    }
+    };
 
     // Renders the type buttons
     const displayTypeBtns = (types, filterBtnClick) => {
@@ -69,9 +69,35 @@ class FilterMenu extends Component {
     return (
       <div className={`filter-menu ${activeClass}`}>
         <span className="filter-label">Browse by Generation:</span>
-        <div className="filter-btns">{displayGenerationBtns(filterBtnClick)}</div>
+        <div className="filter-btns">
+          {displayGenerationBtns(filterBtnClick)}
+        </div>
         <span className="filter-label">Browse by Type:</span>
-        <div className="filter-btns">{displayTypeBtns(types, filterBtnClick)}</div>
+        <div className="filter-btns">
+          {displayTypeBtns(types, filterBtnClick)}
+        </div>
+        <span className="filter-label">Information</span>
+        <div className="credits">
+          <p>
+            Designed and developed by{" "}
+            <a href="https://www.stephenbewers.com/">Stephen Bewers</a>. Pokémon and Pokémon character names are trademarks of Nintendo.
+            Other trademarks are the property of their respective owners.
+          </p>
+          <p>
+            Many thanks to <a href="https://pokeapi.co/">PokeAPI</a>,{" "}
+            <a href="https://reactjs.org/">React.js</a>,{" "}
+            <a href="https://fontawesome.com/">Font Awesome</a>,{" "}
+            <a href="https://www.npmjs.com/package/react-infinite-scroll-component">
+              Ankeet Maini
+            </a>
+            ,{" "}
+            <a href="https://www.npmjs.com/package/react-parallax-tilt">
+              mkosir
+            </a>
+            , and the{" "}
+            <a href="https://zerotomastery.io/">Zero to Mastery community</a>.
+          </p>
+        </div>
       </div>
     );
   }
