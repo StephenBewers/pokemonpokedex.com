@@ -66,8 +66,7 @@ class App extends Component {
   // Retrieves specified pokemon objects from the API
   getPokemonBatch = async (
     remainingPokemonToGet,
-    retrievedPokemon,
-    areVariants
+    retrievedPokemon
   ) => {
     let { retrievalLimit } = this.state;
 
@@ -89,7 +88,7 @@ class App extends Component {
     }
 
     // Retrieves the pokemon objects from the API
-    const pokemonObjects = await getPokemon(pokemonToGetNow, areVariants);
+    const pokemonObjects = await getPokemon(pokemonToGetNow);
 
     // Update the list of pokemon still to retrieve, removing those we retrieved in this batch
     let pokemonStillToGet;
@@ -170,18 +169,16 @@ class App extends Component {
     this.updatePokemonCardList();
 
     let cardListTitle;
-    let areVariants;
     let pokemonList = [];
 
     // Handle type button clicks
     if (btnType === "type") {
       let typeObject = await getType(btnValue);
       cardListTitle = `${btnValue} pokémon`;
-      areVariants = true;
 
       // Get the list of pokemon for this type
       for (let pokemon of typeObject.pokemon) {
-        pokemonList.push(pokemon.pokemon.name);
+        pokemonList.push(pokemon.pokemon);
       }
     }
 
@@ -189,7 +186,6 @@ class App extends Component {
     else if (btnType === "generation") {
       let generationObject = await getGeneration(btnValue);
       cardListTitle = `Gen ${btnValue} pokémon`;
-      areVariants = false;
 
       // Gets the pokemon number from the URL
       const getPokemonNumber = (url) => {
@@ -210,20 +206,20 @@ class App extends Component {
 
       // Get the list of pokemon for this generation
       for (let pokemon of generationObject[0]["pokemon_species"]) {
-        pokemonList.push(pokemon.name);
+        pokemonList.push(pokemon);
       }
     }
 
     // Update the card list to show pokemon returned from the button click
-    this.updatePokemonCardList(pokemonList, cardListTitle, areVariants);
+    this.updatePokemonCardList(pokemonList, cardListTitle);
   };
 
   // Updates the pokemon card list displaying on the main page (call without params to reset)
-  updatePokemonCardList = (pokemonList, cardListTitle, areVariants) => {
+  updatePokemonCardList = (pokemonList, cardListTitle) => {
     const loadPokemonList = (pokemonList) => {
       // If a pokemon list has been supplied, load it
       if (pokemonList?.length) {
-        this.getPokemonBatch(pokemonList, [], areVariants);
+        this.getPokemonBatch(pokemonList, []);
       }
     };
 
