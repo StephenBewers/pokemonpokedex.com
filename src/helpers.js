@@ -71,9 +71,15 @@ export async function getPokemon(arrayOfPokemonToGet) {
       let pokemonVariant;
 
       // If the object to be retrieved is a pokemon species
-      if(pokemon.url.includes("pokemon-species")) {
-        // Get the pokemon species from the API
-        pokemonSpecies = await PokeApi.resource(pokemon.url);
+      if(!pokemon.url || pokemon.url.includes("pokemon-species")) {
+
+        // If we don't have a URL we'll use the species name
+        if (!pokemon.url) {
+          pokemonSpecies = await PokeApi.getPokemonSpeciesByName(pokemon.name);
+        } else {
+          // Otherwise, get the pokemon species from the API using the URL
+          pokemonSpecies = await PokeApi.resource(pokemon.url);
+        }
 
         // Get the data for the default variant of the species
         for (let i = 0; i < pokemonSpecies.varieties.length; i++) {

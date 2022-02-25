@@ -92,7 +92,7 @@ class SearchBar extends Component {
       defaultView: false,
       userInput: event.target.outerText,
     });
-    this.props.updatePokemonCardList([event.target.outerText.toLowerCase()]);
+    this.props.updatePokemonCardList([{name: event.target.outerText.toLowerCase()}]);
   };
 
   // Handle key events for autocomplete suggestion list
@@ -107,8 +107,8 @@ class SearchBar extends Component {
         defaultView: false,
         userInput: filteredOptions[activeOption],
       });
-      this.props.updatePokemonCardList([
-        filteredOptions[activeOption].toLowerCase(),
+      this.props.updatePokemonCardList([{
+        name: filteredOptions[activeOption].toLowerCase()}
       ]);
     }
 
