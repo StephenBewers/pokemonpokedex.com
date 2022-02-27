@@ -68,7 +68,9 @@ class SearchBar extends Component {
     const { options, filterMenuActive, closeFilterMenu } = this.props;
     const userInput = event.currentTarget.value;
     if (userInput.length) {
-      if(filterMenuActive) { closeFilterMenu() };
+      if (filterMenuActive) {
+        closeFilterMenu();
+      }
       const filteredOptions = this.filterOptions(options, userInput);
       this.setState({
         activeOption: 0,
@@ -88,28 +90,41 @@ class SearchBar extends Component {
   onClick = (event) => {
     this.setState({
       activeOption: 0,
+      filteredOptions: [],
       showOptions: false,
       defaultView: false,
       userInput: event.target.outerText,
     });
-    this.props.updatePokemonCardList([{name: event.target.outerText.toLowerCase()}]);
+    this.props.updatePokemonCardList([
+      { name: event.target.outerText.toLowerCase() },
+    ]);
+  };
+
+  // On clicking the submit button, search for the currently selected pokemon in the list
+  onSubmit = (event) => {
+    const { activeOption, filteredOptions } = this.state;
+
+    this.setState({
+      activeOption: 0,
+      filteredOptions: [],
+      showOptions: false,
+      defaultView: false,
+      userInput: filteredOptions[activeOption],
+    });
+    this.props.updatePokemonCardList([
+      {
+        name: filteredOptions[activeOption].toLowerCase(),
+      },
+    ]);
   };
 
   // Handle key events for autocomplete suggestion list
   onKeyDown = (event) => {
     const { activeOption, filteredOptions } = this.state;
 
-    // Return key provides the same action as the click event, but uses the selected pokemon as there is no clicked one
-    if (event.keyCode === 13) {
-      this.setState({
-        activeOption: 0,
-        showOptions: false,
-        defaultView: false,
-        userInput: filteredOptions[activeOption],
-      });
-      this.props.updatePokemonCardList([{
-        name: filteredOptions[activeOption].toLowerCase()}
-      ]);
+    // Return key provides the same action as the submit event
+    if (event.keyCode === 13 && filteredOptions.length) {
+      this.onSubmit(event);
     }
 
     // Up arrow selects the suggestion above the currently selected option if not already at the top
@@ -164,6 +179,7 @@ class SearchBar extends Component {
       onClick,
       onChange,
       onKeyDown,
+      onSubmit,
       listOptions,
       state: { filteredOptions, showOptions, userInput },
     } = this;
@@ -215,6 +231,40 @@ class SearchBar extends Component {
       }
     }
 
+    // Render the search button
+    const getSearchBtn = (options) => {
+      // If there are options available, render the enabled search button
+      if (options > 0) {
+        return (
+          <button
+            type="submit"
+            name="submit"
+            value=""
+            className="search-btn"
+            onClick={onSubmit}
+          >
+            <FontAwesomeIcon icon={faSearch} id="submitBtnIcon" />
+          </button>
+        );
+      }
+      // Otherwise the search button should be disabled to prevent searches for pokemon that do not exist
+      else {
+        return (
+          <button
+            type="submit"
+            id="submit"
+            name="submit"
+            value=""
+            disabled="disabled"
+            className="search-btn"
+            onClick={onSubmit}
+          >
+            <FontAwesomeIcon icon={faSearch} id="submitBtnIcon" />
+          </button>
+        );
+      }
+    };
+
     return (
       <div className={`search-container`}>
         <div className={`search-bar`}>
@@ -228,15 +278,7 @@ class SearchBar extends Component {
             value={userInput}
           />
           <span className="search-divider"></span>
-          <button
-            type="submit"
-            name="submit"
-            value=""
-            className="search-btn"
-            onClick={onClick}
-          >
-            <FontAwesomeIcon icon={faSearch} />
-          </button>
+          {getSearchBtn(filteredOptions.length)}
         </div>
         {optionList}
       </div>

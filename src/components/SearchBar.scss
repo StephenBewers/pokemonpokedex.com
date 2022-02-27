@@ -76,6 +76,11 @@ span.search-divider {
   &:hover {
     color: #1c2c5e;
   }
+
+  &:disabled {
+    color: #aaa;
+    cursor: default;
+  }
 }
 
 div.options-container-divider {
