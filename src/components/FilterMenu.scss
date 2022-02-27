@@ -1,26 +1,39 @@
+@use "../components/Modal/Modal.scss";
+
+.filter-overlay {
+  @extend .modal;
+}
+
 .filter-menu {
+  @extend .modal-main;
   color: #fff;
   background-color: #1c2c5e;
-  border-radius: 32px;
-  border-color: transparent;
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.3), 0 6px 20px 0 rgba(0, 0, 0, 0.3);
+}
 
-  margin-top: 2em;
+.filter-menu-inner {
   padding: 2em;
+}
 
-  &.inactive {
-    display: none;
+.menu-heading {
+  font-family: "Pokemon Solid";
+  letter-spacing: 0.14em;
+  font-size: 1.4em;
+  display: block;
+
+  @media (max-width: 767px) {
+    font-size: 1em;
+    letter-spacing: 0.1em;
   }
 }
 
 .filter-label {
-  font-family: "Pokemon Solid";
-  letter-spacing: 0.09em;
-  font-size: 0.9em;
+  @extend .menu-heading;
+  letter-spacing: 0.1em;
+  font-size: 1em;
 
   @media (max-width: 767px) {
-    font-size: 0.75em;
-    letter-spacing: 0.075em;
+    font-size: 0.8em;
+    letter-spacing: 0.08em;
   }
 }
 
@@ -36,7 +49,7 @@
 }
 
 .credits {
-  font-size: 0.95em;
+  font-size: 1em;
   font-family: "Quicksand", sans-serif;
 
   & a {

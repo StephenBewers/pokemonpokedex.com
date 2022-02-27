@@ -376,15 +376,6 @@ class App extends Component {
       }
     };
 
-    // If the filter menu is open, render the overlay
-    const renderFilterOverlay = (filterMenuActive) => {
-      if (filterMenuActive) {
-        return <div className="filter-overlay"></div>;
-      } else {
-        return null;
-      }
-    };
-
     return (
       <>
         <Header
@@ -398,7 +389,6 @@ class App extends Component {
           closeFilterMenu={this.closeFilterMenu}
         ></Header>
         <main>
-          {renderFilterOverlay(filterMenuActive)}
           {renderProgressBar()}
           {renderModal()}
           {renderCardList()}

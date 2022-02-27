@@ -52,9 +52,12 @@ h1 {
   top: 42vh;
 
   width: 260px;
-  min-width: 60%;
+  min-width: 85%;
   margin: 2em;
   z-index: 100;
+
+  display: flex;
+  justify-content: center;
 
   &.sticky {
     position: fixed;
@@ -67,4 +70,6 @@ h1 {
 
 .nav-bar {
     display: flex;
+    max-width: 1000px;
+    flex-grow: 1;
 }

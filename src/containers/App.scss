@@ -21,16 +21,6 @@
   align-items: flex-end;
 }
 
-.filter-overlay {
-  position: fixed;
-  z-index: 99;
-  top: 0;
-  left: 0;
-  width: 100%;
-  min-height: 100%;
-  background: rgba(0, 0, 0, 0.75);
-}
-
 @mixin card-type-background($color, $image) {
   background: linear-gradient(rgba($color, 0.8), rgba($color, 0.8)), $image, $color;
   background-repeat: space;
