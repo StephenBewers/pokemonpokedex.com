@@ -29,10 +29,12 @@ const PokemonEvolution = ({ pokemon, clickHandler }) => {
       return (
         <>
           <PokemonEvolvesFrom
+            key={`evolves-from-${pokemon.variant.id}`}
             pokemon={pokemon}
             clickHandler={clickHandler}
           ></PokemonEvolvesFrom>
           <PokemonEvolvesTo
+            key={`evolves-to-${pokemon.variant.id}`}
             pokemon={pokemon}
             clickHandler={clickHandler}
           ></PokemonEvolvesTo>

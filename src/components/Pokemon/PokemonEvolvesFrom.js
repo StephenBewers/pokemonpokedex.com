@@ -16,6 +16,12 @@ import {
 let evolvesFromSpeciesPromise;
 let evolvesFromPokemonPromises = [];
 
+// Resets the promise variables to default values
+const resetPromises = () => {
+  evolvesFromSpeciesPromise = null;
+  evolvesFromPokemonPromises = [];
+}
+
 // Resets the state to default values
 const resetState = () => ({
   evolvesFromSpeciesReceived: false,
@@ -30,6 +36,7 @@ class PokemonEvolvesFrom extends Component {
       evolvesFromSpecies: this.props.pokemon.species.evolves_from_species,
       ...resetState(),
     };
+    resetPromises();
   }
 
   componentDidMount() {
@@ -59,8 +66,7 @@ class PokemonEvolvesFrom extends Component {
       prevProps.pokemon.variant.id !== this.props.pokemon.variant.id
     ) {
       // Clear the existing promise arrays
-      evolvesFromSpeciesPromise = null;
-      evolvesFromPokemonPromises = [];
+      resetPromises();
 
       // Reset the state
       this.setState(

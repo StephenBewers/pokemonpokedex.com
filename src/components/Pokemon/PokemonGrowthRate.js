@@ -13,6 +13,10 @@ import {
 // Variable to store the promise to return the additional data. Promise will be cancelled on unmount.
 let growthRatePromise;
 
+// Resets the promise variables to default values
+const resetPromises = () => {
+  growthRatePromise = null;
+}
 class PokemonGrowthRate extends Component {
   constructor(props) {
     super(props);
@@ -20,6 +24,7 @@ class PokemonGrowthRate extends Component {
       growthRate: this.props.pokemon.species.growth_rate,
       growthRateReceived: false,
     };
+    resetPromises();
   }
 
   componentDidMount() {
@@ -35,7 +40,7 @@ class PokemonGrowthRate extends Component {
     // If the variant has changed
     if (prevProps.pokemon.variant.id !== this.props.pokemon.variant.id) {
       // Clear the existing promise
-      growthRatePromise = null;
+      resetPromises();
 
       // Update state with the new pokemon growth rate
       this.setState({

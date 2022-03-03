@@ -13,6 +13,11 @@ import {
 // Array that will store promises to return the additional data. Promises will be cancelled on unmount.
 let eggGroupPromises = [];
 
+// Resets the promise variables to default values
+const resetPromises = () => {
+  eggGroupPromises = [];
+}
+
 class PokemonEggGroups extends Component {
   constructor(props) {
     super(props);
@@ -20,6 +25,7 @@ class PokemonEggGroups extends Component {
       eggGroups: this.props.pokemon.species.egg_groups,
       eggGroupsReceived: false,
     };
+    resetPromises();
   }
 
   componentDidMount() {
@@ -35,7 +41,7 @@ class PokemonEggGroups extends Component {
     // If the species has changed
     if (prevProps.pokemon.species.id !== this.props.pokemon.species.id) {
       // Clear the existing promise array
-      eggGroupPromises = [];
+      resetPromises();
 
       // Update state with the new pokemon eggGroups
       this.setState({

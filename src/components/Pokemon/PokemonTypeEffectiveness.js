@@ -11,9 +11,6 @@ import {
   getResource,
 } from "../../helpers.js";
 
-// Array to store promises to return the additional data. Promises will be cancelled on unmount.
-let typePromises = [];
-
 // Default type effectiveness
 const defaultTypeEffectivenessValue = 1;
 const getDefaultTypeEffectiveness = () => {
@@ -39,14 +36,28 @@ const getDefaultTypeEffectiveness = () => {
   };
 };
 
+// Array to store promises to return the additional data. Promises will be cancelled on unmount.
+let typePromises = [];
+
+// Resets the promise variables to default values
+const resetPromises = () => {
+  typePromises = [];
+}
+
+// Resets the state to default values
+const resetState = () => ({
+  typesReceived: false,
+  typeEffectiveness: getDefaultTypeEffectiveness(),
+});
+
 class PokemonTypeEffectiveness extends Component {
   constructor(props) {
     super(props);
     this.state = {
       types: this.props.pokemon.variant.types,
-      typesReceived: false,
-      typeEffectiveness: getDefaultTypeEffectiveness(),
+      ...resetState(),
     };
+    resetPromises();
   }
 
   componentDidMount() {
@@ -62,13 +73,12 @@ class PokemonTypeEffectiveness extends Component {
     // If the variant has changed
     if (prevProps.pokemon.variant.id !== this.props.pokemon.variant.id) {
       // Clear the existing promises
-      typePromises = [];
+      resetPromises();
 
       // Update state with the new pokemon types
       this.setState({
         types: this.props.pokemon.variant.types,
-        typesReceived: false,
-        typeEffectiveness: getDefaultTypeEffectiveness(),
+        ...resetState(),
       });
 
       // Get the type promises for the new pokemon

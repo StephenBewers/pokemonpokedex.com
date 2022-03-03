@@ -16,6 +16,11 @@ import {
 // Array to store promises to return the additional data. Promises will be cancelled on unmount.
 let otherVariantPromises = [];
 
+// Resets the promise variables to default values
+const resetPromises = () => {
+  otherVariantPromises = [];
+}
+
 // Resets the state to default values
 const resetState = () => ({
   otherVariantsReceived: false,
@@ -28,6 +33,7 @@ class PokemonOtherForms extends Component {
     this.state = {
       ...resetState(),
     };
+    resetPromises();
   }
 
   componentDidMount() {
@@ -47,7 +53,7 @@ class PokemonOtherForms extends Component {
       prevProps.pokemon.variant.id !== this.props.pokemon.variant.id
     ) {
       // Clear the existing promises
-      otherVariantPromises = [];
+      resetPromises();
 
       // Reset the state
       this.setState(

@@ -15,6 +15,11 @@ import {
 // Array that will store promises to return the additional data. Promises will be cancelled on unmount.
 let abilityPromises = [];
 
+// Resets the promise variables to default values
+const resetPromises = () => {
+  abilityPromises = [];
+}
+
 class PokemonAbilities extends Component {
   constructor(props) {
     super(props);
@@ -22,6 +27,7 @@ class PokemonAbilities extends Component {
       abilities: this.props.pokemon.variant.abilities,
       abilitiesReceived: false,
     };
+    resetPromises();
   }
 
   componentDidMount() {
@@ -37,7 +43,7 @@ class PokemonAbilities extends Component {
     // If the variant has changed
     if (prevProps.pokemon.variant.id !== this.props.pokemon.variant.id) {
       // Clear the existing promise array
-      abilityPromises = [];
+      resetPromises();
 
       // Update state with the new pokemon abilities
       this.setState({

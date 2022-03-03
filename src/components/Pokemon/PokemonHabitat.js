@@ -13,6 +13,10 @@ import {
 // Variable to store the promise to return the additional data. Promise will be cancelled on unmount.
 let habitatPromise;
 
+// Resets the promise variables to default values
+const resetPromises = () => {
+  habitatPromise = null;
+}
 class PokemonHabitat extends Component {
   constructor(props) {
     super(props);
@@ -20,6 +24,7 @@ class PokemonHabitat extends Component {
       habitat: this.props.pokemon.species.habitat,
       habitatReceived: false,
     };
+    resetPromises();
   }
 
   componentDidMount() {
@@ -35,7 +40,7 @@ class PokemonHabitat extends Component {
     // If the variant has changed
     if (prevProps.pokemon.variant.id !== this.props.pokemon.variant.id) {
       // Clear the existing promise
-      habitatPromise = null;
+      resetPromises();
 
       // Update state with the new pokemon habitat
       this.setState({

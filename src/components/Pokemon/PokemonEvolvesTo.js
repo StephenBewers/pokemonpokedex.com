@@ -18,6 +18,13 @@ let evolutionChainPromise;
 let evolvesToSpeciesPromises = [];
 let evolvesToPokemonPromises = [];
 
+// Resets the promise variables to default values
+const resetPromises = () => {
+  evolutionChainPromise = null;
+  evolvesToSpeciesPromises = [];
+  evolvesToPokemonPromises = [];
+}
+
 // Resets the state to default values
 const resetState = () => ({
   evolutionChain: {},
@@ -33,6 +40,7 @@ class PokemonEvolvesTo extends Component {
   constructor(props) {
     super(props);
     this.state = { ...resetState() };
+    resetPromises();
   }
 
   componentDidMount() {
@@ -65,9 +73,7 @@ class PokemonEvolvesTo extends Component {
       prevProps.pokemon.variant.id !== this.props.pokemon.variant.id
     ) {
       // Clear the existing promise arrays
-      evolutionChainPromise = null;
-      evolvesToSpeciesPromises = [];
-      evolvesToPokemonPromises = [];
+      resetPromises();
 
       // Reset the state and then treat it as if the component just mounted
       this.setState(
@@ -131,6 +137,26 @@ class PokemonEvolvesTo extends Component {
     // Cancel the evolution chain promise
     if (evolutionChainPromise?.hasOwnProperty("promise")) {
       cancelPromise(evolutionChainPromise, errorHandler);
+    }
+
+    // Cancel the evolves to species promises
+    if (evolvesToSpeciesPromises.length) {
+      evolvesToSpeciesPromises.forEach((promise) => {
+        if (promise) {
+          cancelPromise(promise, errorHandler);
+        }
+      });
+    }
+
+    // Cancel the evolves to pokemon promises (sometimes there is no form so we need to check each one isn't empty)
+    if (evolvesToPokemonPromises.length) {
+      evolvesToPokemonPromises.forEach((evolvesToPokemon) => {
+        evolvesToPokemon.forEach((promise) => {
+          if (promise) {
+            cancelPromise(promise, errorHandler);
+          }
+        })
+      });
     }
   }
 
