@@ -71,16 +71,16 @@ const FilterMenu = ({ active, filterBtnClick, toggleFilterMenuState }) => {
       <ModalExitBtn hideModal={toggleFilterMenuState}></ModalExitBtn>
       <div className="filter-menu" onClick={innerModalClick}>
         <div className="filter-menu-inner">
-          <span className="menu-heading">Browse Pokémon by:</span>
-          <span className="filter-label">Generation</span>
+          <div className="menu-heading">Browse Pokémon</div>
+          <div className="filter-label">By generation:</div>
           <div className="filter-btns">
             {displayGenerationBtns(filterBtnClick)}
           </div>
-          <span className="filter-label">Type</span>
+          <div className="filter-label">By type:</div>
           <div className="filter-btns">
             {displayTypeBtns(types, filterBtnClick)}
           </div>
-          <span className="menu-heading">Information</span>
+          <div className="menu-heading">Information</div>
           <div className="credits">
             <p>
               Designed and developed by{" "}

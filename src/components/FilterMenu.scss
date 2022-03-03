@@ -6,8 +6,8 @@
 
 .filter-menu {
   @extend .modal-main;
-  color: #fff;
-  background-color: #1c2c5e;
+  background-image: linear-gradient(rgba(255,255,255,.8),rgba(255,255,255,.8)), url(../assets/images/menu-background.jpg);
+  background-size: cover;
 }
 
 .filter-menu-inner {
@@ -19,6 +19,7 @@
   letter-spacing: 0.14em;
   font-size: 1.4em;
   display: block;
+  color: #1c2c5e;
 
   @media (max-width: 767px) {
     font-size: 1em;
@@ -27,14 +28,10 @@
 }
 
 .filter-label {
-  @extend .menu-heading;
-  letter-spacing: 0.1em;
+  font-family: "Quicksand", sans-serif;
   font-size: 1em;
-
-  @media (max-width: 767px) {
-    font-size: 0.8em;
-    letter-spacing: 0.08em;
-  }
+  font-weight: bold;
+  margin-top: 0.8em;
 }
 
 .filter-btns {
@@ -53,17 +50,17 @@
   font-family: "Quicksand", sans-serif;
 
   & a {
-    color: #ffcb05;
+    color: #421aa3;
     font-weight: 800;
     text-decoration: none;
   }
   & a:visited {
-    color: #9bbb1b;
+    color: #50396d;
     font-weight: 800;
     text-decoration: none;
   }
   & a:hover {
-    color: #4398f9;
+    color: #a4241e;
     font-weight: 800;
     text-decoration: none;
   }
