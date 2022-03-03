@@ -176,7 +176,6 @@ class SearchBar extends Component {
 
   render() {
     const {
-      onClick,
       onChange,
       onKeyDown,
       onSubmit,
