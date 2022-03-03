@@ -5,45 +5,44 @@ $text-stroke: 0 0 3px black;
 
 @mixin text-style {
   z-index: $img-panel-z-index;
-
-  font-family: "Pokemon Solid";
-  letter-spacing: 4px;
-  line-height: 1.4;
   text-align: center;
-  color: #fff;
   text-shadow: $text-stroke, $text-stroke, $text-stroke, $text-stroke;
+  line-height: 1.4;
+  letter-spacing: 4px;
+  color: #fff;
+  font-family: "Pokemon Solid";
 }
 
 .modal-img-panel {
-  position: relative;
-  flex: 1 33%;
   display: flex;
-  flex-direction: column;
+  position: relative;
   align-items: center;
+  flex: 1 33%;
+  flex-direction: column;
   justify-content: space-between;
-  min-width: 180px;
   transform: perspective(0px); // Fixes issue with gradient between two type backgrounds
+  min-width: 180px;
 
   img {
     z-index: $img-panel-z-index;
     width: 60%;
-    height: auto;
     max-width: 35vh;
+    height: auto;
     max-height: 35vh;
   }
 
   .pokemon-number {
-    @include text-style;
-    font-size: $font-size;
     margin: 8vh 1vw 6vh 1vw;
     margin-top: max(60px, 8vh);
+    font-size: $font-size;
+    @include text-style;
   }
 
   .pokemon-name {
-    @include text-style;
-    font-size: $font-size;
     margin: 6vh 1vw 7vh 1vw;
     text-transform: capitalize;
+    font-size: $font-size;
+    @include text-style;
   }
 
   .hidden {

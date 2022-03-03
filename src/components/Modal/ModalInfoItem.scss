@@ -1,23 +1,24 @@
 .modal-info-item {
   display: flex;
+  align-items: flex-start;
   flex-direction: column;
   flex-grow: 1;
-  align-items: flex-start;
-  text-align: left;
   margin-right: 1vw;
+  text-align: left;
 
   @media (max-width: 1200px) {
     margin: 1vmax 5vw 1vmax 0vw;
   }
+
   @media (max-width: 720px) {
     margin: 2vmax 5vw 2vmax 0vw;
   }
 }
 
 #modal-top-row .modal-info-item {
+  flex-grow: 0;
   margin-right: 4vw;
   margin-bottom: 2vmax;
-  flex-grow: 0;
 }
 
 .modal-info-values-row {
@@ -29,6 +30,7 @@
 
 .modal-info-subitem {
   @extend .modal-info-item;
+
   @media (min-width: 1200px) {
     margin: 1vmax 2vw 0vmax 0vw;
   }
@@ -39,15 +41,18 @@
   color: #666;
   font-size: 1.2em;
   font-weight: normal;
+
   @media (max-width: 1200px) {
     margin-bottom: 1vmax;
   }
 }
 
 .modal-info-sublabel {
-  @extend .modal-info-label;
   font-size: 0.9em;
   font-weight: bold;
+
+  @extend .modal-info-label;
+  
   @media (max-width: 1200px) {
     margin-bottom: 0vmax;
   }

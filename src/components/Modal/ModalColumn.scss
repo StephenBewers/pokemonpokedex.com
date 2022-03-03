@@ -1,19 +1,15 @@
-@use './ModalRow.scss';
-
 .modal-column {
   display: flex;
-  flex-direction: column;
   flex: 1 1 0;
+  flex-direction: column;
   width: 100%;
 }
 
 #modal-centre-section > .modal-column {
-  padding-top: ModalRow.$thick-padding-constant;
-  background-color: #fff;
-
   /* Move the columns slightly outside of the bounding box to hide 
      the grey background which provides the dividing line */
   margin: -2px;
+  background-color: #fff;
   padding: 2px;
 }
 

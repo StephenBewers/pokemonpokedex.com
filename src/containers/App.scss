@@ -1,7 +1,7 @@
 @font-face {
   font-family: "Pokemon Solid";
-  font-style: normal;
   font-weight: normal;
+  font-style: normal;
   src: local("../assets/fonts/Pokemon\ Solid.ttf"),
     url("../assets/fonts/Pokemon\ Solid.ttf") format("truetype");
 }
@@ -9,16 +9,16 @@
 @import url("https://fonts.googleapis.com/css2?family=Quicksand&display=swap");
 
 .progress-overlay {
+  display: flex;
   position: fixed;
-  z-index: 995;
   top: 0;
   left: 0;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 995;
+  background: rgba(255, 255, 255, 0.5);
   width: 100%;
   min-height: 100%;
-  background: rgba(255, 255, 255, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: flex-end;
 }
 
 @mixin card-type-background($color, $image) {
@@ -28,15 +28,14 @@
 
 @mixin secondary-type-pseudo-style {
   $image-mask: linear-gradient(to bottom right, transparent 30%, black 70%);
-
-  content: "";
   position: absolute;
-  transform: translateZ(1px);
   top: 0;
   left: 0;
+  transform: translateZ(1px);
+  border-radius: inherit;
   width: 100%;
   height: 100%;
-  border-radius: inherit;
+  content: "";
   mask-image: $image-mask;
   -webkit-mask-image: $image-mask;
 }

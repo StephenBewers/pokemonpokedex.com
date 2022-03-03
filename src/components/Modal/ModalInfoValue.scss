@@ -2,33 +2,34 @@ $value-padding: 0.4em;
 $value-half-padding: 0.2em;
 
 .modal-info-value {
-  font-size: 1.2em;
-  min-width: 66px;
   padding-top: $value-padding;
   padding-bottom: $value-half-padding;
+  min-width: 66px;
   text-transform: capitalize;
+  font-size: 1.2em;
 }
 
 .modal-info-alternative-value {
   min-width: 66px;
-  font-size: 1em;
   color: #666;
+  font-size: 1em;
 }
 
 .modal-info-unit {
-  font-size: 0.9em;
-  padding-left: 0.3em;
   align-self: center;
+  padding-left: 0.3em;
+  font-size: 0.9em;
 }
 
 .modal-info-alternative-unit {
-  @extend .modal-info-unit;
   font-size: 0.8em;
+  
+  @extend .modal-info-unit;
 }
 
 .modal-info-values-row .modal-info-value {
-  padding-right: 1.2em;
   padding-top: 0;
+  padding-right: 1.2em;
 }
 
 .modal-info-value + .modal-info-value {

@@ -1,24 +1,23 @@
 @mixin options-style {
-  list-style: none;
-  padding: 0.25em 1.25em;
   margin: 0;
-  text-transform: capitalize;
   cursor: pointer;
+  padding: 0.25em 1.25em;
+  list-style: none;
+  text-transform: capitalize;
 }
 
 .search-container {
   flex: 1;
-  height: max-content;
-
-  overflow: hidden;
-  background-color: #fff;
   border-radius: 32px;
   border-color: transparent;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.3), 0 6px 20px 0 rgba(0, 0, 0, 0.3);
+  background-color: #fff;
+  height: max-content;
+  overflow: hidden;
 
   &:focus-within {
-    box-shadow: 0 0 5px 4px cornflowerblue;
     outline: 0;
+    box-shadow: 0 0 5px 4px cornflowerblue;
   }
 }
 
@@ -29,77 +28,75 @@
 }
 
 .search-box {
-  width: 100%;
+  flex-grow: 2;
+  border: none;
   padding: 0.25em;
   padding-bottom: 0.5em;
-  flex-grow: 2;
-  
-  font-family: "Pokemon Solid";
-  letter-spacing: 0.1em;
-  font-size: 1em;
+  width: 100%;
   text-indent: 1em;
-
-  border: none;
+  letter-spacing: 0.1em;
+  font-family: "Pokemon Solid";
+  font-size: 1em;
 
   @media (max-width: 767px) {
-    font-size: 0.8em;
     letter-spacing: 0.08em;
+    font-size: 0.8em;
   }
 
   &:focus-within {
-    box-shadow: none;
     outline: 0;
+    box-shadow: none;
   }
 }
 
 span.search-divider {
-  border-right: 1px solid #dfe1e5;
-  height: 65%;
   align-self: center;
   margin-left: 1.1em;
+  border-right: 1px solid #dfe1e5;
+  height: 65%;
 
   &:before {
-    content: "\200D";
     display: inline;
+    content: "\200D";
  }
 }
 
 .search-btn {
-  background: none;
-  color: #3563ad;
-  border: none;
-  font-size: 1.1em;
-  padding: 0.25em 1.6em;
-  cursor: pointer;
   transition: color 0.1s ease-in-out;
+  border: none;
+  background: none;
+  cursor: pointer;
+  padding: 0.25em 1.6em;
+  color: #3563ad;
+  font-size: 1.1em;
 
   &:hover {
     color: #1c2c5e;
   }
 
   &:disabled {
-    color: #aaa;
     cursor: default;
+    color: #aaa;
   }
 }
 
 div.options-container-divider {
+  margin: auto;
   border-top: 1px solid #dfe1e5;
   padding: 0.25em 0em;
   width: 96%;
-  margin: auto;
 }
 
 .options-container {
   padding-bottom: 0.6em;
-  font-family: "Pokemon Solid";
   letter-spacing: 0.09em;
-  font-size: 0.9em;
   color: #333;
+  font-family: "Pokemon Solid";
+  font-size: 0.9em;
 
   @media (max-width: 1000px) {
-    font-size: 0.8em;
     letter-spacing: 0.08em;
+    font-size: 0.8em;
   }
 }
 
@@ -113,13 +110,13 @@ div.options-container-divider {
 }
 
 .option-active {
-  @include options-style;
   background-color: #B3E5FC;
+  @include options-style;
 }
 
 .no-results {
-  @include options-style;
-  text-transform: none;
   cursor: auto;
+  text-transform: none;
   color: #f44336;
+  @include options-style;
 }

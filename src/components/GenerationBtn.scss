@@ -1,8 +1,8 @@
 @use '../components/Pokemon/PokemonTypeBtn.scss';
 
 .generation-btn {
-    @extend .pokemon-type-btn;
     padding-left: 20px;
+    @extend .pokemon-type-btn;
 }
 
 .gen-1 {

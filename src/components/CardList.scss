@@ -4,10 +4,10 @@ $text-stroke: 0 0 3.5px black;
 
 .card-list {
   display: grid;
-  padding: 5vmin;
-  gap: 5vmin;
   justify-content: center;
   margin-top: 120px;
+  padding: 5vmin;
+  gap: 5vmin;
 
   @media (orientation: landscape) and (min-height: 600px) {
     grid-template-columns: repeat(auto-fit, minmax(110px, calc(33vmin / 1.4)));
@@ -31,9 +31,9 @@ $text-stroke: 0 0 3.5px black;
 
 .modal-card-list {
   display: grid;
+  justify-content: start;
   padding: 3vh 0vw;
   gap: 28px;
-  justify-content: start;
 
   @media (orientation: landscape) and (min-height: 600px) {
     grid-template-columns: repeat(auto-fit, minmax(110px, calc(20vmin / 1.4)));
@@ -61,18 +61,17 @@ $text-stroke: 0 0 3.5px black;
 }
 
 .card-list-header {
-  grid-column: 1 / -1;
   display: flex;
+  grid-column: 1 / -1;
   font-size: calc(14px + (50 - 14) * (100vmin - 140px) / (3840 - 140));
 }
 
 .card-list-reset-btn {
+  transition: color 0.1s ease-in-out;
+  border-radius: 48px;
+  cursor: pointer;
   padding: 12px;
   color: rgba(255, 255, 255, 1);
-  border-radius: 48px;
-
-  cursor: pointer;
-  transition: color 0.1s ease-in-out;
 
   &:hover {
     color: rgba(255, 255, 255, 0.5);
@@ -80,14 +79,13 @@ $text-stroke: 0 0 3.5px black;
 }
 
 .card-list-title {
-  font-family: "Pokemon Solid";
-  letter-spacing: 2px;
-  color: #fff;
-  text-shadow: $text-stroke, $text-stroke, $text-stroke, $text-stroke;
-
-  text-transform: capitalize;
   transform: translateZ(3px);
   margin: 0.5em;
   margin-top: 0em;
+  text-transform: capitalize;
+  text-shadow: $text-stroke, $text-stroke, $text-stroke, $text-stroke;
   line-height: 1.4;
+  letter-spacing: 2px;
+  color: #fff;
+  font-family: "Pokemon Solid";
 }

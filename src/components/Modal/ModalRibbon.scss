@@ -3,34 +3,34 @@
 $text-stroke: 0 0 3px black;
 
 @mixin modal-ribbon-span($color) {
-  position: absolute;
   display: block;
-  width: 800px;
-  padding: 1.2em 0;
-  background-color: $color;
+  position: absolute;
+  top: 2.2em;
+  right: -4em;
+  transform: rotate(-45deg);
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.5);
+  background-color: $color;
+  padding: 1.2em 0;
+  width: 800px;
+  text-align: center;
+  text-transform: uppercase;
+  text-shadow: $text-stroke, $text-stroke, $text-stroke, $text-stroke;
   color: #fff;
   font-family: "Quicksand", sans-serif;
   // font-size: calc([minimum font size] + ([maximum font size] - [minimum font size]) * ((100vmin - [minimum viewport width]) / ([maximum viewport width] - [minimum viewport width])));
   font-size: calc(10px + (30 - 10) * (100vmin - 140px) / (3840 - 140));
   font-weight: 900;
-  text-shadow: $text-stroke, $text-stroke, $text-stroke, $text-stroke;
-  text-transform: uppercase;
-  text-align: center;
-  right: -4em;
-  top: 2.2em;
-  transform: rotate(-45deg);
 }
 
 .modal-ribbon {
-  width: 400px;
-  height: 400px;
-  max-height: 100%;
-  overflow: hidden;
   position: absolute;
   top: -10px;
   left: -10px;
   z-index: 5;
+  width: 400px;
+  height: 400px;
+  max-height: 100%;
+  overflow: hidden;
 }
 span.baby {
   @include modal-ribbon-span(#f4c2c2);

@@ -1,17 +1,17 @@
 .loading-spinner {
-  width: 100%;
   display: flex;
+  align-items: center;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
+  width: 100%;
 }
 
 .loading-label {
+  text-shadow: -0.064em 0.064em 0.032em #1c2c5e;
+  letter-spacing: 2px;
   color: #fff;
   font-family: "Pokemon Solid";
   font-size: 1.2em;
-  letter-spacing: 2px;
-  text-shadow: -0.064em 0.064em 0.032em #1c2c5e;
 }
 
 .lds-ellipsis {
@@ -23,10 +23,10 @@
 .lds-ellipsis div {
   position: absolute;
   top: 16px;
-  width: 13px;
-  height: 13px;
   border-radius: 50%;
   background: #fff;
+  width: 13px;
+  height: 13px;
   animation-timing-function: cubic-bezier(0, 1, 1, 0);
 }
 .lds-ellipsis div:nth-child(1) {

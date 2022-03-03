@@ -2,17 +2,17 @@
 
 .modal {
   position: fixed;
-  z-index: 990;
   top: 0;
   left: 0;
+  z-index: 990;
+  background: rgba(0, 0, 0, 0.75);
   width: 100%;
   min-height: 100%;
-  background: rgba(0, 0, 0, 0.75);
 
   &.visible {
     display: flex;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
   }
 
   &.hidden {
@@ -21,30 +21,29 @@
 }
 
 .modal-main {
-  position: fixed;
   display: flex;
-  flex-flow: row wrap;
-  align-items: stretch;
-  z-index: 995;
-  width: 90%;
-  height: 90%;
+  position: fixed;
   top: 50%;
   left: 50%;
-  overflow: hidden;
+  align-items: stretch;
+  flex-flow: row wrap;
   transform: translate(-50%, -50%);
-
-  background-color: white;
+  z-index: 995;
   border-radius: 16px;
+  background-color: white;
+  width: 90%;
+  height: 90%;
+  overflow: hidden;
   overflow-y: auto;
 }
 
 .modal-info-panel {
-  flex: 1 55%;
   display: flex;
+  flex: 1 55%;
   flex-direction: column;
   margin-top: 55px;
   padding: 0vmax 3vmax 0vmax 3vmax;
-  font-family: "Quicksand", sans-serif;
-  overflow-y: auto;
   height: calc(90vh - 85px);
+  overflow-y: auto;
+  font-family: "Quicksand", sans-serif;
 }

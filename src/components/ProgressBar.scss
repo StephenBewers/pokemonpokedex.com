@@ -4,43 +4,42 @@ $text-stroke: 0 0 3.5px black;
 
 .progress-bar {
     display: flex;
+    align-items: center;
     flex-direction: row;
     justify-content: center;
-    align-items: center;
-    width: 100%;
     margin-bottom: 25vh;
+    width: 100%;
 }
 
 .progress-bar-label, .progress-amount {
-  font-size: calc(14px + (50 - 14) * (100vmin - 140px) / (3840 - 140));
-  font-family: "Pokemon Solid";
-  letter-spacing: 2px;
-  color: #fff;
-  text-shadow: $text-stroke, $text-stroke, $text-stroke, $text-stroke;
-
-  text-transform: capitalize;
   transform: translateZ(3px);
   margin: 0.5em;
   margin-top: 0em;
+  text-transform: capitalize;
+  text-shadow: $text-stroke, $text-stroke, $text-stroke, $text-stroke;
   line-height: 1.4;
+  letter-spacing: 2px;
+  color: #fff;
+  font-family: "Pokemon Solid";
+  font-size: calc(14px + (50 - 14) * (100vmin - 140px) / (3840 - 140));
 }
 
 .progress-bar-outer {
-  width: 40%;
-  height: 3em;
-  min-width: 200px;
-  border: #3563ad 6px solid;
-  background: rgba(0, 0, 0, 0.3);
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.3), 0 6px 20px 0 rgba(0, 0, 0, 0.3);
   display: flex;
   align-items: center;
+  border: #3563ad 6px solid;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.3), 0 6px 20px 0 rgba(0, 0, 0, 0.3);
+  background: rgba(0, 0, 0, 0.3);
+  width: 40%;
+  min-width: 200px;
+  height: 3em;
 }
 
 .progress-bar-inner {
   display: flex;
   align-items: center;
   justify-content: right;
-  height: 100%;
-  background-color: #ffcb05;
   transition: width 0.5s;
+  background-color: #ffcb05;
+  height: 100%;
 }
