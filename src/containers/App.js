@@ -21,6 +21,7 @@ class App extends Component {
     this.hideModal = this.hideModal.bind(this);
     this.toggleFilterMenuState = this.toggleFilterMenuState.bind(this);
     this.closeFilterMenu = this.closeFilterMenu.bind(this);
+    this.searchBarCleared = this.searchBarCleared.bind(this);
     this.state = {
       pokemonNames: [],
       pokemonToGet: [],
@@ -64,10 +65,7 @@ class App extends Component {
   };
 
   // Retrieves specified pokemon objects from the API
-  getPokemonBatch = async (
-    remainingPokemonToGet,
-    retrievedPokemon
-  ) => {
+  getPokemonBatch = async (remainingPokemonToGet, retrievedPokemon) => {
     let { retrievalLimit } = this.state;
 
     // Compares the number of pokemon already retrieved to the total to get
@@ -147,11 +145,6 @@ class App extends Component {
 
   // Handles a filter button being clicked
   filterBtnClick = async (btnType, btnValue) => {
-    // Clear the search bar
-    this.setState({
-      clearSearchBar: true,
-    });
-
     // If the modal is showing, hide it
     if (this.state.showModal) {
       this.hideModal();
@@ -189,10 +182,12 @@ class App extends Component {
 
       // Gets the pokemon number from the URL
       const getPokemonNumber = (url) => {
-        return (parseInt(url
-          .split("/")
-          .filter((e) => e)
-          .slice(-1)))
+        return parseInt(
+          url
+            .split("/")
+            .filter((e) => e)
+            .slice(-1)
+        );
       };
 
       // Sort the pokemon returned for this generation into numerical order
@@ -228,6 +223,7 @@ class App extends Component {
       {
         retrievedPokemon: [],
         cardListTitle: cardListTitle,
+        clearSearchBar: true,
       },
       loadPokemonList(pokemonList)
     );
@@ -244,7 +240,7 @@ class App extends Component {
 
   // Hides the modal
   hideModal = () => {
-    this.setState({ showModal: false, clearSearchBar: false });
+    this.setState({ showModal: false });
   };
 
   // Updates the state to initialise the progress bar
@@ -261,14 +257,22 @@ class App extends Component {
 
   // Toggle the filter menu active state on filter button click
   toggleFilterMenuState = () => {
+    const clearSearchBar = this.state.filterMenuActive ? false : true;
+
     this.setState({
       filterMenuActive: !this.state.filterMenuActive,
+      clearSearchBar: clearSearchBar,
     });
   };
 
   // Closes the filter panel
   closeFilterMenu = () => {
     this.setState({ filterMenuActive: false });
+  };
+
+  // Once the search bar has been cleared, update the state
+  searchBarCleared = () => {
+    this.setState({ clearSearchBar: false });
   };
 
   componentDidMount() {
@@ -383,10 +387,10 @@ class App extends Component {
           searchOptions={pokemonNames}
           updatePokemonCardList={this.updatePokemonCardList}
           clearSearchBar={clearSearchBar}
+          searchBarCleared={this.searchBarCleared}
           filterBtnClick={this.filterBtnClick}
           toggleFilterMenuState={this.toggleFilterMenuState}
           filterMenuActive={filterMenuActive}
-          closeFilterMenu={this.closeFilterMenu}
         ></Header>
         <main>
           {renderProgressBar()}

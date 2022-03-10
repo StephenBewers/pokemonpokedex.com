@@ -31,7 +31,7 @@
   position: absolute;
   top: 0;
   left: 0;
-  transform: translateZ(1px);
+  transform: translateZ(1px), perspective(0px); // Perspective fixes issue with gradient between two type backgrounds
   border-radius: inherit;
   width: 100%;
   height: 100%;

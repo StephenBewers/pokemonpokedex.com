@@ -38,8 +38,8 @@ class ProgressBar extends Component {
 
     // Renders the progress
     const renderProgress = (progress) => {
-      // If the progress is less than 20% show the label to the right of the bar
-      if (progress < 20) {
+      // If the progress is less than 40% show the label to the right of the bar
+      if (progress < 40) {
         return (
           <>
           <span

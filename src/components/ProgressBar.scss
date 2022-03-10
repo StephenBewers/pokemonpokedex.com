@@ -3,15 +3,18 @@
 $text-stroke: 0 0 3.5px black;
 
 .progress-bar {
-    display: flex;
-    align-items: center;
-    flex-direction: row;
-    justify-content: center;
-    margin-bottom: 25vh;
-    width: 100%;
+  display: flex;
+  position: absolute;
+  top: 50vh;
+  align-items: center;
+  flex-direction: row;
+  justify-content: center;
+  margin-top: calc(120px + 5vmin);
+  width: 100%;
 }
 
-.progress-bar-label, .progress-amount {
+.progress-bar-label,
+.progress-amount {
   transform: translateZ(3px);
   margin: 0.5em;
   margin-top: 0em;

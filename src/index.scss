@@ -1,7 +1,21 @@
 body {
   margin: 0;
-  background: url(../src/assets/images/background.png) no-repeat fixed center;
+  overflow: hidden;
+}
+
+#background {
+  position: fixed;
+  background-image: url(../src/assets/images/background.png);
+  background-repeat: no-repeat;
+  background-position: top center;
   background-size: cover;
-  padding-bottom: 20vmin;
-  overflow-y: scroll;
+  width: 100vw;
+  height: 100vh;
+}
+
+#root {
+  position: absolute;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden scroll;
 }

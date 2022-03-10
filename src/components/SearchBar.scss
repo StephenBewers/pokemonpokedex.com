@@ -4,15 +4,20 @@
   padding: 0.25em 1.25em;
   list-style: none;
   text-transform: capitalize;
+
+  @media (max-width: 767px) {
+    padding: 1em;
+  }
 }
 
 .search-container {
+  display: flex;
   flex: 1;
+  flex-direction: column;
   border-radius: 32px;
   border-color: transparent;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.3), 0 6px 20px 0 rgba(0, 0, 0, 0.3);
   background-color: #fff;
-  height: max-content;
   overflow: hidden;
 
   &:focus-within {
@@ -24,7 +29,9 @@
 .search-bar {
   display: flex;
   flex-direction: row;
+  flex-grow: 1;
   margin: 0.25em 0em;
+  min-height: 58px;
 }
 
 .search-box {

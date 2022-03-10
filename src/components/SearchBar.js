@@ -8,7 +8,8 @@ class SearchBar extends Component {
   static propTypes = {
     options: PropTypes.instanceOf(Array).isRequired,
     updatePokemonCardList: PropTypes.func,
-    searchBarToBeCleared: PropTypes.bool,
+    clearSearchBar: PropTypes.bool,
+    searchBarCleared: PropTypes.func,
   };
 
   state = {
@@ -20,13 +21,16 @@ class SearchBar extends Component {
   };
 
   componentDidUpdate = () => {
-    if (this.props.searchBarToBeCleared && this.state.userInput !== "") {
-      this.setState({
-        activeOption: 0,
-        filteredOptions: [],
-        showOptions: false,
-        userInput: "",
-      });
+    if (this.props.clearSearchBar) {
+      this.setState(
+        {
+          activeOption: 0,
+          filteredOptions: [],
+          showOptions: false,
+          userInput: "",
+        },
+        this.props.searchBarCleared()
+      );
     }
   };
 
@@ -49,10 +53,11 @@ class SearchBar extends Component {
     );
   };
 
-  // Resets the view to display all pokemon with no autocomplete options displayed
+  // Resets the view of the whole app to the default
   resetView = () => {
     if (!this.state.defaultView) {
       this.props.updatePokemonCardList();
+      this.props.searchBarCleared();
     }
     this.setState({
       activeOption: 0,
@@ -65,12 +70,9 @@ class SearchBar extends Component {
 
   // When the text in the search bar changes, filter the list of pokemon and display the suggestions
   onChange = (event) => {
-    const { options, filterMenuActive, closeFilterMenu } = this.props;
+    const { options } = this.props;
     const userInput = event.currentTarget.value;
     if (userInput.length) {
-      if (filterMenuActive) {
-        closeFilterMenu();
-      }
       const filteredOptions = this.filterOptions(options, userInput);
       this.setState({
         activeOption: 0,

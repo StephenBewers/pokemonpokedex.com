@@ -6,32 +6,36 @@ header {
   background-color: transparent;
   width: 100%;
   height: 47vh;
+  overflow: hidden;
 }
 
 h1 {
   display: inline-block;
   max-width: 90%;
   text-align: center;
-  text-shadow: -0.032em 0.032em 0.016em #1c2c5e;
-  line-height: 1em;
+  text-shadow: -0.04em 0.04em 0.02em #1c2c5e;
+  line-height: 1.2em;
   letter-spacing: 0.06em;
   color: #ffcb05;
   font-family: "Pokemon Solid";
   font-size: 7em;
-  -webkit-text-stroke: 0.016em #3563ad;
+  font-weight: 500; // Required so that text-stroke renders correctly on Chrome
+  -webkit-text-stroke: 0.04em #3563ad;
 
   @media (max-width: 1200px) and (max-height: 900px) {
     font-size: 6em;
+  }
+
+  @media (max-width: 1000px) {
+    font-size: 5em;
   }
 
   @media (max-width: 900px) and (max-height: 600px) {
     font-size: 4em;
   }
 
-  @media (max-width: 767px) {
-    letter-spacing: 0.03em;
+  @media (max-width: 828px) {
     font-size: 4em;
-    -webkit-text-stroke: 0.008em #3563ad;
   }
 
   @media (max-width: 600px) and (max-height: 400px) {
@@ -41,7 +45,6 @@ h1 {
   @media (max-width: 330px) {
     font-size: 3em;
   }
-
 }
 
 .navigation {
@@ -64,7 +67,7 @@ h1 {
 }
 
 .nav-bar {
-    display: flex;
-    flex-grow: 1;
-    max-width: 1000px;
+  display: flex;
+  flex-grow: 1;
+  max-width: 1000px;
 }

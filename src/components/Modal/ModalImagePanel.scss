@@ -1,5 +1,5 @@
 // font-size: calc([minimum font size] + ([maximum font size] - [minimum font size]) * ((100vmin - [minimum viewport width]) / ([maximum viewport width] - [minimum viewport width])));
-$font-size: calc(10px + (90 - 10) * (100vmin - 140px) / (3840 - 140));
+$font-size: calc(14px + (90 - 14) * (100vmin - 140px) / (3840 - 140));
 $img-panel-z-index: 5;
 $text-stroke: 0 0 3px black;
 
@@ -20,7 +20,6 @@ $text-stroke: 0 0 3px black;
   flex: 1 33%;
   flex-direction: column;
   justify-content: space-between;
-  transform: perspective(0px); // Fixes issue with gradient between two type backgrounds
   min-width: 180px;
 
   img {

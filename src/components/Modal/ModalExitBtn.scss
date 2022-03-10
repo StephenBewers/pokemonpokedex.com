@@ -4,13 +4,18 @@
   right: 5vw;
   transition: background-color 0.1s ease-in-out;
   z-index: 999;
-  border-radius: 0px 16px 0px 16px;
-  background-color: rgba(0, 0, 0, 0.15);
+  border-radius: 32px;
+  background-color: rgba(0, 0, 0, 0.25);
   cursor: pointer;
   padding: 12px;
   color: #fff;
+  font-size: 1.2em;
+
+  @media (any-hover: hover) {
+    border-radius: 0px 16px 0px 16px;
+  }
 
   &:hover {
-    background-color: rgba(0, 0, 0, 0.3);
+    background-color: rgba(0, 0, 0, 0.4);
   }
 }

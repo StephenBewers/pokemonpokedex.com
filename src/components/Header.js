@@ -9,10 +9,10 @@ const Header = ({
   searchOptions,
   updatePokemonCardList,
   clearSearchBar,
+  searchBarCleared,
   filterBtnClick,
   toggleFilterMenuState,
   filterMenuActive,
-  closeFilterMenu,
 }) => {
   const stickyClass = stickyNav ? "sticky" : "default";
 
@@ -24,9 +24,8 @@ const Header = ({
           <SearchBar
             options={searchOptions}
             updatePokemonCardList={updatePokemonCardList}
-            searchBarToBeCleared={clearSearchBar}
-            filterMenuActive={filterMenuActive}
-            closeFilterMenu={closeFilterMenu}
+            clearSearchBar={clearSearchBar}
+            searchBarCleared={searchBarCleared}
           ></SearchBar>
           <FilterToggleBtn
             active={filterMenuActive}

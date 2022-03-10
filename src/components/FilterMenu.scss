@@ -6,12 +6,30 @@
 
 .filter-menu {
   background-image: linear-gradient(rgba(255,255,255,.8),rgba(255,255,255,.8)), url(../assets/images/menu-background.jpg);
+  background-repeat: no-repeat;
+  background-position: top center;
   background-size: cover;
+  width: 100vw;
+  height: 100vh;
+  overscroll-behavior: none;
   @extend .modal-main;
+
+  @media (any-hover: hover) {
+    width: 90vw;
+    height: 90vh;
+  }
 }
 
 .filter-menu-inner {
-  padding: 2em;
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 6em 2em;
+  overflow: auto;
+
+  @media (any-hover: hover) {
+    padding: 3em 2em;
+  }
 }
 
 .menu-heading {

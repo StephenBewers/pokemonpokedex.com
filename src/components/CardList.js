@@ -13,11 +13,18 @@ const CardList = ({
 }) => {
   // Determines the class to use for the card list
   const cardListClass = isModal ? "modal-card-list" : "card-list";
-  const cardListSecondClass = title ? "with-title" : "without-title";
+  const cardListSecondClass = isModal ? "without-title" : "with-title";
 
-  const renderCardListTitle = (title) => {
+  const renderCardListHeader = (title, isModal) => {
     // If a title has been provided, render the title line
-    if (title) {
+    const renderTitle = (title) => {
+      if (title) {
+        return <span className="card-list-title">{title}</span>;
+      }
+    };
+
+    // If the card list is not on a modal, render the header
+    if (!isModal) {
       return (
         <div className="card-list-header">
           <div
@@ -27,26 +34,26 @@ const CardList = ({
           >
             <FontAwesomeIcon icon={faTimes} />
           </div>
-          <span className="card-list-title">{title}</span>
+          {renderTitle(title)}
         </div>
       );
     }
   };
 
   return (
-      <div className={`${cardListClass} ${cardListSecondClass}`}>
-      {renderCardListTitle(title)}
-        {pokemonList.map((pokemon, i) => {
-          return (
-            <Card
-              key={i}
-              pokemon={pokemon}
-              modalCard={isModal}
-              clickHandler={clickHandler}
-            />
-          );
-        })}
-      </div>
+    <div className={`${cardListClass} ${cardListSecondClass}`}>
+      {renderCardListHeader(title, isModal)}
+      {pokemonList.map((pokemon, i) => {
+        return (
+          <Card
+            key={i}
+            pokemon={pokemon}
+            modalCard={isModal}
+            clickHandler={clickHandler}
+          />
+        );
+      })}
+    </div>
   );
 };
 
