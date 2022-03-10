@@ -1,6 +1,6 @@
 body {
   margin: 0;
-  overflow: hidden;
+  overflow: hidden scroll;
 }
 
 #background {
@@ -15,7 +15,6 @@ body {
 
 #root {
   position: absolute;
-  width: 100vw;
+  width: 100%;
   height: 100vh;
-  overflow: hidden scroll;
 }
