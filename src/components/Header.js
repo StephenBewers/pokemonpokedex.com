@@ -10,16 +10,17 @@ const Header = ({
   updatePokemonCardList,
   clearSearchBar,
   searchBarCleared,
+  showModal,
   filterBtnClick,
   toggleFilterMenuState,
   filterMenuActive,
 }) => {
-  const stickyClass = stickyNav ? "sticky" : "default";
+  const navClass = showModal ? "hidden" : stickyNav ? "sticky" : "default";
 
   return (
     <header>
       <h1>Pokémon Pokédex</h1>
-      <div className={`navigation ${stickyClass}`}>
+      <div className={`navigation ${navClass}`}>
         <div className="nav-bar">
           <SearchBar
             options={searchOptions}

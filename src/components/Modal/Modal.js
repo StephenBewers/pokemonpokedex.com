@@ -151,6 +151,10 @@ class Modal extends Component {
                 pokemon={pokemon}
                 key={`habitat-${pokemon.species.id}`}
               />
+              <PokemonGender
+                pokemon={pokemon}
+                key={`gender-${pokemon.species.id}`}
+              />
               <PokemonCatchRate
                 pokemon={pokemon}
                 key={`catch-rate-${pokemon.species.id}`}
@@ -162,10 +166,6 @@ class Modal extends Component {
               <PokemonWeight
                 pokemon={pokemon}
                 key={`weight-${pokemon.variant.id}`}
-              />
-              <PokemonGender
-                pokemon={pokemon}
-                key={`gender-${pokemon.species.id}`}
               />
             </ModalRow>
             <ModalRow id="modal-centre-section">

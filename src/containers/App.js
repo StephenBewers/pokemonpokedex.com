@@ -329,6 +329,8 @@ class App extends Component {
       ? "Looking for more pokémon"
       : "Looking for pokémon";
 
+    const mainClass = showModal ? "fixed" : "default";
+
     // If the state implies that we should show the progress bar, render it
     const renderProgressBar = () => {
       if (showProgressBar) {
@@ -388,11 +390,12 @@ class App extends Component {
           updatePokemonCardList={this.updatePokemonCardList}
           clearSearchBar={clearSearchBar}
           searchBarCleared={this.searchBarCleared}
+          showModal={showModal}
           filterBtnClick={this.filterBtnClick}
           toggleFilterMenuState={this.toggleFilterMenuState}
           filterMenuActive={filterMenuActive}
         ></Header>
-        <main>
+        <main className={mainClass}>
           {renderProgressBar()}
           {renderModal()}
           {renderCardList()}

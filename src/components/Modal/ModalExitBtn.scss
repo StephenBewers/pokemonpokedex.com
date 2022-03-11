@@ -1,7 +1,7 @@
 .btn-modal-exit {
   position: fixed;
-  top: 3%;
-  right: 4.5%;
+  top: 1%;
+  right: 2%;
   transition: background-color 0.1s ease-in-out;
   z-index: 999;
   border-radius: 32px;
@@ -11,10 +11,14 @@
   color: #fff;
   font-size: 1.2em;
 
-  @media (any-hover: hover) {
+  @media (orientation: landscape) {
     top: 5%;
-    right: 4.5%;
+    right: 5%;
     border-radius: 0px 16px 0px 16px;
+  }
+
+  @media (any-hover: hover) {
+    right: 4.5%; // To account for desktop scrollbars
   }
 
   &:hover {

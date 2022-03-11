@@ -11,9 +11,10 @@ header {
 
 h1 {
   display: inline-block;
+  //transform: translate3d(0,0,0); // Ensures text-shadow renders correctly on iOS
   max-width: 90%;
   text-align: center;
-  text-shadow: -0.04em 0.04em 0.02em #1c2c5e;
+  text-shadow: -0.04em 0.04em 0.02rem #1c2c5e;
   line-height: 1.2em;
   letter-spacing: 0.06em;
   color: #ffcb05;
@@ -53,7 +54,7 @@ h1 {
   top: 42vh;
   justify-content: center;
   z-index: 100;
-  margin: 2em;
+  margin: 2em auto;
   width: 260px;
   min-width: 85%;
 
@@ -63,6 +64,10 @@ h1 {
     right: 0;
     left: 0;
     margin: 0 auto;
+  }
+
+  &.hidden {
+    display: none;
   }
 }
 

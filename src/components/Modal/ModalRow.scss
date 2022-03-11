@@ -40,6 +40,7 @@ $thick-padding-constant: 2vmax;
 #modal-top-row {
   border-top: $border-style;
   padding: $padding-constant 0vmax;
+  flex: 1 0 auto;
 }
 
 #modal-centre-section {

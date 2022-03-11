@@ -5,7 +5,11 @@
 }
 
 .filter-menu {
-  background-image: linear-gradient(rgba(255,255,255,.8),rgba(255,255,255,.8)), url(../assets/images/menu-background.jpg);
+  background-image: linear-gradient(
+      rgba(255, 255, 255, 0.8),
+      rgba(255, 255, 255, 0.8)
+    ),
+    url(../assets/images/menu-background.jpg);
   background-repeat: no-repeat;
   background-position: top center;
   background-size: cover;
@@ -14,7 +18,7 @@
   overscroll-behavior: none;
   @extend .modal-main;
 
-  @media (any-hover: hover) {
+  @media (orientation: landscape) {
     width: 90vw;
     height: 90vh;
   }
@@ -27,7 +31,7 @@
   padding: 6em 2em;
   overflow: auto;
 
-  @media (any-hover: hover) {
+  @media (orientation: landscape) {
     padding: 3em 2em;
   }
 }
@@ -77,7 +81,7 @@
     color: #50396d;
     font-weight: 600;
   }
-  
+
   & a:hover {
     text-decoration: none;
     color: #a4241e;
