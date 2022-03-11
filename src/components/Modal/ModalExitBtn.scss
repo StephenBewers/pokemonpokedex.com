@@ -1,7 +1,7 @@
 .btn-modal-exit {
   position: fixed;
-  top: 5vh;
-  right: 5vw;
+  top: 3%;
+  right: 4.5%;
   transition: background-color 0.1s ease-in-out;
   z-index: 999;
   border-radius: 32px;
@@ -12,6 +12,8 @@
   font-size: 1.2em;
 
   @media (any-hover: hover) {
+    top: 5%;
+    right: 4.5%;
     border-radius: 0px 16px 0px 16px;
   }
 

@@ -19,7 +19,7 @@ $text-stroke: 0 0 3px black;
   font-family: "Quicksand", sans-serif;
   // font-size: calc([minimum font size] + ([maximum font size] - [minimum font size]) * ((100vmin - [minimum viewport width]) / ([maximum viewport width] - [minimum viewport width])));
   font-size: calc(10px + (30 - 10) * (100vmin - 140px) / (3840 - 140));
-  font-weight: 900;
+  font-weight: 600;
 }
 
 .modal-ribbon {

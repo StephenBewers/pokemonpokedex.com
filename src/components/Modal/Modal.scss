@@ -6,7 +6,7 @@
   left: 0;
   z-index: 990;
   background: rgba(0, 0, 0, 0.75);
-  width: 100%;
+  width: 100vw;
   min-height: 100%;
 
   &.visible {
@@ -30,13 +30,13 @@
   transform: translate(-50%, -50%);
   z-index: 995;
   background-color: white;
-  width: 100%;
+  width: 100vw;
   height: 100%;
   overflow: hidden auto;
 
   @media (any-hover: hover) {
     border-radius: 16px;
-    width: 90%;
+    width: 90vw;
     height: 90%;
   }
 }

@@ -49,7 +49,7 @@
   margin-top: 0.8em;
   font-family: "Quicksand", sans-serif;
   font-size: 1em;
-  font-weight: bold;
+  font-weight: 600;
 }
 
 .filter-btns {
@@ -69,18 +69,18 @@
   & a {
     text-decoration: none;
     color: #421aa3;
-    font-weight: 800;
+    font-weight: 600;
   }
 
   & a:visited {
     text-decoration: none;
     color: #50396d;
-    font-weight: 800;
+    font-weight: 600;
   }
   
   & a:hover {
     text-decoration: none;
     color: #a4241e;
-    font-weight: 800;
+    font-weight: 600;
   }
 }
