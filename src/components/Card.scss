@@ -29,16 +29,17 @@ $border-radius: 8px;
   cursor: pointer;
   width: 100%;
   height: 100%;
+  overflow: hidden;
 
   img {
-    transform: translateZ(20px);
+    z-index: 5;
     width: 75%;
     height: auto;
     max-height: 50%;
   }
 
   .pokemon-number {
-    transform: translateZ(3px);
+    z-index: 5;
     margin: 1.2em;
     margin-bottom: 0em;
     line-height: 1.4;
@@ -48,7 +49,7 @@ $border-radius: 8px;
   }
 
   .pokemon-name {
-    transform: translateZ(3px);
+    z-index: 5;
     margin: 1.2em;
     margin-top: 0em;
     text-align: center;
