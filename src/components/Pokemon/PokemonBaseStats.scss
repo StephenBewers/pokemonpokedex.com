@@ -5,6 +5,7 @@ table.pokemon-stat-table {
 }
 
 .pokemon-stat-table caption {
+  display: block;
   text-align: left;
   margin-block-start: 1em;
   margin-block-end: 1em;
@@ -30,10 +31,12 @@ thead tr {
 thead {
   // Hide the table header  when the stat and values span multiple lines
   @media (max-width: 663px) {
-    visibility: collapse;
+    position: absolute;
+    opacity: 0;
   }
   @media (min-width: 888px) and (max-width: 1306px) {
-    visibility: collapse;
+    position: absolute;
+    opacity: 0;
   }
 }
 
