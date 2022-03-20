@@ -2,7 +2,11 @@ import React from "react";
 import "./FilterMenu.scss";
 import PokemonTypeBtn from "./Pokemon/PokemonTypeBtn";
 import GenerationBtn from "./GenerationBtn";
+import ModalRow from "./Modal/ModalRow";
+import ModalInfoItem from "./Modal/ModalInfoItem";
+import ModalInfoValue from "./Modal/ModalInfoValue";
 import ModalExitBtn from "./Modal/ModalExitBtn";
+import ModalImagePanel from "./Modal/ModalImagePanel";
 
 const FilterMenu = ({ active, filterBtnClick, toggleFilterMenuState }) => {
   const activeClass = active ? "visible" : "hidden";
@@ -65,46 +69,66 @@ const FilterMenu = ({ active, filterBtnClick, toggleFilterMenuState }) => {
 
   return (
     <div
-      className={`filter-overlay ${activeClass}`}
+      className={`menu-modal ${activeClass}`}
       onClick={toggleFilterMenuState}
     >
       <ModalExitBtn hideModal={toggleFilterMenuState}></ModalExitBtn>
-      <div className="filter-menu" onClick={innerModalClick}>
-        <div className="filter-menu-inner">
-          <div className="menu-heading">Browse Pokémon</div>
-          <div className="filter-label">By generation:</div>
-          <div className="filter-btns">
-            {displayGenerationBtns(filterBtnClick)}
-          </div>
-          <div className="filter-label">By type:</div>
-          <div className="filter-btns">
-            {displayTypeBtns(types, filterBtnClick)}
-          </div>
-          <div className="menu-heading">Information</div>
-          <div className="credits">
-            <p>
-              Designed and developed by{" "}
-              <a href="https://www.stephenbewers.com/">Stephen Bewers</a>.
-              Pokémon and Pokémon character names are trademarks of Nintendo.
-              Other trademarks are the property of their respective owners.
-            </p>
-            <p>
-              Many thanks to <a href="https://pokeapi.co/">PokeAPI</a>,{" "}
-              <a href="https://reactjs.org/">React.js</a>,{" "}
-              <a href="https://fontawesome.com/">Font Awesome</a>,{" "}
-              <a href="https://www.npmjs.com/package/react-infinite-scroll-component">
-                Ankeet Maini
-              </a>
-              ,{" "}
-              <a href="https://www.npmjs.com/package/react-parallax-tilt">
-                mkosir
-              </a>
-              , and the{" "}
-              <a href="https://zerotomastery.io/">Zero to Mastery community</a>.
-            </p>
-          </div>
+      <section className="menu-modal-main" onClick={innerModalClick}>
+        <ModalImagePanel></ModalImagePanel>
+        <div className="menu-modal-info-panel">
+          <ModalRow id="menu-browse-pokemon-row">
+            <ModalInfoItem label="Browse pokemon" id="menu-browse-pokemon">
+              <ModalRow>
+                <ModalInfoItem
+                  label="By generation"
+                  id="filter-pokemon-generation"
+                  subitem={true}
+                  row={true}
+                >
+                  {displayGenerationBtns(filterBtnClick)}
+                </ModalInfoItem>
+              </ModalRow>
+              <ModalRow>
+                <ModalInfoItem
+                  label="By type"
+                  id="filter-pokemon-type"
+                  subitem={true}
+                  row={true}
+                >
+                  {displayTypeBtns(types, filterBtnClick)}
+                </ModalInfoItem>
+              </ModalRow>
+            </ModalInfoItem>
+          </ModalRow>
+          <ModalRow id="menu-information-row">
+            <ModalInfoItem label="Information" id="menu-information">
+              <p>
+                Designed and developed by{" "}
+                <a href="https://www.stephenbewers.com/">Stephen Bewers</a>.
+                Pokémon and Pokémon character names are trademarks of Nintendo.
+                Other trademarks are the property of their respective owners.
+              </p>
+              <p>
+                Many thanks to <a href="https://pokeapi.co/">PokeAPI</a>,{" "}
+                <a href="https://reactjs.org/">React.js</a>,{" "}
+                <a href="https://fontawesome.com/">Font Awesome</a>,{" "}
+                <a href="https://www.npmjs.com/package/react-infinite-scroll-component">
+                  Ankeet Maini
+                </a>
+                ,{" "}
+                <a href="https://www.npmjs.com/package/react-parallax-tilt">
+                  mkosir
+                </a>
+                , and the{" "}
+                <a href="https://zerotomastery.io/">
+                  Zero to Mastery community
+                </a>
+                .
+              </p>
+            </ModalInfoItem>
+          </ModalRow>
         </div>
-      </div>
+      </section>
     </div>
   );
 };

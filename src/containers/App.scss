@@ -8,7 +8,7 @@
     url("../assets/fonts/pokemon_solid-webfont.svg") format("svg");
 }
 
-@import url("https://fonts.googleapis.com/css2?family=Quicksand:wght@200;500;600;&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Quicksand:wght@200;500;900&display=swap");
 
 main {
   &.fixed {
@@ -68,7 +68,7 @@ main {
   cursor: pointer;
   padding: 5px 10px;
   color: white;
-  font-weight: 600;
+  font-weight: 900;
 
   &:hover {
     color: #ffcb05;
@@ -85,7 +85,7 @@ main {
   cursor: pointer;
   padding: 10px 15px;
   color: black;
-  font-weight: 600;
+  font-weight: 900;
 
   &:hover {
     background: #3563ad;

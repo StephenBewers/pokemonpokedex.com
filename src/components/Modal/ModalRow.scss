@@ -43,6 +43,14 @@ $thick-padding-constant: 2vmax;
   padding: $padding-constant 0vmax;
 }
 
+#menu-browse-pokemon-row {
+  border-bottom: $border-style;
+}
+
+#menu-information-row {
+  border-bottom: $border-style;
+}
+
 #modal-centre-section {
   /* This uses the background color to create a smart divider
      between columns which then divides between rows on wrap */

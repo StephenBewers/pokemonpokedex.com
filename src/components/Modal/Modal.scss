@@ -7,7 +7,7 @@
   z-index: 990;
   background: rgba(0, 0, 0, 0.75);
   width: 100vw;
-  min-height: 100vh;
+  min-height: 100%;
 
   &.visible {
     display: flex;
@@ -37,7 +37,7 @@
   @media (orientation: landscape) {
     border-radius: 16px;
     width: 90vw;
-    height: 90%;
+    height: 90vh;
   }
 }
 

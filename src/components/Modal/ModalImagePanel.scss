@@ -30,14 +30,14 @@ $text-stroke: 0 0 3px black;
     max-height: 35vh;
   }
 
-  .pokemon-number {
+  .modal-top-heading {
     margin: 8vh 1vw 6vh 1vw;
     margin-top: max(60px, 8vh);
     font-size: $font-size;
     @include text-style;
   }
 
-  .pokemon-name {
+  .modal-bottom-heading {
     margin: 6vh 1vw 7vh 1vw;
     text-transform: capitalize;
     font-size: $font-size;
@@ -47,4 +47,9 @@ $text-stroke: 0 0 3px black;
   .hidden {
     visibility: hidden;
   }
+}
+
+.menu-modal-img {
+  background-image: linear-gradient(rgba(255,255,255,.7),rgba(255,255,255,.7)), url(../../assets/images/menu-background.jpg);
+  background-size: cover;
 }
