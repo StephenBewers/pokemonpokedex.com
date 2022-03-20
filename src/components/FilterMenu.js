@@ -4,7 +4,6 @@ import PokemonTypeBtn from "./Pokemon/PokemonTypeBtn";
 import GenerationBtn from "./GenerationBtn";
 import ModalRow from "./Modal/ModalRow";
 import ModalInfoItem from "./Modal/ModalInfoItem";
-import ModalInfoValue from "./Modal/ModalInfoValue";
 import ModalExitBtn from "./Modal/ModalExitBtn";
 import ModalImagePanel from "./Modal/ModalImagePanel";
 
