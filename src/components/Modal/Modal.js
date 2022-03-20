@@ -18,7 +18,8 @@ import PokemonTraining from "../Pokemon/PokemonTraining";
 import PokemonTypeEffectiveness from "../Pokemon/PokemonTypeEffectiveness";
 import PokemonOtherForms from "../Pokemon/PokemonOtherForms";
 import PokemonEvolution from "../Pokemon/PokemonEvolution";
-import { errorHandler, cancelPromise, getFormPromises } from "../../helpers.js";
+import { errorHandler, cancelPromise } from "../../utils/promiseUtils"
+import { getFormPromises } from "../../utils/pokeApiUtils";
 import ModalRibbon from "./ModalRibbon";
 
 // Array that will store promises to return the current variant forms. Promises will be cancelled on unmount.

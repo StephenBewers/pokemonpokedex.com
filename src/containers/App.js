@@ -6,12 +6,17 @@ import CardList from "../components/CardList.js";
 import Modal from "../components/Modal/Modal.js";
 import ProgressBar from "../components/ProgressBar";
 import LoadingSpinnerMain from "../components/LoadingSpinnerMain";
+import CookieConsent, {
+  getCookieConsentValue,
+  Cookies,
+} from "react-cookie-consent";
+import { initGA } from "../utils/gaUtils";
 import {
   getPokemonSpeciesList,
   getPokemon,
   getType,
   getGeneration,
-} from "../helpers.js";
+} from "../utils/pokeApiUtils";
 class App extends Component {
   constructor() {
     super();
@@ -37,6 +42,21 @@ class App extends Component {
       filterMenuActive: false,
     };
   }
+
+  // Handles the cookie accept
+  handleCookieAccept = () => {
+    if (process.env.REACT_APP_GOOGLE_ANALYTICS_ID) {
+      initGA(process.env.REACT_APP_GOOGLE_ANALYTICS_ID);
+    }
+  };
+
+  // Handles the cookie decline
+  handleCookieDecline = () => {
+    // Remove Google Analytics cookies
+    Cookies.remove("_ga");
+    Cookies.remove("_gat");
+    Cookies.remove("_gid");
+  };
 
   // Initialises the pokemon list
   initPokemonList = () => {
@@ -276,6 +296,12 @@ class App extends Component {
   };
 
   componentDidMount() {
+    // Checks the cookie consent value and if we have consent, handle as an accept
+    const isConsent = getCookieConsentValue();
+    if (isConsent === "true") {
+      this.handleCookieAccept();
+    }
+
     // If the pokemon names list is empty, initialise the pokemon list
     if (!this.state.pokemonNames.length) {
       this.initPokemonList();
@@ -400,6 +426,21 @@ class App extends Component {
           {renderModal()}
           {renderCardList()}
         </main>
+        <CookieConsent
+          enableDeclineButton
+          onAccept={this.handleCookieAccept}
+          onDecline={this.handleCookieDecline}
+          buttonText={"Allow"}
+          declineButtonText={"Disable"}
+          disableStyles={true}
+          containerClasses={"cookie-bar"}
+          contentClasses={"cookie-bar-content"}
+          buttonWrapperClasses={"cookie-bar-btns"}
+          buttonClasses={"cookie-btn-accept"}
+          declineButtonClasses={"cookie-btn-decline"}
+        >
+          Pokémon Pokédex only uses cookies to analyse how the app is used.
+        </CookieConsent>
       </>
     );
   }

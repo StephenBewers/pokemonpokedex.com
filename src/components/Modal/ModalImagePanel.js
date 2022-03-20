@@ -1,6 +1,6 @@
 import React from "react";
 import "./ModalImagePanel.scss";
-import { getNumberWithLeadingZeros, getPokemonName, getImage } from "../../helpers.js";
+import { getNumberWithLeadingZeros, getPokemonName, getImage } from "../../utils/pokemonUtils";
 
 const ModalImagePanel = ({ pokemon }) => {
   // Get pokemon information for display on the card

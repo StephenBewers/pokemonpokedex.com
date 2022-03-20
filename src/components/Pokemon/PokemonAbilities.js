@@ -3,14 +3,13 @@ import "./PokemonAbilities.scss";
 import LoadingBarSmall from "../LoadingSpinnerSmall";
 import ModalRow from "../Modal/ModalRow";
 import ModalInfoItem from "../Modal/ModalInfoItem";
+import { getResource } from "../../utils/pokeApiUtils";
+import { getEnglishContent, textCleanup } from "../../utils/pokemonUtils";
 import {
   errorHandler,
   cancelPromise,
-  getEnglishContent,
-  textCleanup,
   makeCancellable,
-  getResource,
-} from "../../helpers.js";
+} from "../../utils/promiseUtils";
 
 // Array that will store promises to return the additional data. Promises will be cancelled on unmount.
 let abilityPromises = [];
@@ -18,7 +17,7 @@ let abilityPromises = [];
 // Resets the promise variables to default values
 const resetPromises = () => {
   abilityPromises = [];
-}
+};
 
 class PokemonAbilities extends Component {
   constructor(props) {
@@ -77,9 +76,7 @@ class PokemonAbilities extends Component {
     if (abilities.length) {
       for (let i = 0; i < abilities.length; i++) {
         abilityPromises.push(
-          makeCancellable(
-            getResource(`${abilities[i].ability.url}`)
-          )
+          makeCancellable(getResource(`${abilities[i].ability.url}`))
         );
       }
     }

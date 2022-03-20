@@ -1,7 +1,7 @@
 import React from "react";
 import Tilt from "react-parallax-tilt";
 import "./Card.scss";
-import { getNumberWithLeadingZeros, getPokemonName, getImage } from "../helpers.js";
+import { getNumberWithLeadingZeros, getPokemonName, getImage } from "../utils/pokemonUtils"
 
 const Card = ({ pokemon, modalCard, clickHandler }) => {
   // Determines the class to use for the card

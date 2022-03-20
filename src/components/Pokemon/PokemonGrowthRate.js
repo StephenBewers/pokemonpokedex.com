@@ -1,14 +1,13 @@
 import React, { Component } from "react";
 import ModalInfoItem from "../Modal/ModalInfoItem";
 import ModalInfoValue from "../Modal/ModalInfoValue";
+import { getResource } from "../../utils/pokeApiUtils";
+import { getEnglishContent, textCleanup } from "../../utils/pokemonUtils";
 import {
   errorHandler,
   cancelPromise,
-  getEnglishContent,
-  textCleanup,
   makeCancellable,
-  getResource,
-} from "../../helpers.js";
+} from "../../utils/promiseUtils";
 
 // Variable to store the promise to return the additional data. Promise will be cancelled on unmount.
 let growthRatePromise;

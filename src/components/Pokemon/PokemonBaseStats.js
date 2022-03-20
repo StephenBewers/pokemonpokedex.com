@@ -2,7 +2,7 @@ import React from "react";
 import "./PokemonBaseStats.scss";
 import ModalRow from "../Modal/ModalRow";
 import ModalInfoItem from "../Modal/ModalInfoItem";
-import { textCleanup } from "../../helpers.js";
+import { textCleanup } from "../../utils/pokemonUtils";
 
 const PokemonBaseStats = ({ pokemon }) => {
   const types = pokemon.form?.details?.types?.length

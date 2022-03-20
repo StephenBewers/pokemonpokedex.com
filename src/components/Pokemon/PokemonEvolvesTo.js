@@ -4,14 +4,13 @@ import ModalInfoItem from "../Modal/ModalInfoItem";
 import ModalColumn from "../Modal/ModalColumn";
 import ModalRow from "../Modal/ModalRow";
 import CardList from "../CardList";
+import { getResource } from "../../utils/pokeApiUtils";
+import { getPokemonName, isGalarianEvolution } from "../../utils/pokemonUtils";
 import {
   errorHandler,
   cancelPromise,
   makeCancellable,
-  getResource,
-  getPokemonName,
-  isGalarianEvolution,
-} from "../../helpers.js";
+} from "../../utils/promiseUtils";
 
 // Array that will store promises to return the additional data. Promises will be cancelled on unmount.
 let evolutionChainPromise;

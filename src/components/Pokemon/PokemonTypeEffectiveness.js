@@ -4,12 +4,12 @@ import ModalRow from "../Modal/ModalRow";
 import ModalInfoItem from "../Modal/ModalInfoItem";
 import PokemonTypeBtn from "../Pokemon/PokemonTypeBtn";
 import LoadingBarSmall from "../LoadingSpinnerSmall";
+import { getResource } from "../../utils/pokeApiUtils";
 import {
   errorHandler,
   cancelPromise,
   makeCancellable,
-  getResource,
-} from "../../helpers.js";
+} from "../../utils/promiseUtils";
 
 // Default type effectiveness
 const defaultTypeEffectivenessValue = 1;

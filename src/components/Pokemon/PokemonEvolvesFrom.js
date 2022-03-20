@@ -4,13 +4,13 @@ import ModalInfoItem from "../Modal/ModalInfoItem";
 import ModalColumn from "../Modal/ModalColumn";
 import CardList from "../CardList";
 import PokemonEggGroups from "./PokemonEggGroups";
+import { getResource } from "../../utils/pokeApiUtils";
+import { isGalarianEvolution } from "../../utils/pokemonUtils";
 import {
   errorHandler,
   cancelPromise,
   makeCancellable,
-  getResource,
-  isGalarianEvolution,
-} from "../../helpers.js";
+} from "../../utils/promiseUtils";
 
 // Array that will store promises to return the additional data. Promises will be cancelled on unmount.
 let evolvesFromSpeciesPromise;

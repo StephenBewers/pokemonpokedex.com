@@ -16,6 +16,83 @@ main {
   }
 }
 
+@keyframes slideInFromBottom {
+  0% {
+    transform: translateY(+100%);
+  }
+  50% {
+    transform: translateY(+100%);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.cookie-bar {
+  display: flex;
+  position: fixed;
+  bottom: 0px;
+  left: 0px;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+  z-index: 999;
+  background-color: #1c2c5e;
+  width: 100%;
+  animation: 2s ease-in-out 0s 1 slideInFromBottom;
+  color: white;
+  font-family: "Quicksand", sans-serif;
+  font-size: 0.9em;
+  font-weight: 500;
+}
+
+.cookie-bar-content {
+  flex: 1 0 40%;
+  margin: 15px 5%;
+}
+
+.cookie-bar-btns {
+  display: flex;
+  flex: 1 0 40%;
+  justify-content: right;
+  margin-right: 5%;
+}
+
+.cookie-btn-decline {
+  flex: 0 0 auto;
+  margin: 15px;
+  border: 0px;
+  border-radius: 0px;
+  box-shadow: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 5px 10px;
+  color: white;
+  font-weight: 600;
+
+  &:hover {
+    color: #ffcb05;
+  }
+}
+
+.cookie-btn-accept {
+  flex: 0 0 auto;
+  margin: 15px;
+  border: 0px;
+  border-radius: 32px;
+  box-shadow: none;
+  background: #ffcb05;
+  cursor: pointer;
+  padding: 10px 15px;
+  color: black;
+  font-weight: 600;
+
+  &:hover {
+    background: #3563ad;
+    color: white;
+  }
+}
+
 .progress-overlay {
   display: flex;
   position: fixed;

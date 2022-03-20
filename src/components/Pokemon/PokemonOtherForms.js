@@ -4,14 +4,13 @@ import ModalRow from "../Modal/ModalRow";
 import ModalColumn from "../Modal/ModalColumn";
 import ModalInfoItem from "../Modal/ModalInfoItem";
 import CardList from "../CardList";
+import { getResource, getFormPromises } from "../../utils/pokeApiUtils";
+import { getPokemonName } from "../../utils/pokemonUtils";
 import {
   errorHandler,
   cancelPromise,
   makeCancellable,
-  getFormPromises,
-  getPokemonName,
-  getResource,
-} from "../../helpers.js";
+} from "../../utils/promiseUtils";
 
 // Array to store promises to return the additional data. Promises will be cancelled on unmount.
 let otherVariantPromises = [];

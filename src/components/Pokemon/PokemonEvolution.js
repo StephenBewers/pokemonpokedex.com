@@ -3,7 +3,7 @@ import ModalInfoItem from "../Modal/ModalInfoItem";
 import ModalRow from "../Modal/ModalRow";
 import PokemonEvolvesFrom from "./PokemonEvolvesFrom";
 import PokemonEvolvesTo from "./PokemonEvolvesTo";
-import { getPokemonName } from "../../helpers.js";
+import { getPokemonName } from "../../utils/pokemonUtils";
 import "./PokemonEvolution.scss";
 
 const PokemonEvolution = ({ pokemon, clickHandler }) => {
