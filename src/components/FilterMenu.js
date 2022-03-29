@@ -118,6 +118,14 @@ const FilterMenu = ({ active, filterBtnClick, toggleFilterMenuState }) => {
                 <a href="https://www.npmjs.com/package/react-parallax-tilt">
                   mkosir
                 </a>
+                ,{" "}
+                <a href="https://www.npmjs.com/package/react-cookie-consent">
+                  Mastermindzh
+                </a>
+                ,{" "}
+                <a href="https://www.npmjs.com/package/react-ga4">
+                  PriceRunner
+                </a>
                 , and the{" "}
                 <a href="https://zerotomastery.io/">
                   Zero to Mastery community
