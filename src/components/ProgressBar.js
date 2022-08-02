@@ -1,47 +1,48 @@
-import React, { Component } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import "./ProgressBar.scss";
 
-class ProgressBar extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      progress: 0,
-    };
-  }
+const useInterval = (callback, delay) => {
+  const savedCallback = useRef();
 
-  addProgress() {
+  // Update the saved callback only if it has changed
+  useEffect(() => {
+    savedCallback.current = callback;
+  }, [callback]);
+
+  useEffect(() => {
+    // Set up the interval to run the saved callback at the specified delay
+    let interval = setInterval(() => {
+      savedCallback.current();
+    }, delay);
+
+    // Clear the interval when the component unmounts
+    return () => clearInterval(interval);
+  }, [delay]);
+};
+
+const ProgressBar = () => {
+  const [progress, setProgress] = useState(0);
+
+  // This is only a dummy progress bar so we will simply increment the progress every 0.75s
+  useInterval(() => {
     // If the progress bar is less than 99%, increment
-    if (this.state.progress < 99) {
+    if (progress < 99) {
       // Maximum progress that can be made without going over 99%
-      let max = 98 - this.state.progress;
-      this.setState((state) => ({
-        progress:
-          state.progress + (Math.floor(Math.random() * Math.min(max, 12)) + 2),
-      }));
+      let max = 98 - progress;
+      // Increase the progress by a random number up to 12 (or up to the max if that is less than 12)
+      setProgress(
+        (progress) =>
+          progress + (Math.floor(Math.random() * Math.min(max, 12)) + 2)
+      );
     }
-    // Otherwise, end the timer
-    else {
-      clearInterval(this.interval);
-    }
-  }
+  }, 750);
 
-  componentDidMount() {
-    this.interval = setInterval(() => this.addProgress(), 750);
-  }
-
-  componentWillUnmount() {
-    clearInterval(this.interval);
-  }
-
-  render() {
-    const progress = this.state.progress;
-
-    // Renders the progress
-    const renderProgress = (progress) => {
-      // If the progress is less than 40% show the label to the right of the bar
-      if (progress < 40) {
-        return (
-          <>
+  // Renders the progress
+  const renderProgress = (progress) => {
+    // If the progress is less than 40% show the label to the right of the bar
+    if (progress < 40) {
+      return (
+        <>
           <span
             className="progress-bar-inner"
             style={{
@@ -49,29 +50,30 @@ class ProgressBar extends Component {
             }}
           ></span>
           <span className="progress-amount">{progress}%</span>
-          </>
-        );
-      }
-      // Otherwise, show the label inside the progress bar
-      else {
-        return (
-          <span
-            className="progress-bar-inner"
-            style={{
-              width: progress + "%",
-            }}
-          ><span className="progress-amount">{progress}%</span></span>
-        );
-      }
-    };
+        </>
+      );
+    }
+    // Otherwise, show the label inside the progress bar
+    else {
+      return (
+        <span
+          className="progress-bar-inner"
+          style={{
+            width: progress + "%",
+          }}
+        >
+          <span className="progress-amount">{progress}%</span>
+        </span>
+      );
+    }
+  };
 
-    return (
-      <div className="progress-bar">
-        <span className="progress-bar-label">Loading: </span>
-        <span className="progress-bar-outer">{renderProgress(progress)}</span>
-      </div>
-    );
-  }
-}
+  return (
+    <div className="progress-bar">
+      <span className="progress-bar-label">Loading: </span>
+      <span className="progress-bar-outer">{renderProgress(progress)}</span>
+    </div>
+  );
+};
 
 export default ProgressBar;
