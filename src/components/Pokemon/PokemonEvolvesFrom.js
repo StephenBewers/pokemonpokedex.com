@@ -12,8 +12,8 @@ const PokemonEvolvesFrom = ({ pokemon, clickHandler }) => {
   const [evolvesFromPokemon, setEvolvesFromPokemon] = useState({});
 
   useEffect(() => {
-    let currentVariant = pokemon.variant;
-    let currentForm = pokemon.form;
+    const currentVariant = pokemon.variant;
+    const currentForm = pokemon.form;
 
     let evolvesFromSpecies = pokemon.species.evolves_from_species;
     let evolvesFromVariant = { details: {} };
@@ -92,6 +92,9 @@ const PokemonEvolvesFrom = ({ pokemon, clickHandler }) => {
                 evolvesFromVariant.details = await getResource(
                   getDefaultVariantUrl(evolvesFromSpecies)
                 );
+                evolvesFromForm.details = await getResource(
+                  `https://pokeapi.co/api/v2/pokemon-form/${evolvesFromSpecies.details.name}`
+                );
               } catch (error) {
                 errorHandler(error);
               }
@@ -124,6 +127,9 @@ const PokemonEvolvesFrom = ({ pokemon, clickHandler }) => {
           try {
             evolvesFromVariant.details = await getResource(
               getDefaultVariantUrl(evolvesFromSpecies)
+            );
+            evolvesFromForm.details = await getResource(
+              `https://pokeapi.co/api/v2/pokemon-form/${evolvesFromSpecies.details.name}`
             );
           } catch (error) {
             errorHandler(error);
