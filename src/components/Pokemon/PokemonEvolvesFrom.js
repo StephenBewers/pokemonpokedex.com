@@ -13,7 +13,7 @@ const PokemonEvolvesFrom = ({ pokemon, clickHandler }) => {
 
   useEffect(() => {
     const currentVariant = pokemon.variant;
-    const currentForm = pokemon.form;
+    let currentForm = pokemon.form;
 
     let evolvesFromSpecies = pokemon.species.evolves_from_species;
     let evolvesFromVariant = { details: {} };
