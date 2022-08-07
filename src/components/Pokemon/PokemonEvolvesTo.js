@@ -95,14 +95,18 @@ const PokemonEvolvesTo = ({ pokemon, clickHandler }) => {
                     evolvesToSpecies.details.varieties[i].pokemon.name ===
                     `${evolvesToSpecies.details.name}-${formName}`
                   ) {
-                    // Get the variant details
-                    evolvesToVariant.details = await getResource(
-                      `${evolvesToSpecies.details.varieties[i].pokemon.url}`
-                    );
-                    // Get the form details
-                    evolvesToForm.details = await getResource(
-                      `https://pokeapi.co/api/v2/pokemon-form/${evolvesToSpecies.details.name}-${formName}`
-                    );
+                    try {
+                      // Get the variant details
+                      evolvesToVariant.details = await getResource(
+                        `${evolvesToSpecies.details.varieties[i].pokemon.url}`
+                      );
+                      // Get the form details
+                      evolvesToForm.details = await getResource(
+                        `https://pokeapi.co/api/v2/pokemon-form/${evolvesToSpecies.details.name}-${formName}`
+                      );
+                    } catch (error) {
+                      errorHandler(error);
+                    }
                     // Add this evolution to the pokemon array
                     evolvesToPokemonArray.push({
                       species: evolvesToSpecies.details,
@@ -114,13 +118,18 @@ const PokemonEvolvesTo = ({ pokemon, clickHandler }) => {
 
                 // If there isn't a variant with the same form name, get the default
                 if (!evolvesToPokemonArray.length) {
-                  evolvesToVariant.details = await getResource(
-                    getDefaultVariantUrl(evolvesToSpecies)
-                  );
-                  // Get the form details
-                  evolvesToForm.details = await getResource(
-                    `https://pokeapi.co/api/v2/pokemon-form/${evolvesToSpecies.details.name}`
-                  );
+                  try {
+                    // Get the variant details
+                    evolvesToVariant.details = await getResource(
+                      getDefaultVariantUrl(evolvesToSpecies)
+                    );
+                    // Get the form details
+                    evolvesToForm.details = await getResource(
+                      `https://pokeapi.co/api/v2/pokemon-form/${evolvesToSpecies.details.name}`
+                    );
+                  } catch (error) {
+                    errorHandler(error);
+                  }
 
                   // Add this evolution to the pokemon array (even though in this case the form is empty)
                   evolvesToPokemonArray.push({
@@ -133,14 +142,19 @@ const PokemonEvolvesTo = ({ pokemon, clickHandler }) => {
 
               // Otherwise, there is only one variant and we can get that one and the corresponding form
               else {
-                // Get the variant details
-                evolvesToVariant.details = await getResource(
-                  `${evolvesToSpecies.details.varieties[0].pokemon.url}`
-                );
-                // Get the form details
-                evolvesToForm.details = await getResource(
-                  `https://pokeapi.co/api/v2/pokemon-form/${evolvesToSpecies.details.name}-${formName}`
-                );
+                try {
+                  // Get the variant details
+                  evolvesToVariant.details = await getResource(
+                    `${evolvesToSpecies.details.varieties[0].pokemon.url}`
+                  );
+                  // Get the form details
+                  evolvesToForm.details = await getResource(
+                    `https://pokeapi.co/api/v2/pokemon-form/${evolvesToSpecies.details.name}-${formName}`
+                  );
+                } catch (error) {
+                  errorHandler(error);
+                }
+
                 // Add this evolution to the pokemon array
                 evolvesToPokemonArray.push({
                   species: evolvesToSpecies.details,
@@ -152,14 +166,18 @@ const PokemonEvolvesTo = ({ pokemon, clickHandler }) => {
 
             // If not, the current modal pokemon must be the default variant
             else {
-              // Get the variant details
-              evolvesToVariant.details = await getResource(
-                getDefaultVariantUrl(evolvesToSpecies)
-              );
-              // Get the form details
-              evolvesToForm.details = await getResource(
-                `https://pokeapi.co/api/v2/pokemon-form/${evolvesToSpecies.details.name}`
-              );
+              try {
+                // Get the variant details
+                evolvesToVariant.details = await getResource(
+                  getDefaultVariantUrl(evolvesToSpecies)
+                );
+                // Get the form details
+                evolvesToForm.details = await getResource(
+                  `https://pokeapi.co/api/v2/pokemon-form/${evolvesToSpecies.details.name}`
+                );
+              } catch (error) {
+                errorHandler(error);
+              }
 
               // Add this evolution to the pokemon array (even though in this case the form is empty)
               evolvesToPokemonArray.push({
