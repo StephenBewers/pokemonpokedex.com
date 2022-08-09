@@ -1,133 +1,58 @@
-import React, { Component } from "react";
+import React, { useState, useEffect } from "react";
 import ModalInfoItem from "../Modal/ModalInfoItem";
 import ModalInfoValue from "../Modal/ModalInfoValue";
 import { getResource } from "../../utils/pokeApiUtils";
 import { getEnglishContent, textCleanup } from "../../utils/pokemonUtils";
-import {
-  errorHandler,
-  cancelPromise,
-  makeCancellable,
-} from "../../utils/promiseUtils";
+import { errorHandler } from "../../utils/promiseUtils";
 
-// Variable to store the promise to return the additional data. Promise will be cancelled on unmount.
-let habitatPromise;
+const PokemonHabitat = ({ pokemon }) => {
+  const [habitat, setHabitat] = useState(pokemon.species.habitat);
 
-// Resets the promise variables to default values
-const resetPromises = () => {
-  habitatPromise = null;
-}
-class PokemonHabitat extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      habitat: this.props.pokemon.species.habitat,
-      habitatReceived: false,
-    };
-    resetPromises();
-  }
-
-  componentDidMount() {
-    let { pokemon } = this.props;
-
-    // Fetch details about the pokemon habitat from the API
-    habitatPromise = this.getHabitatPromise(pokemon);
-  }
-
-  componentDidUpdate(prevProps) {
-    let { pokemon } = this.props;
-
-    // If the variant has changed
-    if (prevProps.pokemon.variant.id !== this.props.pokemon.variant.id) {
-      // Clear the existing promise
-      resetPromises();
-
-      // Update state with the new pokemon habitat
-      this.setState({
-        habitat: this.props.pokemon.species.habitat,
-        habitatReceived: false,
-      });
-
-      // Get the habitat promise for the new pokemon
-      habitatPromise = this.getHabitatPromise(pokemon);
-    }
-
-    // If the habitat promise has been retrieved, update the habitat in state
-    if (
-      habitatPromise?.hasOwnProperty("promise") &&
-      !this.state.habitatReceived
-    ) {
-      this.updateHabitat(pokemon, habitatPromise);
-    }
-  }
-
-  componentWillUnmount() {
-    // Cancel the habitat promise
-    if (habitatPromise?.hasOwnProperty("promise")) {
-      cancelPromise(habitatPromise, errorHandler);
-    }
-  }
-
-  // Gets cancellable promise to return the habitat of this pokemon
-  getHabitatPromise = (pokemon) => {
+  // Fetch habitat from the API if the pokemon has changed
+  useEffect(() => {
     const habitat = pokemon.species.habitat;
-    let habitatPromise;
-    if (habitat?.hasOwnProperty("url")) {
-      habitatPromise = makeCancellable(getResource(`${habitat.url}`));
+    (async () => {
+      if (habitat?.hasOwnProperty("url")) {
+        try {
+          habitat.details = await getResource(`${habitat.url}`);
+        } catch (error) {
+          errorHandler(error);
+        }
+      }
+      setHabitat(habitat);
+    })();
+  }, [pokemon]);
+
+  // Gets the habitat name
+  const getHabitatName = (habitat, pokemon) => {
+    let habitatName;
+    // If it's a battle-only pokemon, display the habitat as battle
+    if (pokemon.form?.details?.is_battle_only) {
+      habitatName = "Battle";
     }
-    return habitatPromise;
+    // If the habitat has been received, display the clean habitat name
+    else if (habitat.details) {
+      habitatName = getEnglishContent(habitat.details.names, "name");
+    }
+    // Otherwise do a cleanup of the dirty habitat name
+    else {
+      habitatName = textCleanup(habitat.name);
+    }
+    return habitatName;
   };
 
-  // Adds the habitat of the current pokemon, updating the state
-  updateHabitat = (pokemon, habitatPromise) => {
-    const habitat = pokemon.species.habitat;
-    habitatPromise.promise
-      .then((habitatDetails) => {
-        habitat.details = habitatDetails;
-        this.setState({
-          habitat: habitat,
-          habitatReceived: true,
-        });
-      })
-      .catch((error) => {
-        errorHandler(error);
-      });
-  };
-
-  render() {
-    // Gets the habitat name
-    const getHabitatName = (habitat, habitatReceived, pokemon) => {
-      let habitatName;
-      // If it's a battle-only pokemon, display the habitat as battle
-      if (pokemon.form?.details?.is_battle_only) {
-        habitatName = "Battle";
-      }
-      // If the habitat has been received, display the clean habitat name
-      else if (habitatReceived) {
-        habitatName = getEnglishContent(habitat?.details?.names, "name");
-      }
-      // Otherwise do a cleanup of the dirty habitat name
-      else {
-        habitatName = textCleanup(habitat.name);
-      }
-      return habitatName;
-    };
-
-    // Get the habitat from state
-    const { habitat, habitatReceived } = this.state;
-
-    // Only render the habitat if there is a habitat to render
-    if (habitat) {
-      return (
-        <ModalInfoItem label="Habitat" id="pokemon-habitat" subitem={true}>
-          <ModalInfoValue
-            value={getHabitatName(habitat, habitatReceived, this.props.pokemon)}
-          ></ModalInfoValue>
-        </ModalInfoItem>
-      );
-    } else {
-      return null;
-    }
+  // Only render the habitat if there is a habitat to render
+  if (habitat) {
+    return (
+      <ModalInfoItem label="Habitat" id="pokemon-habitat" subitem={true}>
+        <ModalInfoValue
+          value={getHabitatName(habitat, pokemon)}
+        ></ModalInfoValue>
+      </ModalInfoItem>
+    );
+  } else {
+    return null;
   }
-}
+};
 
 export default PokemonHabitat;
