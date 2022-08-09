@@ -214,7 +214,7 @@ const PokemonEvolvesTo = ({ pokemon, clickHandler }) => {
             evolvesToPokemonArray.length - impossibleEvolutionsArray.length
           ) {
             // If there are no non-Galarian evolutions, update the state to has no evolutions
-            if (evolvesToPokemonArray.length === 0) {
+            if (trueEvolutionsArray.length === 0) {
               setHasEvolutions(false);
             } else {
               // Ensure the array is in the correct order first
