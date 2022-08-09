@@ -119,13 +119,8 @@ const PokemonEvolvesTo = ({ pokemon, clickHandler }) => {
                 // If there isn't a variant with the same form name, get the default
                 if (!evolvesToPokemonArray.length) {
                   try {
-                    // Get the variant details
                     evolvesToVariant.details = await getResource(
                       getDefaultVariantUrl(evolvesToSpecies)
-                    );
-                    // Get the form details
-                    evolvesToForm.details = await getResource(
-                      `https://pokeapi.co/api/v2/pokemon-form/${evolvesToSpecies.details.name}`
                     );
                   } catch (error) {
                     errorHandler(error);
@@ -167,13 +162,8 @@ const PokemonEvolvesTo = ({ pokemon, clickHandler }) => {
             // If not, the current modal pokemon must be the default variant
             else {
               try {
-                // Get the variant details
                 evolvesToVariant.details = await getResource(
                   getDefaultVariantUrl(evolvesToSpecies)
-                );
-                // Get the form details
-                evolvesToForm.details = await getResource(
-                  `https://pokeapi.co/api/v2/pokemon-form/${evolvesToSpecies.details.name}`
                 );
               } catch (error) {
                 errorHandler(error);

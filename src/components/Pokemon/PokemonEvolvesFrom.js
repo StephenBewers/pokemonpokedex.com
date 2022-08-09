@@ -92,9 +92,6 @@ const PokemonEvolvesFrom = ({ pokemon, clickHandler }) => {
                 evolvesFromVariant.details = await getResource(
                   getDefaultVariantUrl(evolvesFromSpecies)
                 );
-                evolvesFromForm.details = await getResource(
-                  `https://pokeapi.co/api/v2/pokemon-form/${evolvesFromSpecies.name}`
-                );
               } catch (error) {
                 errorHandler(error);
               }
@@ -109,7 +106,7 @@ const PokemonEvolvesFrom = ({ pokemon, clickHandler }) => {
                 `${evolvesFromSpecies.details.varieties[0].pokemon.url}`
               );
               evolvesFromForm.details = await getResource(
-                `https://pokeapi.co/api/v2/pokemon-form/${evolvesFromSpecies.name}`
+                `https://pokeapi.co/api/v2/pokemon-form/${evolvesFromSpecies.name}-${formName}`
               );
             } catch (error) {
               errorHandler(error);
@@ -122,9 +119,6 @@ const PokemonEvolvesFrom = ({ pokemon, clickHandler }) => {
           try {
             evolvesFromVariant.details = await getResource(
               getDefaultVariantUrl(evolvesFromSpecies)
-            );
-            evolvesFromForm.details = await getResource(
-              `https://pokeapi.co/api/v2/pokemon-form/${evolvesFromSpecies.name}`
             );
           } catch (error) {
             errorHandler(error);

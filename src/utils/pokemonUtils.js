@@ -33,10 +33,16 @@ export function getEnglishContent(array, field) {
 // Gets the correct pokemon name to use for display
 export function getPokemonName(species, form) {
   let namesArray = [];
-  // If a specific form has been passed, use the form name. If not, use the species name.
+  // If a specific form has been passed, use the form name
   if (form?.details?.names?.length) {
     namesArray = form.details.names;
-  } else {
+  }
+  // If a specific non-default form has been passed but the names array is empty, use the basic form name
+  else if (!form?.details?.is_default && form?.details?.name) {
+    namesArray = [{ language: {name: "en"}, name: form.details.name}]
+  }
+  // Else we'll use the species name
+  else {
     namesArray = species.names;
   }
   return getEnglishContent(namesArray, "name");

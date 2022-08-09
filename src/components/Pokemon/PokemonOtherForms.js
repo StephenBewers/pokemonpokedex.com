@@ -1,165 +1,59 @@
-import React, { Component } from "react";
+import React, { useState, useEffect } from "react";
 import "./PokemonOtherForms.scss";
 import ModalRow from "../Modal/ModalRow";
 import ModalColumn from "../Modal/ModalColumn";
 import ModalInfoItem from "../Modal/ModalInfoItem";
 import CardList from "../CardList";
-import { getResource, getFormPromises } from "../../utils/pokeApiUtils";
+import { getResource } from "../../utils/pokeApiUtils";
 import { getPokemonName } from "../../utils/pokemonUtils";
 import {
-  errorHandler,
-  cancelPromise,
-  makeCancellable,
+  errorHandler
 } from "../../utils/promiseUtils";
 
-// Array to store promises to return the additional data. Promises will be cancelled on unmount.
-let otherVariantPromises = [];
+const PokemonOtherForms = ({ pokemon, formsOfCurrentVariantReceived, refreshModal }) => {
+  const [otherVariants, setOtherVariants] = useState([]);
 
-// Resets the promise variables to default values
-const resetPromises = () => {
-  otherVariantPromises = [];
-}
-
-// Resets the state to default values
-const resetState = () => ({
-  otherVariantsReceived: false,
-  otherVariants: [],
-});
-
-class PokemonOtherForms extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      ...resetState(),
-    };
-    resetPromises();
-  }
-
-  componentDidMount() {
-    let { pokemon } = this.props;
-
-    // Fetch details about the pokemon variants from the API
-    otherVariantPromises = this.getOtherVariantPromises(pokemon);
-  }
-
-  componentDidUpdate(prevProps) {
-    let { pokemon } = this.props;
-
-    // If the form or variant has changed
-    if (
-      prevProps.pokemon.form?.details?.id !==
-        this.props.pokemon.form?.details?.id ||
-      prevProps.pokemon.variant.id !== this.props.pokemon.variant.id
-    ) {
-      // Clear the existing promises
-      resetPromises();
-
-      // Reset the state
-      this.setState(
-        {
-          evolvesFromSpecies: this.props.pokemon.species.evolves_from_species,
-          ...resetState(),
-        },
-        () => {
-          this.componentDidMount();
-        }
-      );
-    }
-
-    // If the variant promises have been retrieved, update the variants in state
-    if (otherVariantPromises.length && !this.state.otherVariantsReceived) {
-      this.updateOtherVariants(pokemon, otherVariantPromises);
-    }
-  }
-
-  componentWillUnmount() {
-    // Cancel the other variant promises
-    if (otherVariantPromises.length) {
-      otherVariantPromises.forEach((promise) => {
-        cancelPromise(promise, errorHandler);
-      });
-    }
-  }
-
-  // Gets cancellable promises to return the other variant objects from the API
-  getOtherVariantPromises = (pokemon) => {
+  // Fetch other forms from the API if the pokemon has changed
+  useEffect(() => {
     const currentVariant = pokemon.variant;
     const otherVariantsToGet = pokemon.species.varieties.filter(
       (variant) => variant.pokemon.name !== currentVariant.name
     );
-    let otherVariantPromises = [];
-    if (otherVariantsToGet.length) {
-      for (let i = 0; i < otherVariantsToGet.length; i++) {
-        otherVariantPromises.push(
-          makeCancellable(getResource(otherVariantsToGet[i].pokemon.url))
-        );
-      }
-    }
-    return otherVariantPromises;
-  };
+    let otherVariantsArray = [];
+    (async () => {
+      if (otherVariantsToGet.length) {
+        // Get each of the other variants first
+        for (let i = 0; i < otherVariantsToGet.length; i++) {
+          let otherVariant = { species: pokemon.species };
+          try {
+            otherVariant.variant = await getResource(
+              `${otherVariantsToGet[i].pokemon.url}`
+            );
+          } catch (error) {
+            errorHandler(error);
+          }
+          otherVariantsArray.push(otherVariant);
+        }
 
-  // Once all other variant promises have resolved, get the forms for those variants and update state
-  updateOtherVariants = (pokemon, otherVariantPromises) => {
-    Promise.all(otherVariantPromises)
-      .then((promises) => {
-        (async () => {
-          let otherVariants = [];
-          for (let i = 0; i < promises.length; i++) {
-            try {
-              let otherVariant = await promises[i].promise;
-              let otherVariantPokemon = {
-                species: pokemon.species,
-                variant: otherVariant,
-                form: {},
-              };
-              otherVariants.push(otherVariantPokemon);
-            } catch (error) {
-              errorHandler(error);
+        // Now get the other forms of each variant
+        for (let i = 0; i < otherVariantsArray.length; i++) {
+          const otherFormsToGet = otherVariantsArray[i].variant.forms;
+          if (otherFormsToGet.length) {
+            for (let ii = 0; ii < otherFormsToGet.length; ii++) {
+              try {
+                otherVariantsArray[i].variant.forms[ii].details = await getResource(
+                  `${otherFormsToGet[ii].url}`
+                );
+              } catch (error) {
+                errorHandler(error);
+              }
             }
           }
-          otherVariants.forEach((pokemon) => {
-            // Get the forms for each other variant pokemon
-            let variantFormPromises = getFormPromises(pokemon);
-            // Only once the form promises have resolved, add the forms to the variant
-            Promise.all(variantFormPromises)
-              .then((formPromises) => {
-                (async () => {
-                  for (let i = 0; i < formPromises.length; i++) {
-                    try {
-                      pokemon.variant.forms[i].details = await formPromises[i]
-                        .promise;
-                    } catch (error) {
-                      errorHandler(error);
-                    }
-                  }
-                  // Update the state for the other variants with their different forms
-                  this.setState({
-                    otherVariants: otherVariants,
-                    otherVariantsReceived: true,
-                  });
-                })();
-              })
-              .catch((error) => {
-                // Cancel the form promises
-                if (variantFormPromises.length) {
-                  variantFormPromises.forEach((promise) => {
-                    cancelPromise(promise, errorHandler);
-                  });
-                }
-                // Log the error
-                errorHandler(error);
-              });
-          });
-        })();
-      })
-      .catch((error) => {
-        errorHandler(error);
-      });
-  };
-
-  render() {
-    const { pokemon, formsOfCurrentVariantReceived, refreshModal } = this.props;
-    const { otherVariants } = this.state;
+        }
+        setOtherVariants([...otherVariantsArray]);
+      }
+    })();
+  }, [pokemon]);
 
     const getFormsToDisplay = (
       currentPokemon,
@@ -183,7 +77,7 @@ class PokemonOtherForms extends Component {
       let allFormsAndVariants = [];
 
       // Add any forms of the current variant to the array of all forms and variants
-      if (formsOfCurrentVariantReceived) {
+      if (formsOfCurrentVariantReceived && currentPokemon.variant.forms.length > 1) {
         allFormsAndVariants.push(getPokemonObjectsForEachForm(currentPokemon));
       }
 
@@ -255,7 +149,6 @@ class PokemonOtherForms extends Component {
     } else {
       return null;
     }
-  }
 }
 
 export default PokemonOtherForms;
