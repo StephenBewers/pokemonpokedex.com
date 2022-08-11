@@ -3,7 +3,6 @@ import ModalInfoItem from "../Modal/ModalInfoItem";
 import ModalInfoValue from "../Modal/ModalInfoValue";
 import { getResource } from "../../utils/pokeApiUtils";
 import { getEnglishContent, textCleanup } from "../../utils/pokemonUtils";
-import { errorHandler } from "../../utils/promiseUtils";
 
 const PokemonHabitat = ({ pokemon }) => {
   const [habitat, setHabitat] = useState(pokemon.species.habitat);
@@ -16,7 +15,7 @@ const PokemonHabitat = ({ pokemon }) => {
         try {
           habitat.details = await getResource(`${habitat.url}`);
         } catch (error) {
-          errorHandler(error);
+          console.error(error);
         }
       }
       setHabitat(habitat);

@@ -5,7 +5,6 @@ import ModalInfoItem from "../Modal/ModalInfoItem";
 import PokemonTypeBtn from "../Pokemon/PokemonTypeBtn";
 import LoadingBarSmall from "../LoadingSpinnerSmall";
 import { getResource } from "../../utils/pokeApiUtils";
-import { errorHandler } from "../../utils/promiseUtils";
 
 // Default type effectiveness
 const defaultTypeEffectivenessValue = 1;
@@ -49,7 +48,7 @@ const PokemonTypeEffectiveness = ({ pokemon, filterBtnClick }) => {
               `${typesArray[i].type.url}`
             );
           } catch (error) {
-            errorHandler(error);
+            console.error(error);
           }
         }
       }

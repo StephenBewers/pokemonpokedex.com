@@ -3,7 +3,6 @@ import ModalInfoItem from "../Modal/ModalInfoItem";
 import ModalInfoValue from "../Modal/ModalInfoValue";
 import { getResource } from "../../utils/pokeApiUtils";
 import { getEnglishContent, textCleanup } from "../../utils/pokemonUtils";
-import { errorHandler } from "../../utils/promiseUtils";
 
 const PokemonGrowthRate = ({ pokemon }) => {
   const [growthRate, setGrowthRate] = useState(pokemon.species.growth_rate);
@@ -16,7 +15,7 @@ const PokemonGrowthRate = ({ pokemon }) => {
         try {
           growthRate.details = await getResource(`${growthRate.url}`);
         } catch (error) {
-          errorHandler(error);
+          console.error(error);
         }
       }
       setGrowthRate(growthRate);

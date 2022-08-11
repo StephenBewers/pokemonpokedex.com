@@ -6,7 +6,6 @@ import ModalRow from "../Modal/ModalRow";
 import CardList from "../CardList";
 import { getResource } from "../../utils/pokeApiUtils";
 import { getPokemonName, isGalarianEvolution } from "../../utils/pokemonUtils";
-import { errorHandler } from "../../utils/promiseUtils";
 
 const PokemonEvolvesTo = ({ pokemon, clickHandler }) => {
   const [evolvesToPokemonArray, setEvolvesToPokemonArray] = useState([]);
@@ -37,7 +36,7 @@ const PokemonEvolvesTo = ({ pokemon, clickHandler }) => {
         try {
           evolutionChain.details = await getResource(`${evolutionChain.url}`);
         } catch (error) {
-          errorHandler(error);
+          console.error(error);
         }
 
         const primaryPokemon = evolutionChain.details.chain.species;
@@ -74,7 +73,7 @@ const PokemonEvolvesTo = ({ pokemon, clickHandler }) => {
                   `${evolvesToSpecies.species.url}`
                 );
               } catch (error) {
-                errorHandler(error);
+                console.error(error);
               }
             }
 
@@ -105,7 +104,7 @@ const PokemonEvolvesTo = ({ pokemon, clickHandler }) => {
                         `https://pokeapi.co/api/v2/pokemon-form/${evolvesToSpecies.details.name}-${formName}`
                       );
                     } catch (error) {
-                      errorHandler(error);
+                      console.error(error);
                     }
                     // Add this evolution to the pokemon array
                     evolvesToPokemonArray.push({
@@ -123,7 +122,7 @@ const PokemonEvolvesTo = ({ pokemon, clickHandler }) => {
                       getDefaultVariantUrl(evolvesToSpecies)
                     );
                   } catch (error) {
-                    errorHandler(error);
+                    console.error(error);
                   }
 
                   // Add this evolution to the pokemon array (even though in this case the form is empty)
@@ -147,7 +146,7 @@ const PokemonEvolvesTo = ({ pokemon, clickHandler }) => {
                     `https://pokeapi.co/api/v2/pokemon-form/${evolvesToSpecies.details.name}-${formName}`
                   );
                 } catch (error) {
-                  errorHandler(error);
+                  console.error(error);
                 }
 
                 // Add this evolution to the pokemon array
@@ -166,7 +165,7 @@ const PokemonEvolvesTo = ({ pokemon, clickHandler }) => {
                   getDefaultVariantUrl(evolvesToSpecies)
                 );
               } catch (error) {
-                errorHandler(error);
+                console.error(error);
               }
 
               // Add this evolution to the pokemon array (even though in this case the form is empty)

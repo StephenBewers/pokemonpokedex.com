@@ -6,7 +6,6 @@ import CardList from "../CardList";
 import PokemonEggGroups from "./PokemonEggGroups";
 import { getResource } from "../../utils/pokeApiUtils";
 import { isGalarianEvolution } from "../../utils/pokemonUtils";
-import { errorHandler } from "../../utils/promiseUtils";
 
 const PokemonEvolvesFrom = ({ pokemon, clickHandler }) => {
   const [evolvesFromPokemon, setEvolvesFromPokemon] = useState({});
@@ -44,7 +43,7 @@ const PokemonEvolvesFrom = ({ pokemon, clickHandler }) => {
             `${evolvesFromSpecies.url}`
           );
         } catch (error) {
-          errorHandler(error);
+          console.error(error);
         }
 
         // If the current modal pokemon has a form and that form has a non-blank name (i.e. not a default pokemon)
@@ -71,7 +70,7 @@ const PokemonEvolvesFrom = ({ pokemon, clickHandler }) => {
                     `${evolvesFromSpecies.details.varieties[i].pokemon.url}`
                   );
                 } catch (error) {
-                  errorHandler(error);
+                  console.error(error);
                 }
                 // Get the evolves from form
                 try {
@@ -79,7 +78,7 @@ const PokemonEvolvesFrom = ({ pokemon, clickHandler }) => {
                     `https://pokeapi.co/api/v2/pokemon-form/${evolvesFromSpecies.name}-${formName}`
                   );
                 } catch (error) {
-                  errorHandler(error);
+                  console.error(error);
                 }
                 // Set the matching variant flag to true
                 matchingVariant = true;
@@ -93,7 +92,7 @@ const PokemonEvolvesFrom = ({ pokemon, clickHandler }) => {
                   getDefaultVariantUrl(evolvesFromSpecies)
                 );
               } catch (error) {
-                errorHandler(error);
+                console.error(error);
               }
             }
           }
@@ -109,7 +108,7 @@ const PokemonEvolvesFrom = ({ pokemon, clickHandler }) => {
                 `https://pokeapi.co/api/v2/pokemon-form/${evolvesFromSpecies.name}-${formName}`
               );
             } catch (error) {
-              errorHandler(error);
+              console.error(error);
             }
           }
         }
@@ -121,7 +120,7 @@ const PokemonEvolvesFrom = ({ pokemon, clickHandler }) => {
               getDefaultVariantUrl(evolvesFromSpecies)
             );
           } catch (error) {
-            errorHandler(error);
+            console.error(error);
           }
         }
 

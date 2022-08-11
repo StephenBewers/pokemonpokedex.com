@@ -5,7 +5,6 @@ import ModalRow from "../Modal/ModalRow";
 import ModalInfoItem from "../Modal/ModalInfoItem";
 import { getResource } from "../../utils/pokeApiUtils";
 import { getEnglishContent, textCleanup } from "../../utils/pokemonUtils";
-import { errorHandler } from "../../utils/promiseUtils";
 
 const PokemonAbilities = ({ pokemon }) => {
   const [abilities, setAbilities] = useState(pokemon.variant.abilities);
@@ -21,7 +20,7 @@ const PokemonAbilities = ({ pokemon }) => {
               `${abilitiesArray[i].ability.url}`
             );
           } catch (error) {
-            errorHandler(error);
+            console.error(error);
           }
         }
       }

@@ -1,7 +1,5 @@
 /* This file contains utility functions for retrieving data from PokeAPI */
 
-import { makeCancellable } from "./promiseUtils"
-
 // Constants for the Poke API
 const Pokedex = require("pokeapi-js-wrapper");
 const customOptions = {
@@ -83,16 +81,4 @@ export async function getPokemon(arrayOfPokemonToGet) {
   } catch {
     console.error(`Unable to retrieve pokemon`);
   }
-}
-
-// Gets cancellable promises to return the form objects from the API
-export function getFormPromises(pokemon) {
-  const forms = pokemon.variant.forms;
-  let formPromises = [];
-  if (forms.length) {
-    for (let i = 0; i < forms.length; i++) {
-      formPromises.push(makeCancellable(getResource(`${forms[i].url}`)));
-    }
-  }
-  return formPromises;
 }

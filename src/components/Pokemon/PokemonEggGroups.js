@@ -3,7 +3,6 @@ import ModalInfoItem from "../Modal/ModalInfoItem";
 import ModalInfoValue from "../Modal/ModalInfoValue";
 import { getResource } from "../../utils/pokeApiUtils";
 import { getEnglishContent, textCleanup } from "../../utils/pokemonUtils";
-import { errorHandler } from "../../utils/promiseUtils";
 
 const PokemonEggGroups = ({ pokemon }) => {
   const [eggGroups, setEggGroups] = useState(pokemon.species.egg_groups);
@@ -19,7 +18,7 @@ const PokemonEggGroups = ({ pokemon }) => {
               `${eggGroupsArray[i].url}`
             );
           } catch (error) {
-            errorHandler(error);
+            console.error(error);
           }
         }
       }
