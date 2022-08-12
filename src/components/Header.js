@@ -6,16 +6,14 @@ import SearchBar from "./SearchBar";
 
 const Header = ({
   stickyNav,
-  searchOptions,
   updatePokemonCardList,
-  clearSearchBar,
-  searchBarCleared,
-  showModal,
+  modalActive,
+  filterMenuActive,
+  anyModalActive,
   filterBtnClick,
   toggleFilterMenuState,
-  filterMenuActive,
 }) => {
-  const navClass = showModal ? "hidden" : stickyNav ? "sticky" : "default";
+  const navClass = modalActive ? "hidden" : stickyNav ? "sticky" : "default";
 
   return (
     <header>
@@ -23,10 +21,8 @@ const Header = ({
       <div className={`navigation ${navClass}`}>
         <div className="nav-bar">
           <SearchBar
-            options={searchOptions}
             updatePokemonCardList={updatePokemonCardList}
-            clearSearchBar={clearSearchBar}
-            searchBarCleared={searchBarCleared}
+            anyModalActive={anyModalActive}
           ></SearchBar>
           <FilterToggleBtn
             active={filterMenuActive}

@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { useState, useEffect } from "react";
 import "./App.scss";
 import Header from "../components/Header.js";
 import InfiniteScroll from "react-infinite-scroll-component";
@@ -11,175 +11,101 @@ import CookieConsent, {
   Cookies,
 } from "react-cookie-consent";
 import { initGA } from "../utils/gaUtils";
-import {
-  getPokemonSpeciesList,
-  getPokemon,
-  getType,
-  getGeneration,
-} from "../utils/pokeApiUtils";
-class App extends Component {
-  constructor() {
-    super();
-    this.updatePokemonCardList = this.updatePokemonCardList.bind(this);
-    this.filterBtnClick = this.filterBtnClick.bind(this);
-    this.initModal = this.initModal.bind(this);
-    this.hideModal = this.hideModal.bind(this);
-    this.toggleFilterMenuState = this.toggleFilterMenuState.bind(this);
-    this.closeFilterMenu = this.closeFilterMenu.bind(this);
-    this.searchBarCleared = this.searchBarCleared.bind(this);
-    this.state = {
-      pokemonNames: [],
-      pokemonToGet: [],
-      retrievedPokemon: [],
-      retrievalLimit: 12,
-      hasMore: true,
-      stickyNav: false,
-      showModal: false,
-      modalPokemon: "",
-      clearSearchBar: false,
-      cardListTitle: "",
-      showProgressBar: false,
-      filterMenuActive: false,
+import { getPokemon, getType, getGeneration } from "../utils/pokeApiUtils";
+
+const App = () => {
+  const [pokemonToGet, setPokemonToGet] = useState([]);
+  const [retrievedPokemon, setRetrievedPokemon] = useState([]);
+  const [hasMore, setHasMore] = useState(true);
+  const [stickyNav, setStickyNav] = useState(false);
+  const [modalActive, setModalActive] = useState(false);
+  const [modalPokemon, setModalPokemon] = useState("");
+  const [cardListTitle, setCardListTitle] = useState("");
+  const [showProgressBar, setShowProgressBar] = useState(false);
+  const [filterMenuActive, setFilterMenuActive] = useState(false);
+
+  const retrievalLimit = 12;
+  const anyModalActive = modalActive || filterMenuActive ? true : false;
+
+  useEffect(() => {
+    // Get the viewport height
+    const viewportHeight = Math.max(
+      document.documentElement.clientHeight || 0,
+      window.innerHeight || 0
+    );
+
+    // Calculate the point for the nav bar to stick
+    const stickyNavPosition = Math.min(viewportHeight * 0.42);
+
+    // Checks if the user has scrolled past the sticky position
+    const checkStickyPosition = () => {
+      // If we pass the sticky position, make the search bar stick
+      if (window.scrollY >= stickyNavPosition && !stickyNav) {
+        setStickyNav(true);
+      } else {
+        setStickyNav(false);
+      }
     };
-  }
+
+    // Listen for scrolling and/or mouse wheeling
+    window.addEventListener("scroll", checkStickyPosition, {
+      passive: true,
+    });
+    window.addEventListener("wheel", checkStickyPosition, {
+      passive: true,
+    });
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Lint rule is disabled as we want this effect to behave like componentDidMount and passing the empty array is correct
 
   // Handles the cookie accept
-  handleCookieAccept = () => {
+  const handleCookieAccept = () => {
     if (process.env.REACT_APP_GOOGLE_ANALYTICS_ID) {
       initGA(process.env.REACT_APP_GOOGLE_ANALYTICS_ID);
     }
   };
 
   // Handles the cookie decline
-  handleCookieDecline = () => {
+  const handleCookieDecline = () => {
     // Remove Google Analytics cookies
     Cookies.remove("_ga");
     Cookies.remove("_gat");
     Cookies.remove("_gid");
   };
 
-  // Initialises the pokemon list
-  initPokemonList = () => {
-    // The starting point and number of pokemon to retrieve from the API per request
-    const interval = { offset: 0, limit: 2000 };
-
-    try {
-      (async () => {
-        // Gets the json of all pokemon species
-        let response = await getPokemonSpeciesList(interval);
-
-        // Store all of the pokemon names in an array
-        let pokemonNames = [];
-        for (const item of response.results) {
-          pokemonNames.push(item.name);
-        }
-
-        // Update the state with the list of pokemon names
-        this.setState({
-          pokemonNames: pokemonNames,
-        });
-      })();
-    } catch {
-      console.error(`Failed to get the list of Pokemon`);
-    }
+  // Updates the state to initialise the modal
+  const initModal = (pokemon) => {
+    setModalActive(true);
+    setModalPokemon(pokemon);
   };
 
-  // Retrieves specified pokemon objects from the API
-  getPokemonBatch = async (remainingPokemonToGet, retrievedPokemon) => {
-    let { retrievalLimit } = this.state;
-
-    // Compares the number of pokemon already retrieved to the total to get
-    if (retrievedPokemon.length >= remainingPokemonToGet.length) {
-      // If there are no more to retrieve, set the hasMore flag to false
-      this.setState({ hasMore: false });
-      return;
-    } else {
-      this.setState({ hasMore: true });
-    }
-
-    // Select the pokemon to get in this request
-    let pokemonToGetNow;
-    if (remainingPokemonToGet.length > retrievalLimit) {
-      pokemonToGetNow = remainingPokemonToGet.slice(0, retrievalLimit);
-    } else {
-      pokemonToGetNow = remainingPokemonToGet;
-    }
-
-    // Retrieves the pokemon objects from the API
-    const pokemonObjects = await getPokemon(pokemonToGetNow);
-
-    // Update the list of pokemon still to retrieve, removing those we retrieved in this batch
-    let pokemonStillToGet;
-    let hasMore = true;
-    if (remainingPokemonToGet.length > retrievalLimit) {
-      pokemonStillToGet = remainingPokemonToGet.slice(
-        retrievalLimit,
-        remainingPokemonToGet.length
-      );
-    } else {
-      pokemonStillToGet = [];
-      hasMore = false;
-    }
-
-    // Hides the loading bar if needed
-    const doesProgressBarNeedHiding = (hasMore) => {
-      if (!hasMore) {
-        this.hideProgressBar();
-      }
-    };
-
-    // If no pokemon have already been retrieved, update the state with those retrieved in this request
-    if (retrievedPokemon.length < 1) {
-      this.setState(
-        {
-          pokemonToGet: pokemonStillToGet,
-          retrievedPokemon: pokemonObjects,
-          hasMore: hasMore,
-        },
-        () => {
-          doesProgressBarNeedHiding();
-        }
-      );
-    } else {
-      // If not, add the array of pokemon objects retrieved in this request to the pokemon objects already in state
-      this.setState(
-        {
-          pokemonToGet: pokemonStillToGet,
-          retrievedPokemon: retrievedPokemon.concat(pokemonObjects),
-          hasMore: hasMore,
-        },
-        () => {
-          doesProgressBarNeedHiding();
-        }
-      );
-    }
+  // Hides the modal
+  const hideModal = () => {
+    setModalActive(false);
   };
 
-  // Checks if any pokemon have already been received and if so, gets the next batch
-  getNextPokemonBatch = () => {
-    const { pokemonToGet, retrievedPokemon } = this.state;
-    if (retrievedPokemon.length) {
-      this.getPokemonBatch(pokemonToGet, retrievedPokemon);
-    }
+  // Toggle the filter menu active state on filter button click
+  const toggleFilterMenuState = () => {
+    setFilterMenuActive(!filterMenuActive);
   };
 
   // Handles a filter button being clicked
-  filterBtnClick = async (btnType, btnValue) => {
+  const filterBtnClick = async (btnType, btnValue) => {
     // If the modal is showing, hide it
-    if (this.state.showModal) {
-      this.hideModal();
+    if (modalActive) {
+      hideModal();
     }
 
     // If the filter menu is open, close it
-    if (this.state.filterMenuActive) {
-      this.closeFilterMenu();
+    if (filterMenuActive) {
+      closeFilterMenu();
     }
 
     // Show the progress bar
-    this.initProgressBar();
+    setShowProgressBar(true);
 
     // Clear the existing pokemon card list
-    this.updatePokemonCardList();
+    updatePokemonCardList();
 
     let cardListTitle;
     let pokemonList = [];
@@ -226,224 +152,189 @@ class App extends Component {
     }
 
     // Update the card list to show pokemon returned from the button click
-    this.updatePokemonCardList(pokemonList, cardListTitle);
+    updatePokemonCardList(pokemonList, cardListTitle);
+  };
+
+  // Closes the filter panel
+  const closeFilterMenu = () => {
+    setFilterMenuActive(false);
+  };
+
+  // Retrieves specified pokemon objects from the API
+  const getPokemonBatch = async (remainingPokemonToGet, retrievedPokemon) => {
+    // Compares the number of pokemon already retrieved to the total to get
+    if (retrievedPokemon.length >= remainingPokemonToGet.length) {
+      // If there are no more to retrieve, set the hasMore flag to false
+      setHasMore(false);
+      return;
+    } else {
+      setHasMore(true);
+    }
+
+    // Select the pokemon to get in this request
+    let pokemonToGetNow;
+    if (remainingPokemonToGet.length > retrievalLimit) {
+      pokemonToGetNow = remainingPokemonToGet.slice(0, retrievalLimit);
+    } else {
+      pokemonToGetNow = remainingPokemonToGet;
+    }
+
+    // Retrieves the pokemon objects from the API
+    const pokemonObjects = await getPokemon(pokemonToGetNow);
+
+    // Update the list of pokemon still to retrieve, removing those we retrieved in this batch
+    let pokemonStillToGet;
+    let hasMore = true;
+    if (remainingPokemonToGet.length > retrievalLimit) {
+      pokemonStillToGet = remainingPokemonToGet.slice(
+        retrievalLimit,
+        remainingPokemonToGet.length
+      );
+    } else {
+      pokemonStillToGet = [];
+      hasMore = false;
+    }
+
+    // Hides the loading bar if needed
+    const doesProgressBarNeedHiding = (hasMore) => {
+      if (!hasMore) {
+        setShowProgressBar(false);
+      }
+    };
+
+    // If no pokemon have already been retrieved, update the state with those retrieved in this request
+    if (retrievedPokemon.length < 1) {
+      setRetrievedPokemon(pokemonObjects);
+    } else {
+      // If not, add the array of pokemon objects retrieved in this request to the pokemon objects already in state
+      setRetrievedPokemon(retrievedPokemon.concat(pokemonObjects));
+    }
+
+    setPokemonToGet(pokemonStillToGet);
+    setHasMore(hasMore);
+    doesProgressBarNeedHiding();
+  };
+
+  // Checks if any pokemon have already been received and if so, gets the next batch
+  const getNextPokemonBatch = () => {
+    if (retrievedPokemon.length) {
+      getPokemonBatch(pokemonToGet, retrievedPokemon);
+    }
   };
 
   // Updates the pokemon card list displaying on the main page (call without params to reset)
-  updatePokemonCardList = (pokemonList, cardListTitle) => {
+  const updatePokemonCardList = (pokemonList, cardListTitle) => {
     const loadPokemonList = (pokemonList) => {
       // If a pokemon list has been supplied, load it
       if (pokemonList?.length) {
-        this.getPokemonBatch(pokemonList, []);
+        getPokemonBatch(pokemonList, []);
       }
     };
 
     // Clear any previously retrieved pokemon and update the card list title
-    this.setState(
-      {
-        retrievedPokemon: [],
-        cardListTitle: cardListTitle,
-        clearSearchBar: true,
-      },
-      loadPokemonList(pokemonList)
-    );
+    setRetrievedPokemon([]);
+    setCardListTitle(cardListTitle);
+    loadPokemonList(pokemonList);
   };
 
-  // Updates the state to initialise the modal
-  initModal = (pokemon) => {
-    this.setState({
-      showModal: true,
-      modalPokemon: pokemon,
-      clearSearchBar: true,
-    });
-  };
-
-  // Hides the modal
-  hideModal = () => {
-    this.setState({ showModal: false });
-  };
-
-  // Updates the state to initialise the progress bar
-  initProgressBar = () => {
-    this.setState({
-      showProgressBar: true,
-    });
-  };
-
-  // Hides the progress bar
-  hideProgressBar = () => {
-    this.setState({ showProgressBar: false });
-  };
-
-  // Toggle the filter menu active state on filter button click
-  toggleFilterMenuState = () => {
-    const clearSearchBar = this.state.filterMenuActive ? false : true;
-
-    this.setState({
-      filterMenuActive: !this.state.filterMenuActive,
-      clearSearchBar: clearSearchBar,
-    });
-  };
-
-  // Closes the filter panel
-  closeFilterMenu = () => {
-    this.setState({ filterMenuActive: false });
-  };
-
-  // Once the search bar has been cleared, update the state
-  searchBarCleared = () => {
-    this.setState({ clearSearchBar: false });
-  };
-
-  componentDidMount() {
+  useEffect(() => {
     // Checks the cookie consent value and if we have consent, handle as an accept
     const isConsent = getCookieConsentValue();
     if (isConsent === "true") {
-      this.handleCookieAccept();
+      handleCookieAccept();
     }
+  }, []);
 
-    // If the pokemon names list is empty, initialise the pokemon list
-    if (!this.state.pokemonNames.length) {
-      this.initPokemonList();
+  const loadingLabel = retrievedPokemon.length
+    ? "Looking for more pokémon"
+    : "Looking for pokémon";
+
+  const mainClass = modalActive ? "fixed" : "default";
+
+  // If the state implies that we should show the progress bar, render it
+  const renderProgressBar = () => {
+    if (showProgressBar) {
+      return (
+        <div className="progress-overlay">
+          <ProgressBar></ProgressBar>
+        </div>
+      );
     }
+  };
 
-    // Get the viewport height
-    const viewportHeight = Math.max(
-      document.documentElement.clientHeight || 0,
-      window.innerHeight || 0
-    );
+  // If the state implies that we should show the modal, render it
+  const renderModal = () => {
+    if (modalActive) {
+      return (
+        <Modal
+          active={modalActive}
+          hideModal={hideModal}
+          filterBtnClick={filterBtnClick}
+          pokemon={modalPokemon}
+        />
+      );
+    }
+  };
 
-    // Calculate the point for the nav bar to stick
-    let stickyNavPosition = Math.min(viewportHeight * 0.42);
-
-    // Checks if the user has scrolled past the sticky position
-    const checkStickyPosition = () => {
-      // If we pass the sticky position, make the search bar stick
-      if (window.scrollY >= stickyNavPosition) {
-        if (!this.state.stickyNav) {
-          this.setState({ stickyNav: true });
-        }
-      } else {
-        if (this.state.stickyNav) {
-          this.setState({ stickyNav: false });
-        }
-      }
-    };
-
-    // Listen for scrolling and/or mouse wheeling
-    window.addEventListener("scroll", checkStickyPosition, {
-      passive: true,
-    });
-    window.addEventListener("wheel", checkStickyPosition, {
-      passive: true,
-    });
-  }
-
-  render() {
-    const {
-      pokemonNames,
-      retrievedPokemon,
-      hasMore,
-      stickyNav,
-      clearSearchBar,
-      showModal,
-      showProgressBar,
-      cardListTitle,
-      filterMenuActive,
-    } = this.state;
-    const loadingLabel = retrievedPokemon.length
-      ? "Looking for more pokémon"
-      : "Looking for pokémon";
-
-    const mainClass = showModal ? "fixed" : "default";
-
-    // If the state implies that we should show the progress bar, render it
-    const renderProgressBar = () => {
-      if (showProgressBar) {
-        return (
-          <div className="progress-overlay">
-            <ProgressBar></ProgressBar>
-          </div>
-        );
-      }
-    };
-
-    // If the state implies that we should show the modal, render it
-    const renderModal = () => {
-      if (showModal) {
-        return (
-          <Modal
-            showModal={this.state.showModal}
-            hideModal={this.hideModal}
-            filterBtnClick={this.filterBtnClick}
-            pokemon={this.state.modalPokemon}
-          />
-        );
-      }
-    };
-
-    // If pokemon have been retrieved, render the card list
-    const renderCardList = () => {
-      if (retrievedPokemon.length) {
-        return (
-          <InfiniteScroll
-            dataLength={retrievedPokemon.length}
-            next={this.getNextPokemonBatch}
-            hasMore={hasMore}
-            scrollThreshold="80%"
-            loader={
-              <LoadingSpinnerMain
-                loadingLabel={loadingLabel}
-              ></LoadingSpinnerMain>
-            }
-          >
-            <CardList
-              pokemonList={retrievedPokemon}
-              title={cardListTitle}
-              clickHandler={this.initModal}
-              updatePokemonCardList={this.updatePokemonCardList}
-            />
-          </InfiniteScroll>
-        );
-      }
-    };
-
-    return (
-      <>
-        <Header
-          stickyNav={stickyNav}
-          searchOptions={pokemonNames}
-          updatePokemonCardList={this.updatePokemonCardList}
-          clearSearchBar={clearSearchBar}
-          searchBarCleared={this.searchBarCleared}
-          showModal={showModal}
-          filterBtnClick={this.filterBtnClick}
-          toggleFilterMenuState={this.toggleFilterMenuState}
-          filterMenuActive={filterMenuActive}
-        ></Header>
-        <main className={mainClass}>
-          {renderProgressBar()}
-          {renderModal()}
-          {renderCardList()}
-        </main>
-        <CookieConsent
-          enableDeclineButton
-          onAccept={this.handleCookieAccept}
-          onDecline={this.handleCookieDecline}
-          buttonText={"Allow"}
-          declineButtonText={"Disable"}
-          disableStyles={true}
-          containerClasses={"cookie-bar"}
-          contentClasses={"cookie-bar-content"}
-          buttonWrapperClasses={"cookie-bar-btns"}
-          buttonClasses={"cookie-btn-accept"}
-          declineButtonClasses={"cookie-btn-decline"}
+  // If pokemon have been retrieved and no modals are active, render the card list
+  const renderCardList = () => {
+    if (retrievedPokemon.length && !anyModalActive) {
+      return (
+        <InfiniteScroll
+          dataLength={retrievedPokemon.length}
+          next={getNextPokemonBatch}
+          hasMore={hasMore}
+          scrollThreshold="80%"
+          loader={
+            <LoadingSpinnerMain
+              loadingLabel={loadingLabel}
+            ></LoadingSpinnerMain>
+          }
         >
-          Pokémon Pokédex only uses cookies to analyse how the app is used.
-        </CookieConsent>
-      </>
-    );
-  }
-}
+          <CardList
+            pokemonList={retrievedPokemon}
+            title={cardListTitle}
+            clickHandler={initModal}
+            updatePokemonCardList={updatePokemonCardList}
+          />
+        </InfiniteScroll>
+      );
+    }
+  };
+
+  return (
+    <>
+      <Header
+        stickyNav={stickyNav}
+        updatePokemonCardList={updatePokemonCardList}
+        modalActive={modalActive}
+        anyModalActive={anyModalActive}
+        filterBtnClick={filterBtnClick}
+        toggleFilterMenuState={toggleFilterMenuState}
+        filterMenuActive={filterMenuActive}
+      ></Header>
+      <main className={mainClass}>
+        {renderProgressBar()}
+        {renderModal()}
+        {renderCardList()}
+      </main>
+      <CookieConsent
+        enableDeclineButton
+        onAccept={handleCookieAccept}
+        onDecline={handleCookieDecline}
+        buttonText={"Allow"}
+        declineButtonText={"Disable"}
+        disableStyles={true}
+        containerClasses={"cookie-bar"}
+        contentClasses={"cookie-bar-content"}
+        buttonWrapperClasses={"cookie-bar-btns"}
+        buttonClasses={"cookie-btn-accept"}
+        declineButtonClasses={"cookie-btn-decline"}
+      >
+        Pokémon Pokédex only uses cookies to analyse how the app is used.
+      </CookieConsent>
+    </>
+  );
+};
 
 export default App;

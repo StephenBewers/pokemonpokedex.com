@@ -20,7 +20,7 @@ import PokemonEvolution from "../Pokemon/PokemonEvolution";
 import { getResource } from "../../utils/pokeApiUtils";
 import ModalRibbon from "./ModalRibbon";
 
-const Modal = ({ showModal, hideModal, filterBtnClick, pokemon }) => {
+const Modal = ({ active, hideModal, filterBtnClick, pokemon }) => {
   const infoPanelRef = useRef();
   const modalMainRef = useRef();
   
@@ -66,8 +66,8 @@ const Modal = ({ showModal, hideModal, filterBtnClick, pokemon }) => {
     setFormsOfCurrentVariantReceived(false);
   };
 
-    // If the showModal state becomes false, hide the modal
-    const visibleClassName = showModal ? "visible" : "hidden";
+    // If the active state becomes false, hide the modal
+    const visibleClassName = active ? "visible" : "hidden";
 
     return (
       <div className={`modal ${visibleClassName}`} onClick={hideModal}>

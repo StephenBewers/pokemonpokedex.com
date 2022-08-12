@@ -2,36 +2,55 @@ import React, { useState, useEffect } from "react";
 import "./SearchBar.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
+import { getPokemonSpeciesList } from "../utils/pokeApiUtils";
+
+// Gets the list of pokemon names for the search bar autocomplete
+const getPokemonNameOptions = () => {
+  // The starting point and number of pokemon to retrieve from the API per request
+  const interval = { offset: 0, limit: 2000 };
+
+  let pokemonNames = [];
+
+  (async () => {
+    try {
+      // Gets the json of all pokemon species
+      let response = await getPokemonSpeciesList(interval);
+
+      // Store all of the pokemon names in an array
+      for (const item of response.results) {
+        pokemonNames.push(item.name);
+      }
+    } catch {
+      console.error(`Failed to get the list of Pokemon names`);
+    }
+  })();
+
+  return pokemonNames;
+};
 
 const SearchBar = ({
-  options,
   updatePokemonCardList,
-  clearSearchBar,
-  searchBarCleared,
+  anyModalActive,
+  options = getPokemonNameOptions(),
 }) => {
   const [activeOption, setActiveOption] = useState(0);
   const [filteredOptions, setFilteredOptions] = useState([]);
   const [showOptions, setShowOptions] = useState(false);
-  const [defaultView, setDefaultView] = useState(true);
   const [userInput, setUserInput] = useState("");
 
   const resetState = () => {
     setActiveOption(0);
     setFilteredOptions([]);
     setShowOptions(false);
-    setDefaultView(true);
     setUserInput("");
   };
 
   useEffect(() => {
-    if (clearSearchBar) {
-      setActiveOption(0);
-      setFilteredOptions([]);
-      setShowOptions(false);
-      setUserInput("");
-      searchBarCleared();
+    // If a modal is active, reset the state
+    if (anyModalActive) {
+      resetState();
     }
-  }, [clearSearchBar, searchBarCleared]);
+  }, [anyModalActive]);
 
   const filterOptions = (options, userInput) => {
     // Get the pokemon that begin with the user input string
@@ -52,15 +71,6 @@ const SearchBar = ({
     );
   };
 
-  // Resets the view of the whole app to the default
-  const resetView = () => {
-    if (!defaultView) {
-      updatePokemonCardList();
-      searchBarCleared();
-    }
-    resetState();
-  };
-
   // When the text in the search bar changes, filter the list of pokemon and display the suggestions
   const onChange = (event) => {
     const userInputText = event.currentTarget.value;
@@ -71,9 +81,9 @@ const SearchBar = ({
       setShowOptions(true);
       setUserInput(userInputText);
     }
-    // If user input has been cleared, reset the view
+    // If user input has been cleared, reset the state
     else {
-      resetView();
+      resetState();
     }
   };
 
@@ -83,7 +93,6 @@ const SearchBar = ({
     setActiveOption(0);
     setFilteredOptions([]);
     setShowOptions(false);
-    setDefaultView(false);
     setUserInput(event.target.outerText);
 
     updatePokemonCardList([{ name: event.target.outerText.toLowerCase() }]);
@@ -94,7 +103,6 @@ const SearchBar = ({
     setActiveOption(0);
     setFilteredOptions([]);
     setShowOptions(false);
-    setDefaultView(false);
     setUserInput(filteredOptions[activeOption]);
 
     updatePokemonCardList([
@@ -127,9 +135,9 @@ const SearchBar = ({
       setActiveOption((activeOption) => activeOption + 1);
     }
 
-    // Esc key resets the view
+    // Esc key resets the state
     if (event.keyCode === 27) {
-      resetView();
+      resetState();
     }
   };
 
