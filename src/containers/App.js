@@ -55,6 +55,12 @@ const App = () => {
       passive: true,
     });
 
+    // Remove event listeners on unmount
+    return () => {
+      window.removeEventListener("scroll", checkStickyPosition);
+      window.removeEventListener("wheel", checkStickyPosition);
+    };
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Lint rule is disabled as we want this effect to behave like componentDidMount and passing the empty array is correct
 

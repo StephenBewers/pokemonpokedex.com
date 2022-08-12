@@ -37,23 +37,39 @@ const Modal = ({ active, hideModal, filterBtnClick, pokemon }) => {
 
   // Fetch forms from the API if the pokemon has changed
   useEffect(() => {
+    let mounted = true;
+    let controller = new AbortController();
+
     const formsArray = pokemonState.variant.forms;
     let pokemonWithFormDetails = pokemonState;
+
     (async () => {
       if (formsArray.length && !formsOfCurrentVariantReceived) {
         for (let i = 0; i < formsArray.length; i++) {
           try {
             pokemonWithFormDetails.variant.forms[i].details = await getResource(
-              `${formsArray[i].url}`
+              `${formsArray[i].url}`,
+              {
+                signal: controller.signal,
+              }
             );
           } catch (error) {
             console.error(error);
           }
         }
       }
-      setPokemonState(pokemonWithFormDetails);
-      setFormsOfCurrentVariantReceived(true);
+
+      if(mounted) {
+        setPokemonState(pokemonWithFormDetails);
+        setFormsOfCurrentVariantReceived(true);
+      }
     })();
+    
+    // Cleanup on unmount
+    return (() => {
+      controller?.abort();
+      mounted = false;
+    });
   }, [pokemonState, formsOfCurrentVariantReceived]);
 
   // Refreshes the modal with a different pokemon

@@ -9,21 +9,37 @@ const PokemonEggGroups = ({ pokemon }) => {
 
   // Fetch egg groups from the API if the pokemon has changed
   useEffect(() => {
+    let mounted = true;
+    let controller = new AbortController();
+
     const eggGroupsArray = pokemon.species.egg_groups;
+
     (async () => {
       if (eggGroupsArray.length) {
         for (let i = 0; i < eggGroupsArray.length; i++) {
           try {
             eggGroupsArray[i].details = await getResource(
-              `${eggGroupsArray[i].url}`
+              `${eggGroupsArray[i].url}`,
+              {
+                signal: controller.signal,
+              }
             );
           } catch (error) {
             console.error(error);
           }
         }
       }
-      setEggGroups([...eggGroupsArray]);
+      
+      if(mounted) {
+        setEggGroups([...eggGroupsArray]);
+      }
     })();
+    
+    // Cleanup on unmount
+    return (() => {
+      controller?.abort();
+      mounted = false;
+    });
   }, [pokemon]);
 
   // If the details of the eggGroup have been received, return the English name

@@ -46,10 +46,17 @@ const SearchBar = ({
   };
 
   useEffect(() => {
+    let mounted = true;
+
     // If a modal is active, reset the state
-    if (anyModalActive) {
+    if (anyModalActive && mounted) {
       resetState();
     }
+    
+    // Cleanup on unmount
+    return (() => {
+      mounted = false;
+    });
   }, [anyModalActive]);
 
   const filterOptions = (options, userInput) => {

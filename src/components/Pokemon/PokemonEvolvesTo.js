@@ -12,6 +12,9 @@ const PokemonEvolvesTo = ({ pokemon, clickHandler }) => {
   const [hasEvolutions, setHasEvolutions] = useState(true);
 
   useEffect(() => {
+    let mounted = true;
+    let controller = new AbortController();
+
     const currentSpecies = pokemon.species;
     const currentForm = pokemon.form;
 
@@ -34,7 +37,9 @@ const PokemonEvolvesTo = ({ pokemon, clickHandler }) => {
     (async () => {
       if (evolutionChain?.hasOwnProperty("url")) {
         try {
-          evolutionChain.details = await getResource(`${evolutionChain.url}`);
+          evolutionChain.details = await getResource(`${evolutionChain.url}`, {
+            signal: controller.signal
+          });
         } catch (error) {
           console.error(error);
         }
@@ -57,7 +62,7 @@ const PokemonEvolvesTo = ({ pokemon, clickHandler }) => {
         }
 
         // If the evolves to species array is empty, this pokemon has no evolutions so update state
-        if (!evolvesToSpeciesArray.length) {
+        if (!evolvesToSpeciesArray.length && mounted) {
           setHasEvolutions(false);
         }
         // Else, we know the pokemon does have evolutions so get the evolves to species
@@ -70,7 +75,9 @@ const PokemonEvolvesTo = ({ pokemon, clickHandler }) => {
             if (evolvesToSpecies.species?.hasOwnProperty("url")) {
               try {
                 evolvesToSpecies.details = await getResource(
-                  `${evolvesToSpecies.species.url}`
+                  `${evolvesToSpecies.species.url}`, {
+                    signal: controller.signal
+                  }
                 );
               } catch (error) {
                 console.error(error);
@@ -97,11 +104,15 @@ const PokemonEvolvesTo = ({ pokemon, clickHandler }) => {
                     try {
                       // Get the variant details
                       evolvesToVariant.details = await getResource(
-                        `${evolvesToSpecies.details.varieties[i].pokemon.url}`
+                        `${evolvesToSpecies.details.varieties[i].pokemon.url}`, {
+                          signal: controller.signal
+                        }
                       );
                       // Get the form details
                       evolvesToForm.details = await getResource(
-                        `https://pokeapi.co/api/v2/pokemon-form/${evolvesToSpecies.details.name}-${formName}`
+                        `https://pokeapi.co/api/v2/pokemon-form/${evolvesToSpecies.details.name}-${formName}`, {
+                          signal: controller.signal
+                        }
                       );
                     } catch (error) {
                       console.error(error);
@@ -119,7 +130,9 @@ const PokemonEvolvesTo = ({ pokemon, clickHandler }) => {
                 if (!evolvesToPokemonArray.length) {
                   try {
                     evolvesToVariant.details = await getResource(
-                      getDefaultVariantUrl(evolvesToSpecies)
+                      getDefaultVariantUrl(evolvesToSpecies), {
+                        signal: controller.signal
+                      }
                     );
                   } catch (error) {
                     console.error(error);
@@ -139,11 +152,15 @@ const PokemonEvolvesTo = ({ pokemon, clickHandler }) => {
                 try {
                   // Get the variant details
                   evolvesToVariant.details = await getResource(
-                    `${evolvesToSpecies.details.varieties[0].pokemon.url}`
+                    `${evolvesToSpecies.details.varieties[0].pokemon.url}`, {
+                      signal: controller.signal
+                    }
                   );
                   // Get the form details
                   evolvesToForm.details = await getResource(
-                    `https://pokeapi.co/api/v2/pokemon-form/${evolvesToSpecies.details.name}-${formName}`
+                    `https://pokeapi.co/api/v2/pokemon-form/${evolvesToSpecies.details.name}-${formName}`, {
+                      signal: controller.signal
+                    }
                   );
                 } catch (error) {
                   console.error(error);
@@ -162,7 +179,9 @@ const PokemonEvolvesTo = ({ pokemon, clickHandler }) => {
             else {
               try {
                 evolvesToVariant.details = await getResource(
-                  getDefaultVariantUrl(evolvesToSpecies)
+                  getDefaultVariantUrl(evolvesToSpecies), {
+                    signal: controller.signal
+                  }
                 );
               } catch (error) {
                 console.error(error);
@@ -199,8 +218,8 @@ const PokemonEvolvesTo = ({ pokemon, clickHandler }) => {
 
           // If all of the evolutions have been checked, update state
           if (
-            trueEvolutionsArray.length ===
-            evolvesToPokemonArray.length - impossibleEvolutionsArray.length
+            (trueEvolutionsArray.length ===
+            evolvesToPokemonArray.length - impossibleEvolutionsArray.length) && mounted
           ) {
             // If there are no non-Galarian evolutions, update the state to has no evolutions
             if (trueEvolutionsArray.length === 0) {
@@ -214,6 +233,12 @@ const PokemonEvolvesTo = ({ pokemon, clickHandler }) => {
         }
       }
     })();
+    
+    // Cleanup on unmount
+    return (() => {
+      controller?.abort();
+      mounted = false;
+    });
   }, [pokemon]);
 
   // Displays the pokemon the current pokemon evolves into

@@ -39,13 +39,20 @@ const PokemonTypeEffectiveness = ({ pokemon, filterBtnClick }) => {
 
   // Fetch types from the API if the pokemon has changed
   useEffect(() => {
+    let mounted = true;
+    let controller = new AbortController();
+
     let typesArray = pokemon.variant.types;
+
     (async () => {
       if (typesArray.length) {
         for (let i = 0; i < typesArray.length; i++) {
           try {
             typesArray[i].details = await getResource(
-              `${typesArray[i].type.url}`
+              `${typesArray[i].type.url}`,
+              {
+                signal: controller.signal,
+              }
             );
           } catch (error) {
             console.error(error);
@@ -59,9 +66,18 @@ const PokemonTypeEffectiveness = ({ pokemon, filterBtnClick }) => {
           type.details
         );
       });
-      setTypeEffectiveness(updatedTypeEffectiveness);
-      setTypesReceived(true);
+
+      if(mounted) {
+        setTypeEffectiveness(updatedTypeEffectiveness);
+        setTypesReceived(true);
+      }
     })();
+    
+    // Cleanup on unmount
+    return (() => {
+      controller?.abort();
+      mounted = false;
+    });
   }, [pokemon]);
 
   // Calculates the effectiveness of each type against this pokemon

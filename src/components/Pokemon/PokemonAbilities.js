@@ -11,21 +11,37 @@ const PokemonAbilities = ({ pokemon }) => {
 
   // Fetch abilities from the API if the pokemon has changed
   useEffect(() => {
+    let mounted = true;
+    let controller = new AbortController();
+
     const abilitiesArray = pokemon.variant.abilities;
+
     (async () => {
       if (abilitiesArray.length) {
         for (let i = 0; i < abilitiesArray.length; i++) {
           try {
             abilitiesArray[i].details = await getResource(
-              `${abilitiesArray[i].ability.url}`
+              `${abilitiesArray[i].ability.url}`,
+              {
+                signal: controller.signal,
+              }
             );
           } catch (error) {
             console.error(error);
           }
         }
       }
-      setAbilities([...abilitiesArray]);
+      
+      if(mounted) {
+        setAbilities([...abilitiesArray]);
+      }
     })();
+
+    // Cleanup on unmount
+    return (() => {
+      controller?.abort();
+      mounted = false;
+    });
   }, [pokemon]);
 
   // If the details of the ability have been received, return the English name

@@ -9,17 +9,33 @@ const PokemonHabitat = ({ pokemon }) => {
 
   // Fetch habitat from the API if the pokemon has changed
   useEffect(() => {
+    let mounted = true;
+    let controller = new AbortController();
+
     const habitat = pokemon.species.habitat;
+
     (async () => {
       if (habitat?.hasOwnProperty("url")) {
         try {
-          habitat.details = await getResource(`${habitat.url}`);
+          habitat.details = await getResource(`${habitat.url}`,
+          {
+            signal: controller.signal,
+          });
         } catch (error) {
           console.error(error);
         }
       }
-      setHabitat(habitat);
+      
+      if(mounted) {
+        setHabitat(habitat);
+      }
     })();
+    
+    // Cleanup on unmount
+    return (() => {
+      controller?.abort();
+      mounted = false;
+    });
   }, [pokemon]);
 
   // Gets the habitat name

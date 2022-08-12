@@ -9,17 +9,33 @@ const PokemonGrowthRate = ({ pokemon }) => {
 
   // Fetch growth rate from the API if the pokemon has changed
   useEffect(() => {
+    let mounted = true;
+    let controller = new AbortController();
+
     const growthRate = pokemon.species.growth_rate;
+
     (async () => {
       if (growthRate?.hasOwnProperty("url")) {
         try {
-          growthRate.details = await getResource(`${growthRate.url}`);
+          growthRate.details = await getResource(`${growthRate.url}`,
+          {
+            signal: controller.signal,
+          });
         } catch (error) {
           console.error(error);
         }
       }
-      setGrowthRate(growthRate);
+      
+      if(mounted) {
+        setGrowthRate(growthRate);
+      }
     })();
+    
+    // Cleanup on unmount
+    return (() => {
+      controller?.abort();
+      mounted = false;
+    });
   }, [pokemon]);
 
   // Gets the growth rate description

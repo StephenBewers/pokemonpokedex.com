@@ -11,6 +11,9 @@ const PokemonEvolvesFrom = ({ pokemon, clickHandler }) => {
   const [evolvesFromPokemon, setEvolvesFromPokemon] = useState({});
 
   useEffect(() => {
+    let mounted = true;
+    let controller = new AbortController();
+
     const currentVariant = pokemon.variant;
     let currentForm = pokemon.form;
 
@@ -40,7 +43,10 @@ const PokemonEvolvesFrom = ({ pokemon, clickHandler }) => {
       if (evolvesFromSpecies?.hasOwnProperty("url")) {
         try {
           evolvesFromSpecies.details = await getResource(
-            `${evolvesFromSpecies.url}`
+            `${evolvesFromSpecies.url}`,
+            {
+              signal: controller.signal,
+            }
           );
         } catch (error) {
           console.error(error);
@@ -67,7 +73,10 @@ const PokemonEvolvesFrom = ({ pokemon, clickHandler }) => {
                 // Get the evolves from variant
                 try {
                   evolvesFromVariant.details = await getResource(
-                    `${evolvesFromSpecies.details.varieties[i].pokemon.url}`
+                    `${evolvesFromSpecies.details.varieties[i].pokemon.url}`,
+                    {
+                      signal: controller.signal,
+                    }
                   );
                 } catch (error) {
                   console.error(error);
@@ -75,7 +84,10 @@ const PokemonEvolvesFrom = ({ pokemon, clickHandler }) => {
                 // Get the evolves from form
                 try {
                   evolvesFromForm.details = await getResource(
-                    `https://pokeapi.co/api/v2/pokemon-form/${evolvesFromSpecies.name}-${formName}`
+                    `https://pokeapi.co/api/v2/pokemon-form/${evolvesFromSpecies.name}-${formName}`,
+                    {
+                      signal: controller.signal,
+                    }
                   );
                 } catch (error) {
                   console.error(error);
@@ -89,7 +101,10 @@ const PokemonEvolvesFrom = ({ pokemon, clickHandler }) => {
             if (!matchingVariant) {
               try {
                 evolvesFromVariant.details = await getResource(
-                  getDefaultVariantUrl(evolvesFromSpecies)
+                  getDefaultVariantUrl(evolvesFromSpecies),
+                  {
+                    signal: controller.signal,
+                  }
                 );
               } catch (error) {
                 console.error(error);
@@ -102,10 +117,16 @@ const PokemonEvolvesFrom = ({ pokemon, clickHandler }) => {
             // Get the evolves from variant
             try {
               evolvesFromVariant.details = await getResource(
-                `${evolvesFromSpecies.details.varieties[0].pokemon.url}`
+                `${evolvesFromSpecies.details.varieties[0].pokemon.url}`,
+                {
+                  signal: controller.signal,
+                }
               );
               evolvesFromForm.details = await getResource(
-                `https://pokeapi.co/api/v2/pokemon-form/${evolvesFromSpecies.name}-${formName}`
+                `https://pokeapi.co/api/v2/pokemon-form/${evolvesFromSpecies.name}-${formName}`,
+                {
+                  signal: controller.signal,
+                }
               );
             } catch (error) {
               console.error(error);
@@ -117,7 +138,10 @@ const PokemonEvolvesFrom = ({ pokemon, clickHandler }) => {
         else {
           try {
             evolvesFromVariant.details = await getResource(
-              getDefaultVariantUrl(evolvesFromSpecies)
+              getDefaultVariantUrl(evolvesFromSpecies),
+              {
+                signal: controller.signal,
+              }
             );
           } catch (error) {
             console.error(error);
@@ -131,9 +155,16 @@ const PokemonEvolvesFrom = ({ pokemon, clickHandler }) => {
         };
       }
 
-      // Update state
-      setEvolvesFromPokemon({ ...evolvesFromPokemon });
+      if(mounted) {
+        setEvolvesFromPokemon({ ...evolvesFromPokemon });
+      }
     })();
+    
+    // Cleanup on unmount
+    return (() => {
+      controller?.abort();
+      mounted = false;
+    });
   }, [pokemon]);
 
   // Displays the pokemon the current pokemon evolves from

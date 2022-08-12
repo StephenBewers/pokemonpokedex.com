@@ -16,11 +16,15 @@ const PokemonOtherForms = ({
 
   // Fetch other forms from the API if the pokemon has changed
   useEffect(() => {
+    let mounted = true;
+    let controller = new AbortController();
+
     const currentVariant = pokemon.variant;
     const otherVariantsToGet = pokemon.species.varieties.filter(
       (variant) => variant.pokemon.name !== currentVariant.name
     );
     let otherVariantsArray = [];
+
     (async () => {
       if (otherVariantsToGet.length) {
         // Get each of the other variants first
@@ -28,7 +32,10 @@ const PokemonOtherForms = ({
           let otherVariant = { species: pokemon.species };
           try {
             otherVariant.variant = await getResource(
-              `${otherVariantsToGet[i].pokemon.url}`
+              `${otherVariantsToGet[i].pokemon.url}`,
+              {
+                signal: controller.signal,
+              }
             );
           } catch (error) {
             console.error(error);
@@ -43,16 +50,28 @@ const PokemonOtherForms = ({
             for (let ii = 0; ii < otherFormsToGet.length; ii++) {
               try {
                 otherVariantsArray[i].variant.forms[ii].details =
-                  await getResource(`${otherFormsToGet[ii].url}`);
+                  await getResource(`${otherFormsToGet[ii].url}`,
+                  {
+                    signal: controller.signal,
+                  });
               } catch (error) {
                 console.error(error);
               }
             }
           }
         }
-        setOtherVariants([...otherVariantsArray]);
+
+        if(mounted) {
+          setOtherVariants([...otherVariantsArray]);
+        }
       }
     })();
+    
+    // Cleanup on unmount
+    return (() => {
+      controller?.abort();
+      mounted = false;
+    });
   }, [pokemon]);
 
   const getFormsToDisplay = (
