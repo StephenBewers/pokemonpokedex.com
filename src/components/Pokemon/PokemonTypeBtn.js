@@ -72,13 +72,14 @@ const PokemonTypeBtn = ({
   };
 
   return (
-    <span
+    <button
       className={`${getTypeBtnClass(effectiveness)} ${type}`}
+      type="button"
       onClick={() => filterBtnClick("type", type)}
     >
       {renderTypeIcon(typeIcon)} {type}
       {renderTypeEffectiveness(effectiveness)}
-    </span>
+    </button>
   );
 };
 

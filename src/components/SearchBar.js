@@ -242,7 +242,7 @@ const SearchBar = ({
         <button
           type="submit"
           id="submit"
-          name="submit"
+          aria-label="Submit search"
           value=""
           disabled="disabled"
           className="search-btn"

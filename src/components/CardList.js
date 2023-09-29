@@ -27,13 +27,14 @@ const CardList = ({
     if (!isModal) {
       return (
         <div className="card-list-header">
-          <div
+          <button
             className="card-list-reset-btn"
-            role="button"
+            type="button"
+            aria-label="Clear results"
             onClick={updatePokemonCardList}
           >
             <FontAwesomeIcon icon={faTimes} />
-          </div>
+          </button>
           {renderTitle(title)}
         </div>
       );

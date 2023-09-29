@@ -23,14 +23,15 @@ import ModalRibbon from "./ModalRibbon";
 const Modal = ({ active, hideModal, filterBtnClick, pokemon }) => {
   const infoPanelRef = useRef();
   const modalMainRef = useRef();
-  
+
   const [pokemonState, setPokemonState] = useState(pokemon);
-  const [formsOfCurrentVariantReceived, setFormsOfCurrentVariantReceived] = useState(false);
+  const [formsOfCurrentVariantReceived, setFormsOfCurrentVariantReceived] =
+    useState(false);
 
   // Prevents clicks on the inner modal div triggering the outer modal click event
   const innerModalClick = (event) => {
     event.stopPropagation();
-  }
+  };
 
   // Scrolls the referred element to the top
   const scrollToTop = (ref) => ref.current.scroll({ top: 0, behavior: "auto" });
@@ -59,17 +60,17 @@ const Modal = ({ active, hideModal, filterBtnClick, pokemon }) => {
         }
       }
 
-      if(mounted) {
+      if (mounted) {
         setPokemonState(pokemonWithFormDetails);
         setFormsOfCurrentVariantReceived(true);
       }
     })();
-    
+
     // Cleanup on unmount
-    return (() => {
+    return () => {
       controller?.abort();
       mounted = false;
-    });
+    };
   }, [pokemonState, formsOfCurrentVariantReceived]);
 
   // Refreshes the modal with a different pokemon
@@ -82,92 +83,93 @@ const Modal = ({ active, hideModal, filterBtnClick, pokemon }) => {
     setFormsOfCurrentVariantReceived(false);
   };
 
-    // If the active state becomes false, hide the modal
-    const visibleClassName = active ? "visible" : "hidden";
+  // If the active state becomes false, hide the modal
+  const visibleClassName = active ? "visible" : "hidden";
 
-    return (
-      <div className={`modal ${visibleClassName}`} onClick={hideModal}>
-        <ModalExitBtn hideModal={hideModal} />
-        <section
-          className="modal-main"
-          onClick={innerModalClick}
-          ref={modalMainRef}
-        >
-          <ModalRibbon pokemon={pokemonState} />
-          <ModalImagePanel
+  return (
+    <div className={`modal ${visibleClassName}`} onClick={hideModal}>
+      <ModalExitBtn hideModal={hideModal} id="btn-modal-exit-portrait" />
+      <section
+        className="modal-main"
+        onClick={innerModalClick}
+        ref={modalMainRef}
+      >
+        <ModalExitBtn hideModal={hideModal} id="btn-modal-exit-landscape" />
+        <ModalRibbon pokemon={pokemonState} />
+        <ModalImagePanel
+          pokemon={pokemonState}
+          key={`image-${pokemonState.variant.id}`}
+        />
+        <div className="modal-info-panel" ref={infoPanelRef}>
+          <PokemonDescription
             pokemon={pokemonState}
-            key={`image-${pokemonState.variant.id}`}
+            key={`description-${pokemonState.species.id}`}
           />
-          <div className="modal-info-panel" ref={infoPanelRef}>
-            <PokemonDescription
+          <ModalRow id="modal-top-row">
+            <PokemonTypes
               pokemon={pokemonState}
-              key={`description-${pokemonState.species.id}`}
+              key={`types-${pokemonState.variant.id}`}
+              filterBtnClick={filterBtnClick}
             />
-            <ModalRow id="modal-top-row">
-              <PokemonTypes
+            <PokemonHabitat
+              pokemon={pokemonState}
+              key={`habitat-${pokemonState.species.id}`}
+            />
+            <PokemonGender
+              pokemon={pokemonState}
+              key={`gender-${pokemonState.species.id}`}
+            />
+            <PokemonCatchRate
+              pokemon={pokemonState}
+              key={`catch-rate-${pokemonState.species.id}`}
+            />
+            <PokemonHeight
+              pokemon={pokemonState}
+              key={`height-${pokemonState.variant.id}`}
+            />
+            <PokemonWeight
+              pokemon={pokemonState}
+              key={`weight-${pokemonState.variant.id}`}
+            />
+          </ModalRow>
+          <ModalRow id="modal-centre-section">
+            <ModalColumn>
+              <PokemonBaseStats
                 pokemon={pokemonState}
-                key={`types-${pokemonState.variant.id}`}
+                key={`base-stats-${pokemonState.variant.id}`}
+              />
+              <PokemonAbilities
+                pokemon={pokemonState}
+                key={`abilities-${pokemonState.variant.id}`}
+              />
+              <PokemonTraining
+                pokemon={pokemonState}
+                key={`training-${pokemonState.variant.id}`}
+              />
+            </ModalColumn>
+            <ModalColumn>
+              <PokemonTypeEffectiveness
+                pokemon={pokemonState}
+                key={`type-effectiveness-${pokemonState.variant.id}`}
                 filterBtnClick={filterBtnClick}
               />
-              <PokemonHabitat
-                pokemon={pokemonState}
-                key={`habitat-${pokemonState.species.id}`}
-              />
-              <PokemonGender
-                pokemon={pokemonState}
-                key={`gender-${pokemonState.species.id}`}
-              />
-              <PokemonCatchRate
-                pokemon={pokemonState}
-                key={`catch-rate-${pokemonState.species.id}`}
-              />
-              <PokemonHeight
-                pokemon={pokemonState}
-                key={`height-${pokemonState.variant.id}`}
-              />
-              <PokemonWeight
-                pokemon={pokemonState}
-                key={`weight-${pokemonState.variant.id}`}
-              />
-            </ModalRow>
-            <ModalRow id="modal-centre-section">
-              <ModalColumn>
-                <PokemonBaseStats
-                  pokemon={pokemonState}
-                  key={`base-stats-${pokemonState.variant.id}`}
-                />
-                <PokemonAbilities
-                  pokemon={pokemonState}
-                  key={`abilities-${pokemonState.variant.id}`}
-                />
-                <PokemonTraining
-                  pokemon={pokemonState}
-                  key={`training-${pokemonState.variant.id}`}
-                />
-              </ModalColumn>
-              <ModalColumn>
-                <PokemonTypeEffectiveness
-                  pokemon={pokemonState}
-                  key={`type-effectiveness-${pokemonState.variant.id}`}
-                  filterBtnClick={filterBtnClick}
-                />
-              </ModalColumn>
-            </ModalRow>
-            <PokemonEvolution
-              pokemon={pokemonState}
-              clickHandler={refreshModal}
-              key={`evolution-${pokemonState.variant.id}`}
-            />
-            <PokemonOtherForms
-              pokemon={pokemonState}
-              formsOfCurrentVariantReceived={formsOfCurrentVariantReceived}
-              refreshModal={refreshModal}
-              key={`other-forms-${pokemonState.variant.id}`}
-            />
-          </div>
-        </section>
-      </div>
-    );
-}
+            </ModalColumn>
+          </ModalRow>
+          <PokemonEvolution
+            pokemon={pokemonState}
+            clickHandler={refreshModal}
+            key={`evolution-${pokemonState.variant.id}`}
+          />
+          <PokemonOtherForms
+            pokemon={pokemonState}
+            formsOfCurrentVariantReceived={formsOfCurrentVariantReceived}
+            refreshModal={refreshModal}
+            key={`other-forms-${pokemonState.variant.id}`}
+          />
+        </div>
+      </section>
+    </div>
+  );
+};
 
 export default Modal;

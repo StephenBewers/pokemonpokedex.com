@@ -71,8 +71,15 @@ const FilterMenu = ({ active, filterBtnClick, toggleFilterMenuState }) => {
       className={`menu-modal ${activeClass}`}
       onClick={toggleFilterMenuState}
     >
-      <ModalExitBtn hideModal={toggleFilterMenuState}></ModalExitBtn>
+      <ModalExitBtn
+        hideModal={toggleFilterMenuState}
+        id="btn-modal-exit-portrait"
+      />
       <section className="menu-modal-main" onClick={innerModalClick}>
+        <ModalExitBtn
+          hideModal={toggleFilterMenuState}
+          id="btn-modal-exit-landscape"
+        />
         <ModalImagePanel></ModalImagePanel>
         <div className="menu-modal-info-panel">
           <ModalRow id="menu-browse-pokemon-row">

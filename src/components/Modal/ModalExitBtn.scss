@@ -1,24 +1,35 @@
 .btn-modal-exit {
   position: fixed;
-  top: 1%;
-  right: 2%;
   transition: background-color 0.1s ease-in-out;
   z-index: 999;
-  border-radius: 32px;
+  border: none;
   background-color: rgba(0, 0, 0, 0.25);
   cursor: pointer;
   padding: 12px;
   color: #fff;
   font-size: 1.2em;
 
-  @media (orientation: landscape) {
-    top: 5%;
-    right: 5%;
+  &#btn-modal-exit-portrait {
+    display: block;
+    top: 8px;
+    right: 8px;
+    border-radius: 32px;
+  }
+
+  &#btn-modal-exit-landscape {
+    display: none;
+    right: 0px;
     border-radius: 0px 16px 0px 16px;
   }
 
-  @media (any-hover: hover) {
-    right: 4.5%; // To account for desktop scrollbars
+  @media (orientation: landscape) {
+    &#btn-modal-exit-landscape {
+      display: block;
+    }
+
+    &#btn-modal-exit-portrait {
+      display: none;
+    }
   }
 
   &:hover {

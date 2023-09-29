@@ -2,13 +2,12 @@
   transition: background-color 0.1s ease-in-out, color 0.1s ease-in-out;
   margin-left: 18px; 
   border-radius: 32px;
+  border: none;
   border-color: transparent;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.3), 0 6px 20px 0 rgba(0, 0, 0, 0.3);
   background-color: #3563ad;
   cursor: pointer;
   padding: 24px;
-  width: 1em;
-  height: fit-content;
   text-align: center;
   color: #fff;
 

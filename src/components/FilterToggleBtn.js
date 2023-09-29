@@ -15,13 +15,14 @@ const FilterToggleBtn = ({ active, clickHandler }) => {
   };
 
   return (
-    <div
+    <button
       className={`btn-filter ${activeClass}`}
-      role="button"
+      type="button"
+      aria-label="Filter pokémon"
       onClick={clickHandler}
     >
       {getIcon(active)}
-    </div>
+    </button>
   );
 };
 

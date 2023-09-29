@@ -3,12 +3,12 @@ import "./ModalExitBtn.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 
-const ModalExitBtn = ({hideModal}) => {
+const ModalExitBtn = ({id, hideModal}) => {
     
     return (
-        <div className="btn-modal-exit" role="button" onClick={hideModal}>
+        <button className="btn-modal-exit" id={id} type="button" aria-label="Close modal" onClick={hideModal}>
             <FontAwesomeIcon icon={faTimes} />
-        </div>
+        </button>
     );
 };
 

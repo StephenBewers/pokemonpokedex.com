@@ -7,12 +7,13 @@ const GenerationBtn = ({
 }) => {
 
   return (
-    <span
+    <button
       className={`generation-btn gen-${generation}`}
+      type="button"
       onClick={() => filterBtnClick("generation", generation)}
     >
       Generation {generation}
-    </span>
+    </button>
   );
 };
 
